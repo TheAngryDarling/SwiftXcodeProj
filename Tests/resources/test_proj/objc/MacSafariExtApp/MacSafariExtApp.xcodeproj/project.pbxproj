@@ -1,0 +1,743 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2F50A7D822B1A46600A3A5A8 /* MacSafariExtApp.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 2F50A7D722B1A46600A3A5A8 /* MacSafariExtApp.entitlements */; };
+		2F50A7DB22B1A46600A3A5A8 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F50A7DA22B1A46600A3A5A8 /* AppDelegate.m */; };
+		2F50A7DE22B1A46600A3A5A8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2F50A7DC22B1A46600A3A5A8 /* Main.storyboard */; };
+		2F50A7E122B1A46600A3A5A8 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F50A7E022B1A46600A3A5A8 /* ViewController.m */; };
+		2F50A7E322B1A46700A3A5A8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F50A7E222B1A46700A3A5A8 /* Assets.xcassets */; };
+		2F50A7E622B1A46700A3A5A8 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F50A7E522B1A46700A3A5A8 /* main.m */; };
+		2F50A7F022B1A46700A3A5A8 /* MacSafariExtAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F50A7EF22B1A46700A3A5A8 /* MacSafariExtAppTests.m */; };
+		2F50A7FB22B1A46700A3A5A8 /* MacSafariExtAppUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F50A7FA22B1A46700A3A5A8 /* MacSafariExtAppUITests.m */; };
+		2F50A80222B1A46700A3A5A8 /* MacSafariExtApp Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2F50A80122B1A46700A3A5A8 /* MacSafariExtApp Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2F50A80722B1A46700A3A5A8 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F50A80622B1A46700A3A5A8 /* Cocoa.framework */; };
+		2F50A80B22B1A46700A3A5A8 /* SafariExtensionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F50A80A22B1A46700A3A5A8 /* SafariExtensionHandler.m */; };
+		2F50A80E22B1A46700A3A5A8 /* SafariExtensionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F50A80D22B1A46700A3A5A8 /* SafariExtensionViewController.m */; };
+		2F50A81122B1A46700A3A5A8 /* SafariExtensionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2F50A80F22B1A46700A3A5A8 /* SafariExtensionViewController.xib */; };
+		2F50A81422B1A46700A3A5A8 /* script.js in Resources */ = {isa = PBXBuildFile; fileRef = 2F50A81322B1A46700A3A5A8 /* script.js */; };
+		2F50A81622B1A46700A3A5A8 /* ToolbarItemIcon.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2F50A81522B1A46700A3A5A8 /* ToolbarItemIcon.pdf */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2F50A7EC22B1A46700A3A5A8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2F50A7CC22B1A46600A3A5A8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F50A7D322B1A46600A3A5A8;
+			remoteInfo = MacSafariExtApp;
+		};
+		2F50A7F722B1A46700A3A5A8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2F50A7CC22B1A46600A3A5A8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F50A7D322B1A46600A3A5A8;
+			remoteInfo = MacSafariExtApp;
+		};
+		2F50A80322B1A46700A3A5A8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2F50A7CC22B1A46600A3A5A8 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2F50A80022B1A46700A3A5A8;
+			remoteInfo = "MacSafariExtApp Extension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2F50A81D22B1A46700A3A5A8 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				2F50A80222B1A46700A3A5A8 /* MacSafariExtApp Extension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		2F50A7D422B1A46600A3A5A8 /* MacSafariExtApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacSafariExtApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F50A7D722B1A46600A3A5A8 /* MacSafariExtApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacSafariExtApp.entitlements; sourceTree = "<group>"; };
+		2F50A7D922B1A46600A3A5A8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		2F50A7DA22B1A46600A3A5A8 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		2F50A7DD22B1A46600A3A5A8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		2F50A7DF22B1A46600A3A5A8 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		2F50A7E022B1A46600A3A5A8 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		2F50A7E222B1A46700A3A5A8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2F50A7E422B1A46700A3A5A8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2F50A7E522B1A46700A3A5A8 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		2F50A7EB22B1A46700A3A5A8 /* MacSafariExtAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacSafariExtAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F50A7EF22B1A46700A3A5A8 /* MacSafariExtAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MacSafariExtAppTests.m; sourceTree = "<group>"; };
+		2F50A7F122B1A46700A3A5A8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2F50A7F622B1A46700A3A5A8 /* MacSafariExtAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacSafariExtAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F50A7FA22B1A46700A3A5A8 /* MacSafariExtAppUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MacSafariExtAppUITests.m; sourceTree = "<group>"; };
+		2F50A7FC22B1A46700A3A5A8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2F50A80122B1A46700A3A5A8 /* MacSafariExtApp Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "MacSafariExtApp Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F50A80622B1A46700A3A5A8 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		2F50A80922B1A46700A3A5A8 /* SafariExtensionHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SafariExtensionHandler.h; sourceTree = "<group>"; };
+		2F50A80A22B1A46700A3A5A8 /* SafariExtensionHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SafariExtensionHandler.m; sourceTree = "<group>"; };
+		2F50A80C22B1A46700A3A5A8 /* SafariExtensionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SafariExtensionViewController.h; sourceTree = "<group>"; };
+		2F50A80D22B1A46700A3A5A8 /* SafariExtensionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SafariExtensionViewController.m; sourceTree = "<group>"; };
+		2F50A81022B1A46700A3A5A8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/SafariExtensionViewController.xib; sourceTree = "<group>"; };
+		2F50A81222B1A46700A3A5A8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2F50A81322B1A46700A3A5A8 /* script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = script.js; sourceTree = "<group>"; };
+		2F50A81522B1A46700A3A5A8 /* ToolbarItemIcon.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = ToolbarItemIcon.pdf; sourceTree = "<group>"; };
+		2F50A81722B1A46700A3A5A8 /* MacSafariExtApp_Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacSafariExtApp_Extension.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2F50A7D122B1A46600A3A5A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2F50A7E822B1A46700A3A5A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2F50A7F322B1A46700A3A5A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2F50A7FE22B1A46700A3A5A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F50A80722B1A46700A3A5A8 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2F50A7CB22B1A46600A3A5A8 = {
+			isa = PBXGroup;
+			children = (
+				2F50A7D622B1A46600A3A5A8 /* MacSafariExtApp */,
+				2F50A7EE22B1A46700A3A5A8 /* MacSafariExtAppTests */,
+				2F50A7F922B1A46700A3A5A8 /* MacSafariExtAppUITests */,
+				2F50A80822B1A46700A3A5A8 /* MacSafariExtApp Extension */,
+				2F50A80522B1A46700A3A5A8 /* Frameworks */,
+				2F50A7D522B1A46600A3A5A8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2F50A7D522B1A46600A3A5A8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2F50A7D422B1A46600A3A5A8 /* MacSafariExtApp.app */,
+				2F50A7EB22B1A46700A3A5A8 /* MacSafariExtAppTests.xctest */,
+				2F50A7F622B1A46700A3A5A8 /* MacSafariExtAppUITests.xctest */,
+				2F50A80122B1A46700A3A5A8 /* MacSafariExtApp Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2F50A7D622B1A46600A3A5A8 /* MacSafariExtApp */ = {
+			isa = PBXGroup;
+			children = (
+				2F50A7D722B1A46600A3A5A8 /* MacSafariExtApp.entitlements */,
+				2F50A7D922B1A46600A3A5A8 /* AppDelegate.h */,
+				2F50A7DA22B1A46600A3A5A8 /* AppDelegate.m */,
+				2F50A7DC22B1A46600A3A5A8 /* Main.storyboard */,
+				2F50A7DF22B1A46600A3A5A8 /* ViewController.h */,
+				2F50A7E022B1A46600A3A5A8 /* ViewController.m */,
+				2F50A7E222B1A46700A3A5A8 /* Assets.xcassets */,
+				2F50A7E422B1A46700A3A5A8 /* Info.plist */,
+				2F50A7E522B1A46700A3A5A8 /* main.m */,
+			);
+			path = MacSafariExtApp;
+			sourceTree = "<group>";
+		};
+		2F50A7EE22B1A46700A3A5A8 /* MacSafariExtAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				2F50A7EF22B1A46700A3A5A8 /* MacSafariExtAppTests.m */,
+				2F50A7F122B1A46700A3A5A8 /* Info.plist */,
+			);
+			path = MacSafariExtAppTests;
+			sourceTree = "<group>";
+		};
+		2F50A7F922B1A46700A3A5A8 /* MacSafariExtAppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				2F50A7FA22B1A46700A3A5A8 /* MacSafariExtAppUITests.m */,
+				2F50A7FC22B1A46700A3A5A8 /* Info.plist */,
+			);
+			path = MacSafariExtAppUITests;
+			sourceTree = "<group>";
+		};
+		2F50A80522B1A46700A3A5A8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2F50A80622B1A46700A3A5A8 /* Cocoa.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2F50A80822B1A46700A3A5A8 /* MacSafariExtApp Extension */ = {
+			isa = PBXGroup;
+			children = (
+				2F50A80922B1A46700A3A5A8 /* SafariExtensionHandler.h */,
+				2F50A80A22B1A46700A3A5A8 /* SafariExtensionHandler.m */,
+				2F50A80C22B1A46700A3A5A8 /* SafariExtensionViewController.h */,
+				2F50A80D22B1A46700A3A5A8 /* SafariExtensionViewController.m */,
+				2F50A80F22B1A46700A3A5A8 /* SafariExtensionViewController.xib */,
+				2F50A81222B1A46700A3A5A8 /* Info.plist */,
+				2F50A81322B1A46700A3A5A8 /* script.js */,
+				2F50A81522B1A46700A3A5A8 /* ToolbarItemIcon.pdf */,
+				2F50A81722B1A46700A3A5A8 /* MacSafariExtApp_Extension.entitlements */,
+			);
+			path = "MacSafariExtApp Extension";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2F50A7D322B1A46600A3A5A8 /* MacSafariExtApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2F50A81E22B1A46700A3A5A8 /* Build configuration list for PBXNativeTarget "MacSafariExtApp" */;
+			buildPhases = (
+				2F50A7D022B1A46600A3A5A8 /* Sources */,
+				2F50A7D122B1A46600A3A5A8 /* Frameworks */,
+				2F50A7D222B1A46600A3A5A8 /* Resources */,
+				2F50A81D22B1A46700A3A5A8 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2F50A80422B1A46700A3A5A8 /* PBXTargetDependency */,
+			);
+			name = MacSafariExtApp;
+			productName = MacSafariExtApp;
+			productReference = 2F50A7D422B1A46600A3A5A8 /* MacSafariExtApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		2F50A7EA22B1A46700A3A5A8 /* MacSafariExtAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2F50A82122B1A46700A3A5A8 /* Build configuration list for PBXNativeTarget "MacSafariExtAppTests" */;
+			buildPhases = (
+				2F50A7E722B1A46700A3A5A8 /* Sources */,
+				2F50A7E822B1A46700A3A5A8 /* Frameworks */,
+				2F50A7E922B1A46700A3A5A8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2F50A7ED22B1A46700A3A5A8 /* PBXTargetDependency */,
+			);
+			name = MacSafariExtAppTests;
+			productName = MacSafariExtAppTests;
+			productReference = 2F50A7EB22B1A46700A3A5A8 /* MacSafariExtAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		2F50A7F522B1A46700A3A5A8 /* MacSafariExtAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2F50A82422B1A46700A3A5A8 /* Build configuration list for PBXNativeTarget "MacSafariExtAppUITests" */;
+			buildPhases = (
+				2F50A7F222B1A46700A3A5A8 /* Sources */,
+				2F50A7F322B1A46700A3A5A8 /* Frameworks */,
+				2F50A7F422B1A46700A3A5A8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2F50A7F822B1A46700A3A5A8 /* PBXTargetDependency */,
+			);
+			name = MacSafariExtAppUITests;
+			productName = MacSafariExtAppUITests;
+			productReference = 2F50A7F622B1A46700A3A5A8 /* MacSafariExtAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		2F50A80022B1A46700A3A5A8 /* MacSafariExtApp Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2F50A81A22B1A46700A3A5A8 /* Build configuration list for PBXNativeTarget "MacSafariExtApp Extension" */;
+			buildPhases = (
+				2F50A7FD22B1A46700A3A5A8 /* Sources */,
+				2F50A7FE22B1A46700A3A5A8 /* Frameworks */,
+				2F50A7FF22B1A46700A3A5A8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "MacSafariExtApp Extension";
+			productName = "MacSafariExtApp Extension";
+			productReference = 2F50A80122B1A46700A3A5A8 /* MacSafariExtApp Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2F50A7CC22B1A46600A3A5A8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1010;
+				ORGANIZATIONNAME = "Tyler Anger";
+				TargetAttributes = {
+					2F50A7D322B1A46600A3A5A8 = {
+						CreatedOnToolsVersion = 10.1;
+					};
+					2F50A7EA22B1A46700A3A5A8 = {
+						CreatedOnToolsVersion = 10.1;
+						TestTargetID = 2F50A7D322B1A46600A3A5A8;
+					};
+					2F50A7F522B1A46700A3A5A8 = {
+						CreatedOnToolsVersion = 10.1;
+						TestTargetID = 2F50A7D322B1A46600A3A5A8;
+					};
+					2F50A80022B1A46700A3A5A8 = {
+						CreatedOnToolsVersion = 10.1;
+					};
+				};
+			};
+			buildConfigurationList = 2F50A7CF22B1A46600A3A5A8 /* Build configuration list for PBXProject "MacSafariExtApp" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 2F50A7CB22B1A46600A3A5A8;
+			productRefGroup = 2F50A7D522B1A46600A3A5A8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2F50A7D322B1A46600A3A5A8 /* MacSafariExtApp */,
+				2F50A7EA22B1A46700A3A5A8 /* MacSafariExtAppTests */,
+				2F50A7F522B1A46700A3A5A8 /* MacSafariExtAppUITests */,
+				2F50A80022B1A46700A3A5A8 /* MacSafariExtApp Extension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2F50A7D222B1A46600A3A5A8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F50A7D822B1A46600A3A5A8 /* MacSafariExtApp.entitlements in Resources */,
+				2F50A7E322B1A46700A3A5A8 /* Assets.xcassets in Resources */,
+				2F50A7DE22B1A46600A3A5A8 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2F50A7E922B1A46700A3A5A8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2F50A7F422B1A46700A3A5A8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2F50A7FF22B1A46700A3A5A8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F50A81622B1A46700A3A5A8 /* ToolbarItemIcon.pdf in Resources */,
+				2F50A81122B1A46700A3A5A8 /* SafariExtensionViewController.xib in Resources */,
+				2F50A81422B1A46700A3A5A8 /* script.js in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2F50A7D022B1A46600A3A5A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F50A7E122B1A46600A3A5A8 /* ViewController.m in Sources */,
+				2F50A7E622B1A46700A3A5A8 /* main.m in Sources */,
+				2F50A7DB22B1A46600A3A5A8 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2F50A7E722B1A46700A3A5A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F50A7F022B1A46700A3A5A8 /* MacSafariExtAppTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2F50A7F222B1A46700A3A5A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F50A7FB22B1A46700A3A5A8 /* MacSafariExtAppUITests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2F50A7FD22B1A46700A3A5A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F50A80E22B1A46700A3A5A8 /* SafariExtensionViewController.m in Sources */,
+				2F50A80B22B1A46700A3A5A8 /* SafariExtensionHandler.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2F50A7ED22B1A46700A3A5A8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F50A7D322B1A46600A3A5A8 /* MacSafariExtApp */;
+			targetProxy = 2F50A7EC22B1A46700A3A5A8 /* PBXContainerItemProxy */;
+		};
+		2F50A7F822B1A46700A3A5A8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F50A7D322B1A46600A3A5A8 /* MacSafariExtApp */;
+			targetProxy = 2F50A7F722B1A46700A3A5A8 /* PBXContainerItemProxy */;
+		};
+		2F50A80422B1A46700A3A5A8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2F50A80022B1A46700A3A5A8 /* MacSafariExtApp Extension */;
+			targetProxy = 2F50A80322B1A46700A3A5A8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		2F50A7DC22B1A46600A3A5A8 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2F50A7DD22B1A46600A3A5A8 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		2F50A80F22B1A46700A3A5A8 /* SafariExtensionViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2F50A81022B1A46700A3A5A8 /* Base */,
+			);
+			name = SafariExtensionViewController.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		2F50A81822B1A46700A3A5A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		2F50A81922B1A46700A3A5A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		2F50A81B22B1A46700A3A5A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "MacSafariExtApp Extension/MacSafariExtApp_Extension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "MacSafariExtApp Extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.MacSafariExtApp-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		2F50A81C22B1A46700A3A5A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "MacSafariExtApp Extension/MacSafariExtApp_Extension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "MacSafariExtApp Extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.MacSafariExtApp-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		2F50A81F22B1A46700A3A5A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MacSafariExtApp/MacSafariExtApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = MacSafariExtApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.MacSafariExtApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		2F50A82022B1A46700A3A5A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = MacSafariExtApp/MacSafariExtApp.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = MacSafariExtApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.MacSafariExtApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		2F50A82222B1A46700A3A5A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = MacSafariExtAppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.MacSafariExtAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MacSafariExtApp.app/Contents/MacOS/MacSafariExtApp";
+			};
+			name = Debug;
+		};
+		2F50A82322B1A46700A3A5A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = MacSafariExtAppTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.MacSafariExtAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MacSafariExtApp.app/Contents/MacOS/MacSafariExtApp";
+			};
+			name = Release;
+		};
+		2F50A82522B1A46700A3A5A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = MacSafariExtAppUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.MacSafariExtAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = MacSafariExtApp;
+			};
+			name = Debug;
+		};
+		2F50A82622B1A46700A3A5A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = MacSafariExtAppUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.MacSafariExtAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = MacSafariExtApp;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2F50A7CF22B1A46600A3A5A8 /* Build configuration list for PBXProject "MacSafariExtApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F50A81822B1A46700A3A5A8 /* Debug */,
+				2F50A81922B1A46700A3A5A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2F50A81A22B1A46700A3A5A8 /* Build configuration list for PBXNativeTarget "MacSafariExtApp Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F50A81B22B1A46700A3A5A8 /* Debug */,
+				2F50A81C22B1A46700A3A5A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2F50A81E22B1A46700A3A5A8 /* Build configuration list for PBXNativeTarget "MacSafariExtApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F50A81F22B1A46700A3A5A8 /* Debug */,
+				2F50A82022B1A46700A3A5A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2F50A82122B1A46700A3A5A8 /* Build configuration list for PBXNativeTarget "MacSafariExtAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F50A82222B1A46700A3A5A8 /* Debug */,
+				2F50A82322B1A46700A3A5A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2F50A82422B1A46700A3A5A8 /* Build configuration list for PBXNativeTarget "MacSafariExtAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F50A82522B1A46700A3A5A8 /* Debug */,
+				2F50A82622B1A46700A3A5A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2F50A7CC22B1A46600A3A5A8 /* Project object */;
+}

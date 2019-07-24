@@ -1,0 +1,341 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2F50A65722B1A2A100A3A5A8 /* MacImageUnitPluginPlugInLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 2F50A65622B1A2A100A3A5A8 /* MacImageUnitPluginPlugInLoader.h */; };
+		2F50A65922B1A2A100A3A5A8 /* MacImageUnitPluginPlugInLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F50A65822B1A2A100A3A5A8 /* MacImageUnitPluginPlugInLoader.m */; };
+		2F50A65B22B1A2A100A3A5A8 /* MacImageUnitPluginFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2F50A65A22B1A2A100A3A5A8 /* MacImageUnitPluginFilter.h */; };
+		2F50A65D22B1A2A100A3A5A8 /* MacImageUnitPluginFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F50A65C22B1A2A100A3A5A8 /* MacImageUnitPluginFilter.m */; };
+		2F50A65F22B1A2A100A3A5A8 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 2F50A65E22B1A2A100A3A5A8 /* index.html */; };
+		2F50A66122B1A2A100A3A5A8 /* Description.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2F50A66022B1A2A100A3A5A8 /* Description.plist */; };
+		2F50A66422B1A2A100A3A5A8 /* Description.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2F50A66222B1A2A100A3A5A8 /* Description.strings */; };
+		2F50A66622B1A2A100A3A5A8 /* MacImageUnitPluginFilterKernel.cikernel in Resources */ = {isa = PBXBuildFile; fileRef = 2F50A66522B1A2A100A3A5A8 /* MacImageUnitPluginFilterKernel.cikernel */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2F50A65322B1A2A100A3A5A8 /* MacImageUnitPlugin.plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacImageUnitPlugin.plugin; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F50A65622B1A2A100A3A5A8 /* MacImageUnitPluginPlugInLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MacImageUnitPluginPlugInLoader.h; sourceTree = "<group>"; };
+		2F50A65822B1A2A100A3A5A8 /* MacImageUnitPluginPlugInLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MacImageUnitPluginPlugInLoader.m; sourceTree = "<group>"; };
+		2F50A65A22B1A2A100A3A5A8 /* MacImageUnitPluginFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MacImageUnitPluginFilter.h; sourceTree = "<group>"; };
+		2F50A65C22B1A2A100A3A5A8 /* MacImageUnitPluginFilter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MacImageUnitPluginFilter.m; sourceTree = "<group>"; };
+		2F50A65E22B1A2A100A3A5A8 /* index.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = index.html; sourceTree = "<group>"; };
+		2F50A66022B1A2A100A3A5A8 /* Description.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Description.plist; sourceTree = "<group>"; };
+		2F50A66322B1A2A100A3A5A8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Description.strings; sourceTree = "<group>"; };
+		2F50A66522B1A2A100A3A5A8 /* MacImageUnitPluginFilterKernel.cikernel */ = {isa = PBXFileReference; lastKnownFileType = text; path = MacImageUnitPluginFilterKernel.cikernel; sourceTree = "<group>"; };
+		2F50A66722B1A2A100A3A5A8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2F50A65022B1A2A100A3A5A8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2F50A64922B1A2A100A3A5A8 = {
+			isa = PBXGroup;
+			children = (
+				2F50A65522B1A2A100A3A5A8 /* MacImageUnitPlugin */,
+				2F50A65422B1A2A100A3A5A8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2F50A65422B1A2A100A3A5A8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2F50A65322B1A2A100A3A5A8 /* MacImageUnitPlugin.plugin */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2F50A65522B1A2A100A3A5A8 /* MacImageUnitPlugin */ = {
+			isa = PBXGroup;
+			children = (
+				2F50A65622B1A2A100A3A5A8 /* MacImageUnitPluginPlugInLoader.h */,
+				2F50A65822B1A2A100A3A5A8 /* MacImageUnitPluginPlugInLoader.m */,
+				2F50A65A22B1A2A100A3A5A8 /* MacImageUnitPluginFilter.h */,
+				2F50A65C22B1A2A100A3A5A8 /* MacImageUnitPluginFilter.m */,
+				2F50A65E22B1A2A100A3A5A8 /* index.html */,
+				2F50A66022B1A2A100A3A5A8 /* Description.plist */,
+				2F50A66222B1A2A100A3A5A8 /* Description.strings */,
+				2F50A66522B1A2A100A3A5A8 /* MacImageUnitPluginFilterKernel.cikernel */,
+				2F50A66722B1A2A100A3A5A8 /* Info.plist */,
+			);
+			path = MacImageUnitPlugin;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		2F50A64E22B1A2A100A3A5A8 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F50A65722B1A2A100A3A5A8 /* MacImageUnitPluginPlugInLoader.h in Headers */,
+				2F50A65B22B1A2A100A3A5A8 /* MacImageUnitPluginFilter.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		2F50A65222B1A2A100A3A5A8 /* MacImageUnitPlugin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2F50A66A22B1A2A100A3A5A8 /* Build configuration list for PBXNativeTarget "MacImageUnitPlugin" */;
+			buildPhases = (
+				2F50A64E22B1A2A100A3A5A8 /* Headers */,
+				2F50A64F22B1A2A100A3A5A8 /* Sources */,
+				2F50A65022B1A2A100A3A5A8 /* Frameworks */,
+				2F50A65122B1A2A100A3A5A8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MacImageUnitPlugin;
+			productName = MacImageUnitPlugin;
+			productReference = 2F50A65322B1A2A100A3A5A8 /* MacImageUnitPlugin.plugin */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2F50A64A22B1A2A100A3A5A8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1010;
+				ORGANIZATIONNAME = "Tyler Anger";
+				TargetAttributes = {
+					2F50A65222B1A2A100A3A5A8 = {
+						CreatedOnToolsVersion = 10.1;
+					};
+				};
+			};
+			buildConfigurationList = 2F50A64D22B1A2A100A3A5A8 /* Build configuration list for PBXProject "MacImageUnitPlugin" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 2F50A64922B1A2A100A3A5A8;
+			productRefGroup = 2F50A65422B1A2A100A3A5A8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2F50A65222B1A2A100A3A5A8 /* MacImageUnitPlugin */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2F50A65122B1A2A100A3A5A8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F50A66622B1A2A100A3A5A8 /* MacImageUnitPluginFilterKernel.cikernel in Resources */,
+				2F50A66422B1A2A100A3A5A8 /* Description.strings in Resources */,
+				2F50A65F22B1A2A100A3A5A8 /* index.html in Resources */,
+				2F50A66122B1A2A100A3A5A8 /* Description.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2F50A64F22B1A2A100A3A5A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F50A65D22B1A2A100A3A5A8 /* MacImageUnitPluginFilter.m in Sources */,
+				2F50A65922B1A2A100A3A5A8 /* MacImageUnitPluginPlugInLoader.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		2F50A66222B1A2A100A3A5A8 /* Description.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2F50A66322B1A2A100A3A5A8 /* en */,
+			);
+			name = Description.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		2F50A66822B1A2A100A3A5A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		2F50A66922B1A2A100A3A5A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		2F50A66B22B1A2A100A3A5A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = MacImageUnitPlugin/Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/Graphics/Image Units";
+				LIBRARY_STYLE = BUNDLE;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MacImageUnitPlugin;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = plugin;
+			};
+			name = Debug;
+		};
+		2F50A66C22B1A2A100A3A5A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = MacImageUnitPlugin/Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/Graphics/Image Units";
+				LIBRARY_STYLE = BUNDLE;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MacImageUnitPlugin;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = plugin;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2F50A64D22B1A2A100A3A5A8 /* Build configuration list for PBXProject "MacImageUnitPlugin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F50A66822B1A2A100A3A5A8 /* Debug */,
+				2F50A66922B1A2A100A3A5A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2F50A66A22B1A2A100A3A5A8 /* Build configuration list for PBXNativeTarget "MacImageUnitPlugin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F50A66B22B1A2A100A3A5A8 /* Debug */,
+				2F50A66C22B1A2A100A3A5A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2F50A64A22B1A2A100A3A5A8 /* Project object */;
+}
