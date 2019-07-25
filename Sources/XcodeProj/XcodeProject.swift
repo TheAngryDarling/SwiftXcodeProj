@@ -2,7 +2,7 @@ import Foundation
 import CodableHelpers
 import PBXProj
 import CodeTimer
-import LeveledCustomStringConvertible
+//import LeveledCustomStringConvertible
 
 public class XcodeProject {
     
@@ -545,7 +545,7 @@ public class XcodeProject {
     
 }
 
-extension XcodeProject: LeveledCustomStringConvertible, LeveledCustomDebugStringConvertible {
+extension XcodeProject: LeveledDescripition {
     public func leveledDescription(_ level: Int, indent: String, indentOpening: Bool, sortKeys: Bool) -> String {
         var rtn: String = ""
         if indentOpening { rtn += String(repeating: indent, count: level) }

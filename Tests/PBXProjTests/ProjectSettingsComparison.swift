@@ -8,7 +8,6 @@
 import XCTest
 @testable import PBXProj
 import CodableHelpers
-import LeveledCustomStringConvertible
 
 fileprivate extension FileManager {
     func directoryExists(atPath path: String) -> Bool {
