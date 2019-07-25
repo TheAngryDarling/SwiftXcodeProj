@@ -27,7 +27,7 @@ let package = Package(
         .package(url: "https://github.com/TheAngryDarling/SwiftVersionKit.git", from: "1.0.3"),
         .package(url: "https://github.com/TheAngryDarling/SwiftPatches.git", from: "0.5.0"),
         .package(url: "https://github.com/TheAngryDarling/SwiftRawRepresentableHelpers.git", from: "0.5.2"),
-        .package(url: "https://github.com/TheAngryDarling/SwiftLeveledCustomStringConvertible.git", from: "1.0.0")
+        //.package(url: "https://github.com/TheAngryDarling/SwiftLeveledCustomStringConvertible.git", from: "1.0.0")
         
     ],
     targets: [
@@ -38,11 +38,11 @@ let package = Package(
             dependencies: ["StringIANACharacterSetEncoding", "CodableHelpers", "Nillable", "CodeTimer", "SwiftPatches", "RawRepresentableHelpers", "SwiftClassCollections"]),
         .testTarget(
             name: "PBXProjTests",
-            dependencies: ["PBXProj", "LeveledCustomStringConvertible"]),
+            dependencies: ["PBXProj"]),
         
         .target(
             name: "XcodeProj",
-            dependencies: ["PBXProj", "CodableHelpers", "CodeTimer", "RawRepresentableHelpers", "VersionKit", "LeveledCustomStringConvertible"]),
+            dependencies: ["PBXProj", "CodableHelpers", "CodeTimer", "RawRepresentableHelpers", "VersionKit"]),
         .testTarget(
             name: "XcodeProjTests",
             dependencies: ["XcodeProj", "CodeTimer", "SwiftPatches"]),
