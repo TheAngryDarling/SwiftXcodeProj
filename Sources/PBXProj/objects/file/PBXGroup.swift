@@ -23,9 +23,14 @@ public class PBXGroup: PBXFileElement {
     
     /// Location when adding item to list
     public enum CreationLocation {
+        public enum Error: Swift.Error {
+            case referenceNotFound(PBXReference)
+        }
         case beginning
         case end
         case index(Int)
+        case before(PBXReference)
+        case after(PBXReference)
     }
     
     /// Group Type
@@ -293,8 +298,16 @@ extension PBXGroup {
     public func createSubGroup(namePath: PBXNamePath,
                                type: PBXGroupType = .basic,
                                sourceTree: PBXSourceTree = .group,
-                               location: CreationLocation = .end) -> PBXGroup {
-        
+                               location: CreationLocation = .end) throws -> PBXGroup {
+        if case let .before(ref) = location {
+            if !self.childrenReferences.contains(ref) {
+                throw CreationLocation.Error.referenceNotFound(ref)
+            }
+        } else if case let .after(ref) = location {
+            if !self.childrenReferences.contains(ref) {
+                throw CreationLocation.Error.referenceNotFound(ref)
+            }
+        }
         let rtn = PBXGroup(id: self.proj.generateNewReference(),
                            groupType: type,
                            namePath: namePath,
@@ -305,6 +318,16 @@ extension PBXGroup {
             case .beginning: self.childrenReferences.insert(rtn.id, at: 0)
             case .end: self.childrenReferences.append(rtn.id)
             case .index(let index): self.childrenReferences.insert(rtn.id, at: index)
+            case .before(let ref):
+                guard let index = self.childrenReferences.firstIndex(of: ref) else {
+                    throw CreationLocation.Error.referenceNotFound(ref)
+                }
+                self.childrenReferences.insert(rtn.id, at: index)
+            case .after(let ref):
+                guard let index = self.childrenReferences.firstIndex(of: ref) else {
+                    throw CreationLocation.Error.referenceNotFound(ref)
+                }
+                self.childrenReferences.insert(rtn.id, at: index + 1)
         }
         rtn.parent = self
         return rtn
@@ -322,12 +345,12 @@ extension PBXGroup {
     public func createSubGroup(path: String,
                                type: PBXGroupType = .basic,
                                sourceTree: PBXSourceTree = .group,
-                               location: CreationLocation = .end) -> PBXGroup {
+                               location: CreationLocation = .end) throws -> PBXGroup {
         
-        return self.createSubGroup(namePath: .path(path),
-                                   type: type,
-                                   sourceTree: sourceTree,
-                                   location: location)
+        return try self.createSubGroup(namePath: .path(path),
+                                       type: type,
+                                       sourceTree: sourceTree,
+                                       location: location)
     }
     
     /// Create a sub group
@@ -342,12 +365,12 @@ extension PBXGroup {
     public func createSubGroup(name: String,
                                type: PBXGroupType = .basic,
                                sourceTree: PBXSourceTree = .group,
-                               location: CreationLocation = .end) -> PBXGroup {
+                               location: CreationLocation = .end) throws -> PBXGroup {
         
-        return self.createSubGroup(namePath: .name(name),
-                                   type: type,
-                                   sourceTree: sourceTree,
-                                   location: location)
+        return try self.createSubGroup(namePath: .name(name),
+                                       type: type,
+                                       sourceTree: sourceTree,
+                                       location: location)
     }
     
     
@@ -384,7 +407,16 @@ extension PBXGroup {
                                   indentWidth: UInt? = nil,
                                   tabWidth: UInt? = nil,
                                   wrapsLines: Bool = true,
-                                  location: CreationLocation = .end) -> PBXFileReference {
+                                  location: CreationLocation = .end) throws -> PBXFileReference {
+        if case let .before(ref) = location {
+            if !self.childrenReferences.contains(ref) {
+                throw CreationLocation.Error.referenceNotFound(ref)
+            }
+        } else if case let .after(ref) = location {
+            if !self.childrenReferences.contains(ref) {
+                throw CreationLocation.Error.referenceNotFound(ref)
+            }
+        }
         
         let rtn = PBXFileReference(id: self.proj.generateNewReference(),
                                    namePath: namePath,
@@ -403,6 +435,16 @@ extension PBXGroup {
             case .beginning: self.childrenReferences.insert(rtn.id, at: 0)
             case .end: self.childrenReferences.append(rtn.id)
             case .index(let index): self.childrenReferences.insert(rtn.id, at: index)
+            case .before(let ref):
+                guard let index = self.childrenReferences.firstIndex(of: ref) else {
+                    throw CreationLocation.Error.referenceNotFound(ref)
+                }
+                self.childrenReferences.insert(rtn.id, at: index)
+            case .after(let ref):
+                guard let index = self.childrenReferences.firstIndex(of: ref) else {
+                    throw CreationLocation.Error.referenceNotFound(ref)
+                }
+                self.childrenReferences.insert(rtn.id, at: index + 1)
         }
         
         //self.childrenReferences.append(rtn.id)
