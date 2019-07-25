@@ -33,7 +33,7 @@ public class XcodeMainProjectGroup: XcodeGroup {
             try self.project.fsProvider.createDirectory(at: childURL)
         }
         
-        let pbxChildGroup = self.pbxGroup.createSubGroup(path: name, sourceTree:.sourceRoot)
+        let pbxChildGroup = try self.pbxGroup.createSubGroup(path: name, sourceTree:.sourceRoot)
         
         let rtn = XcodeGroup(self.project, pbxChildGroup, havingParent: self)
         

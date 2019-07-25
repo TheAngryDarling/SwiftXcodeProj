@@ -7,10 +7,10 @@
 
 import Foundation
 import PBXProj
-import LeveledCustomStringConvertible
+//import LeveledCustomStringConvertible
 
 /// The base class for all Xcode File Resources (Groups, Files, etc)
-public class XcodeResource: XcodeObject, LeveledCustomStringConvertible, LeveledCustomDebugStringConvertible {
+public class XcodeResource: XcodeObject, LeveledDescripition {
     /// The PBX object reference
     internal var pbxFileResource: PBXFileElement
     /// The name of the resource

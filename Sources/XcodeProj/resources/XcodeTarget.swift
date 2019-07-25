@@ -8,10 +8,10 @@
 import Foundation
 import PBXProj
 import CodableHelpers
-import LeveledCustomStringConvertible
+//import LeveledCustomStringConvertible
 
 /// The Xcode representation of a Target
-public class XcodeTarget: XcodeObject, LeveledCustomStringConvertible, LeveledCustomDebugStringConvertible {
+public class XcodeTarget: XcodeObject, LeveledDescripition {
     
     public typealias TargetReferenceNaming = PBXTarget.TargetReferenceNaming
     
