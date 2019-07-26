@@ -9,6 +9,7 @@ import CoreFoundation
 import Foundation
 import PBXProj
 import VersionKit
+import SwiftPatches
 
 #if os(Linux)
 import SwiftGlibc
@@ -127,6 +128,12 @@ public struct XcodeProjectBuilders {
     /// - none: No user details
     /// - populated: The current user details
     public enum UserDetails {
+        /// Indicator weather to check the environmental variables for the user name and full user name when using the default constructor
+        /// This would help when temporarialy working in VM environments like Docker.
+        ///
+        /// Then environmental variables are REAL_USER_NAME and REAL_DISPLAY_NAME
+        ///
+        public static var supportEnvUserName: Bool = false
         case none
         case populated(userName: String, displayName: String)
         
@@ -147,55 +154,25 @@ public struct XcodeProjectBuilders {
             return rtn
         }
         
-        /// This builds and returns a user details object out of environment variables
-        ///
-        /// User Name: REAL_USER
-        /// Display Name: REAL_DISPLAY_NAME
-        /*public static var envUserDetails: UserDetails {
-            guard let userName = ProcessInfo.processInfo.environment["REAL_USER"] else {
-                fatalError("Unable to get real user from Docker Enviromental variable 'REAL_USER'")
-            }
-            let rDN = ProcessInfo.processInfo.environment["REAL_DISPLAY_NAME"]
-            let displayName: String = rDN ?? userName
-            if rDN == nil {
-                debugPrint("WARNING: Unable to find Docker Enviromental variable 'REAL_DISPLAY_NAME'.  Failing back to user name for display name")
-            }
-            
-            
-            
-            return UserDetails.populated(userName: userName, displayName: displayName)
-        }*/
-        
-        
-        /*#if !(os(iOS) || os(watchOS) || os(tvOS))
-        private static func fullUserName() -> String {
-            let userName = CFCopyFullUserName().takeRetainedValue()
-            return userName._swiftObject
-        }
-        #endif*/
-        
-        /// Tries to load the current uesr's details
+        /// Tries to load the current uesr's details.
         ///
         /// If not a desktop OS, this will set it to .none.
-        /// This will get NSUserName and NSFullUserName
-        /// When swift < 4.1, this calls getpwnam to get the display name
+        /// If UserDetails.supportEnvUserName is true, will look for REAL_USER_NAME and REAL_DISPLAY_NAME in the environmental variables, otherwise
+        /// this will get NSUserName and NSFullUserName
+        /// When swift < 4.1, this calls getpwnam to get the display name instead of NSFullUserName
         public init() {
-            #if (os(macOS) || os(Linux))
-                #if swift(>=4.1)
+            #if (os(macOS) || os(Linux) || os(Windows))
+                if  let userName = ProcessInfo.processInfo.environment["REAL_USER_NAME"],
+                    let displayName = ProcessInfo.processInfo.environment["REAL_DISPLAY_NAME"], UserDetails.supportEnvUserName {
+                    self = .populated(userName: userName, displayName: displayName)
+                } else {
                     self = .populated(userName: NSUserName(), displayName: NSFullUserName())
-                #else
-                    let userName = NSUserName()
-                    if let pw = getpwnam(userName) {
-                        let str = String(cString: pw.pointee.pw_gecos)
-                        self = .populated(userName: userName, displayName: str)
-                    } else {
-                        self = .populated(userName: userName, displayName: NSUserName())
-                        debugPrint("WARNING: Unable to find user display name.  Failing back to user name")
-                    }
-                #endif
+                }
+            
             #else
                 self = .none
             #endif
+            
         }
         public init(userName: String, displayName: String) { self = .populated(userName: userName, displayName: displayName) }
         
