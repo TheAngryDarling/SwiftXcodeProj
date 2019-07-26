@@ -26,12 +26,12 @@ public final class PBXProjSerialization {
         case unableToFindFileEncodingFrom(String)
         case unableToDecodeProjectDataWithEncoding(String.Encoding)
         case unableToFindBeginningOfRootObject
-        case invalidStartOfComplexObject(Character)
-        case missingEndingSemicolonOnComplexObject
-        case unableToParseObjectName
-        case unableToParseObjectValue
+        //case invalidStartOfComplexObject(Character)
+        case missingEndingSemicolonOnComplexObject(line: Int, column: Int)
+        case unableToParseObjectName(line: Int, column: Int)
+        case unableToParseObjectValue(line: Int, column: Int)
         case unableToEncodeProjectUsing(String.Encoding)
-        case invalidObjectType(Any)
+        //case invalidObjectType(Any)
         case unableToIdentifyEncoding(String)
         
         case unableToGetIANACharacterEncodingFor(String.Encoding)
@@ -251,7 +251,7 @@ public final class PBXProjSerialization {
         let endingObject: Character = "}"
         var workingIndex: String.Index = string.index(after: index)
         
-        let _ = try Timer.time {
+        //let _ = try Timer.time {
         
             while string[workingIndex] != endingObject {
                 //let innerString = String(string.suffix(from: workingIndex))
@@ -282,11 +282,13 @@ public final class PBXProjSerialization {
                     //let range = workingIndex..<(string.index(workingIndex, offsetBy: 256, limitedBy: string.endIndex) ?? string.endIndex )
                     
                     guard let firstMatch = objectNameRegex.firstMatch(in: string, range: NSRange(range, in: string)) else {
-                        throw Error.unableToParseObjectName
+                        let location = getLineCharPos(from: string, atIndex: range.lowerBound)
+                        throw Error.unableToParseObjectName(line: location.line, column: location.column)
                     }
                     
                     var objectName = String(string[Range(firstMatch.range(at: 1), in: string)!])
                     
+                   //print("Decoding Object '\(path.reduce("", { return $0 + "/" + $1 }))/\(objectName)'")
                     
                     let objectTypeRange = Range(firstMatch.range(at: 4), in: string)!
                     let objectType = String(string[objectTypeRange])
@@ -335,12 +337,14 @@ public final class PBXProjSerialization {
             if !isRootObject {
                 //let innerString = String(string.suffix(from: workingIndex))
                 guard acceptableEndingSequences.contains(String(string[workingIndex])) else {
-                    throw Error.missingEndingSemicolonOnComplexObject
+                    let location = getLineCharPos(from: string, atIndex: workingIndex)
+                    //let strRest = String(string.suffix(from: workingIndex))
+                    throw Error.missingEndingSemicolonOnComplexObject(line: location.line, column: location.column)
                 }
                 workingIndex = string.index(after: workingIndex)
                 
             }
-        }
+        //}
         
         //debugPrint("decodeComplexObject(/\(path.joined(separator: "/"))) Took \(duration)s")
         
@@ -375,7 +379,7 @@ public final class PBXProjSerialization {
         let endingObject: Character = ")"
         var workingIndex: String.Index = string.index(after: index)
         
-        let _ = try Timer.time {
+        //let _ = try Timer.time {
             //var innerRange = String(string[workingIndex..<string.endIndex])
             while string[workingIndex] != endingObject {
               //  innerRange = String(string[workingIndex..<string.endIndex])
@@ -428,11 +432,12 @@ public final class PBXProjSerialization {
             
             guard string[workingIndex] == ";" else {
                 //let innerString = String(string.suffix(from: workingIndex))
-                throw Error.missingEndingSemicolonOnComplexObject
+                let location = getLineCharPos(from: string, atIndex: workingIndex)
+                throw Error.missingEndingSemicolonOnComplexObject(line: location.line, column: location.column)
             }
             workingIndex = string.index(after: workingIndex)
         
-        }
+        //}
         
         //debugPrint("decodeObjectList(/\(path.joined(separator: "/"))) Took \(duration)s")
         
@@ -466,9 +471,72 @@ public final class PBXProjSerialization {
             endingSequeneces += e
         }
         
-        //let pattern = "\(patternPrefix)([^\(KEY_REGEX_CHARACTERS)]+)( /\\*([^\(KEY_REGEX_CHARACTERS)]+)\\*/)?(\(endingSequeneces))"
-        //let pattern = "([^\(KEY_REGEX_CHARACTERS)]+)( /\\*([^\(KEY_REGEX_CHARACTERS)]+)\\*/)?(\(endingSequeneces))"
-        let pattern = "([^\(KEY_REGEX_CHARACTERS + specialExcludeCharacters)]+)( /\\*([^\(KEY_REGEX_CHARACTERS)]+)\\*/)?(\(endingSequeneces))"
+        var wholeRange = index..<string.endIndex
+        var objectValue: String = ""
+        
+        var workingIndex = index
+        // Move past any preceeding spaces
+        while string[workingIndex] == " " { workingIndex = string.index(after: workingIndex) }
+        
+        if string[workingIndex] == "\"" {
+            // Move past opening quote
+            workingIndex = string.index(after: workingIndex)
+            // Loop until we find the proper non-escaping closing quote
+            while workingIndex < string.endIndex &&
+                (string[workingIndex] != "\"" || (string[workingIndex] == "\"" && string[string.index(before: workingIndex)] == "\\")) {
+                    workingIndex = string.index(after: workingIndex)
+            }
+            // Ensure we are at the ending quote
+            guard string[workingIndex] == "\"" else {
+                let location = getLineCharPos(from: string, atIndex: index)
+                throw Error.unableToParseObjectValue(line: location.line, column: location.column)
+            }
+            // Look for the ending character of the value (eg ; or ,)
+            while workingIndex < string.endIndex && !endingSequeneces.contains(string[workingIndex]) {
+                 workingIndex = string.index(after: workingIndex)
+            }
+            // Ensure we are at the ending character
+            guard endingSequeneces.contains(string[workingIndex]) else {
+                let location = getLineCharPos(from: string, atIndex: index)
+                throw Error.unableToParseObjectValue(line: location.line, column: location.column)
+            }
+            
+            
+            
+            objectValue = string[index..<workingIndex].replacingOccurrences(of: "\\s+/\\*.*\\*/", with: "", options: .regularExpression)
+            // Move just past the ending character
+            wholeRange = index..<string.index(after: workingIndex)
+        } else {
+            // Loop until we we find the ending character
+            while workingIndex < string.endIndex && !endingSequeneces.contains(string[workingIndex]) {
+                workingIndex = string.index(after: workingIndex)
+            }
+            // Ensure we find the ending character
+            guard endingSequeneces.contains(string[workingIndex]) else {
+                let location = getLineCharPos(from: string, atIndex: index)
+                throw Error.unableToParseObjectValue(line: location.line, column: location.column)
+            }
+            
+            objectValue = string[index..<workingIndex].replacingOccurrences(of: "\\s+/\\*.*\\*/", with: "", options: .regularExpression)
+            // Move just past the ending character
+            wholeRange = index..<string.index(after: workingIndex)
+            
+        }
+        
+        /*guard let lineEnd = string.range(of: "\n", range: index..<string.endIndex) else {
+            let location = geftLineCharPos(from: string, atIndex: index)
+            throw Error.unableToParseObjectValue(line: location.line, column: location.column)
+        }
+        
+        //let endOfObject = string.index(before: lineEnd.lowerBound)
+        let wholeRange = index..<lineEnd.lowerBound
+        
+        var objectValue = string[index..<string.index(before: lineEnd.lowerBound)].replacingOccurrences(of: "\\s+/\\*.*\\* /", with: "", options: .regularExpression)*/
+        
+        /*
+        //let pattern = "\(patternPrefix)([^\(KEY_REGEX_CHARACTERS)]+)( /\\*([^\(KEY_REGEX_CHARACTERS)]+)\\* /)?(\(endingSequeneces))"
+        //let pattern = "([^\(KEY_REGEX_CHARACTERS)]+)( /\\*([^\(KEY_REGEX_CHARACTERS)]+)\\* /)?(\(endingSequeneces))"
+        let pattern = "([^\(KEY_REGEX_CHARACTERS + specialExcludeCharacters)]+)( /\\*([^\(KEY_REGEX_CHARACTERS)]+)\\* /)?(\(endingSequeneces))"
         let objectRegex = try! NSRegularExpression(pattern: pattern)
         var range = index..<string.endIndex
         
@@ -482,13 +550,15 @@ public final class PBXProjSerialization {
         
         //let innerRange = String(string[range])
         guard let firstValuetMatch = objectRegex.firstMatch(in: string, range: NSRange(range, in: string)) else {
-            throw Error.unableToParseObjectValue
+            let location = getLineCharPos(from: string, atIndex: range.lowerBound)
+            throw Error.unableToParseObjectValue(line: location.line, column: location.column)
+            
         }
         
         var objectValue = String(string[Range(firstValuetMatch.range(at: 1), in: string)!])
         
         let wholeRange: Range<String.Index> = Range<String.Index>(firstValuetMatch.range, in: string)!
-        
+        */
         // Will have to process objectValue here for real types
         
         if objectValue.hasPrefix("\"") && objectValue.hasSuffix("\"") {
