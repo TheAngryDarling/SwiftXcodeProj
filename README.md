@@ -4,8 +4,6 @@
 ![Linux](https://img.shields.io/badge/os-linux-green.svg?style=flat)
 ![Apache 2](https://img.shields.io/badge/license-Apache2-blue.svg?style=flat)
 
-Note: Unsupported on Swift 4.1, 4.1.3. Due to package dependency of [Codable Helpers](https://github.com/TheAngryDarling/SwiftCodableHelpers)
-
 
 ## Usage
 ```swift
@@ -44,3 +42,4 @@ This project is licensed under Apache License v2.0 - see the [LICENSE.md](LICENS
 While try to map out the format of the PBX Project File and other Xcode project files I used the following references:
 [Wikipedia](https://en.wikipedia.org/wiki/Xcode)
 [Monobjc](http://www.monobjc.net/xcode-project-file-format.html)
+[Serialization](https://github.com/apple/swift-corelibs-foundation/blob/master/Foundation/JSONSerialization.swift)
