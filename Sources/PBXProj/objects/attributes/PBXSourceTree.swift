@@ -8,7 +8,12 @@
 import Foundation
 
 /// Structure storing the PBX Group source tree
-public struct PBXSourceTree {
+public struct PBXSourceTree: Hashable {
+    
+    #if !swift(>=4.0.4)
+    public var hashValue: Int { return self.rawValue.hashValue }
+    #endif
+    
     internal let rawValue: String
     public init(_ rawValue: String) { self.rawValue = rawValue }
     
@@ -53,9 +58,4 @@ extension PBXSourceTree: Equatable {
     public static func ==(lhs: String, rhs: PBXSourceTree) -> Bool {
         return lhs == rhs.rawValue
     }
-}
-extension PBXSourceTree: Hashable {
-    #if !swift(>=4.1)
-    public var hashValue: Int { return self.rawValue.hashValue }
-    #endif
 }

@@ -8,7 +8,11 @@
 import Foundation
 
 /// Structure to store object reference id's
-public struct PBXReference {
+public struct PBXReference: Hashable {
+    
+    #if !swift(>=4.0.4)
+    public var hashValue: Int { return self.rawValue.hashValue }
+    #endif
     
     internal static let OBJ_REFERENCE_PREFIX: String = "OBJ_"
     
@@ -150,9 +154,4 @@ extension PBXReference: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
         self.init(value)
     }
-}
-extension PBXReference: Hashable {
-    #if !swift(>=4.1)
-    public var hashValue: Int { return self.rawValue.hashValue }
-    #endif
 }

@@ -17,7 +17,13 @@ public protocol PBXFileTypeDetails {
 }
 
 /// An indicator for the kind of file
-public struct PBXFileType {
+public struct PBXFileType: Hashable {
+    
+    #if !swift(>=4.0.4)
+    public var hashValue: Int { return self.rawValue.hashValue }
+    #endif
+    
+    
     private let rawValue: String
     ///public init() { self.rawValue = "" }
     internal init() { self = "" }
@@ -612,10 +618,4 @@ extension PBXFileType: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
         self.init(value)
     }
-}
-
-extension PBXFileType: Hashable {
-    #if !swift(>=4.1)
-    public var hashValue: Int { return self.rawValue.hashValue }
-    #endif
 }

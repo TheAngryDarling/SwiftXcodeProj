@@ -8,7 +8,12 @@
 import Foundation
 
 /// Structure defining the PBX Product Type
-public struct PBXProductType {
+public struct PBXProductType: Hashable {
+    
+    #if !swift(>=4.0.4)
+    public var hashValue: Int { return self.rawValue.hashValue }
+    #endif
+    
     internal let rawValue: String
     public init(_ rawValue: String) { self.rawValue = rawValue }
     
@@ -114,9 +119,4 @@ extension PBXProductType: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
         self.init(value)
     }
-}
-extension PBXProductType: Hashable {
-    #if !swift(>=4.1)
-    public var hashValue: Int { return self.rawValue.hashValue }
-    #endif
 }

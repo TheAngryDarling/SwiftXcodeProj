@@ -8,7 +8,12 @@
 import Foundation
 
 /// Structure storing the PBX Object Type
-public struct PBXObjectType {
+public struct PBXObjectType: Hashable {
+    
+    #if !swift(>=4.0.4)
+    public var hashValue: Int { return self.rawValue.hashValue }
+    #endif
+    
     internal let rawValue: String
     public init(_ rawValue: String) { self.rawValue = rawValue }
     
@@ -166,10 +171,4 @@ extension PBXObjectType: Comparable {
     }
     
     
-}
-
-extension PBXObjectType: Hashable {
-    #if !swift(>=4.1)
-    public var hashValue: Int { return self.rawValue.hashValue }
-    #endif
 }
