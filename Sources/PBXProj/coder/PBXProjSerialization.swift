@@ -501,9 +501,7 @@ public final class PBXProjSerialization {
                 throw Error.unableToParseObjectValue(line: location.line, column: location.column)
             }
             
-            
-            
-            objectValue = string[index..<workingIndex].replacingOccurrences(of: "\\s+/\\*.*\\*/", with: "", options: .regularExpression)
+            objectValue = String(string[index..<workingIndex]).replacingOccurrences(of: "\\s+/\\*.*\\*/", with: "", options: .regularExpression)
             // Move just past the ending character
             wholeRange = index..<string.index(after: workingIndex)
         } else {
@@ -517,7 +515,7 @@ public final class PBXProjSerialization {
                 throw Error.unableToParseObjectValue(line: location.line, column: location.column)
             }
             
-            objectValue = string[index..<workingIndex].replacingOccurrences(of: "\\s+/\\*.*\\*/", with: "", options: .regularExpression)
+            objectValue = String(string[index..<workingIndex]).replacingOccurrences(of: "\\s+/\\*.*\\*/", with: "", options: .regularExpression)
             // Move just past the ending character
             wholeRange = index..<string.index(after: workingIndex)
             
