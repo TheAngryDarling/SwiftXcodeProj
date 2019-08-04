@@ -48,6 +48,10 @@ internal extension String {
         return relComponents.joined(separator: "/")
     }
     
+    /// Full path from a relative path and base
+    ///
+    /// - Parameter base: The base to build upon
+    /// - Returns: Returns the full path if the current string was a relative one, otherwise returns the current string
     func path(from base: String) -> String {
         guard !self.hasPrefix("/") else { return self }
         
