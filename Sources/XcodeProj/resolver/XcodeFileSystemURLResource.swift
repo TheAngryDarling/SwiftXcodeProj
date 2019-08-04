@@ -168,10 +168,12 @@ extension XcodeFileSystemURLResource {
     /// - note: This function will resolve against the base `URL`.
     /// - returns: The path, or an empty string if the URL has an empty path.
     public var path: String {
-        guard !self.relativePath.hasPrefix("/") else { return self.relativePath }
-        guard let base = self.basePath else { return self.relativePath }
-        
-        return self.relativePath.path(from: base)
+        var rtn: String = self.relativePath
+        if let base = self.basePath, !rtn.hasPrefix("/")  {
+           rtn = self.relativePath.path(from: base)
+        }
+        if self.isDirectory && !rtn.hasSuffix("/") { rtn = rtn + "/" }
+        return rtn
     }
     
    
