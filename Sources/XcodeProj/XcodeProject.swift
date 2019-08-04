@@ -12,7 +12,7 @@ public class XcodeProject {
     public typealias TargetBuildConfigurationListOptions = PBXProject.BuildConfigurationListOptions
     
     public enum Error: Swift.Error {
-        case missingPBXProjectFile(URL)
+        case missingPBXProjectFile(XcodeFileSystemURLResource)
     }
     
     /// The PBX Project File encoding settings
@@ -36,11 +36,11 @@ public class XcodeProject {
     
     
     /// The file system provider used while working with this project
-    internal private(set) var fsProvider: XcodeFileSystemProvider
+    public private(set) var fsProvider: XcodeFileSystemProvider
     /// The Xcode project package path
-    internal private(set) var url: XcodeFileSystemURLResource
+    public private(set) var projectPackage: XcodeFileSystemURLResource
     /// The parent (project) folder
-    internal var parentURL: XcodeFileSystemURLResource { return self.url.deletingLastPathComponent() }
+    public var projectFolder: XcodeFileSystemURLResource { return self.projectPackage.deletingLastPathComponent() }
     
     /// The PBX Project file
     internal let proj: PBXProj
@@ -94,7 +94,7 @@ public class XcodeProject {
                   isNewProject: Bool) throws {
         
         
-        self.url = url
+        self.projectPackage = url
         self.fsProvider = provider
         
         self.name = NSString(string: url.lastPathComponent).deletingPathExtension
@@ -206,10 +206,10 @@ public class XcodeProject {
     public init(fromURL url: XcodeFileSystemURLResource,
                 usingFSProvider provider: XcodeFileSystemProvider = LocalXcodeFileSystemProvider.newInstance) throws {
        // let initStart: Date = Date()
-        self.url = url
+        self.projectPackage = url
         // xcode project files are actually folders
-        if !self.url.isDirectory {
-            self.url = .directory(self.url.realURL, self.url.modificationDate)
+        if !self.projectPackage.isDirectory {
+            self.projectPackage = XcodeFileSystemURLResource(directory: url.path, modDate: url.modificationDate, basePath: url.basePath)
         }
         //self.url = XcodeFileSystemURLResource.directory(url, provider)
         self.fsProvider = provider
@@ -218,10 +218,10 @@ public class XcodeProject {
         
         
         // Read PBXProj file
-        let pbxProjFileURL = self.url.appendingPathComponent(XcodeProject.PBX_PROJECT_FILE_NAME, isDirectory: false)
+        let pbxProjFileURL = self.projectPackage.appendingPathComponent(XcodeProject.PBX_PROJECT_FILE_NAME, isDirectory: false)
         
         guard let dta = try provider.dataIfExists(from: pbxProjFileURL) else {
-            throw Error.missingPBXProjectFile(pbxProjFileURL.realURL)
+            throw Error.missingPBXProjectFile(pbxProjFileURL)
         }
         
 
@@ -266,7 +266,7 @@ public class XcodeProject {
     ///   - provider: The file system provider to use to read the project
     public convenience init(fromURL url: URL,
                             usingFSProvider provider: XcodeFileSystemProvider = LocalXcodeFileSystemProvider.newInstance) throws {
-        try self.init(fromURL: .directory(url, nil), usingFSProvider: provider)
+        try self.init(fromURL: XcodeFileSystemURLResource(directory: url.path), usingFSProvider: provider)
     }
     
     
@@ -280,7 +280,7 @@ public class XcodeProject {
     public func workspace() throws -> XCWorkspace {
         if let r = self._workspace { return r }
         
-        let rtn = try XCWorkspace(fromURL: self.url.appendingPathComponent(XcodeProject.PROJECT_WORKSPACE_PACKAGE_NAME, isDirectory: true),
+        let rtn = try XCWorkspace(fromURL: self.projectPackage.appendingPathComponent(XcodeProject.PROJECT_WORKSPACE_PACKAGE_NAME, isDirectory: true),
                                   usingFSProvider: self.fsProvider)
         self._workspace = rtn
         
@@ -295,7 +295,7 @@ public class XcodeProject {
     public func sharedData() throws -> XCSharedData {
         if let r = self._sharedData { return r }
         
-        let rtn = try XCSharedData(fromURL: self.url.appendingPathComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME, isDirectory: true),
+        let rtn = try XCSharedData(fromURL: self.projectPackage.appendingPathComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME, isDirectory: true),
                                    usingFSProvider: self.fsProvider)
         self._sharedData = rtn
         
@@ -310,7 +310,7 @@ public class XcodeProject {
     public func userdataList() throws -> XCUserDataList {
         if let r = self._userdataList { return r }
         
-        let rtn = try XCUserDataList(fromURL: self.url.appendingPathComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME, isDirectory: true),
+        let rtn = try XCUserDataList(fromURL: self.projectPackage.appendingPathComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME, isDirectory: true),
                                      usingFSProvider: self.fsProvider)
         self._userdataList = rtn
         
@@ -465,7 +465,7 @@ public class XcodeProject {
     ///
     /// - Returns: Returns an action that represtnts the saving of the PBX Project File
     private func saveFileAction() throws -> XcodeFileSystemProviderAction {
-        let pbxURL = self.url.appendingPathComponent(XcodeProject.PBX_PROJECT_FILE_NAME,
+        let pbxURL = self.projectPackage.appendingPathComponent(XcodeProject.PBX_PROJECT_FILE_NAME,
                                                      isDirectory: false)
         
         // Write PBXProj file
@@ -499,21 +499,21 @@ public class XcodeProject {
         
         // Setup XCWorkspace save actions
         if let o = self._workspace {
-            let actions = try o.saveActions(to: self.url.appendingPathComponent(XcodeProject.PROJECT_WORKSPACE_PACKAGE_NAME, isDirectory: true),
+            let actions = try o.saveActions(to: self.projectPackage.appendingPathComponent(XcodeProject.PROJECT_WORKSPACE_PACKAGE_NAME, isDirectory: true),
                                             overrideChangeCheck: overrideChangeCheck)
             allActions.append(contentsOf: actions)
         }
         
         // Setup Shared Data save actions
         if let o = self._sharedData {
-            let actions = try o.saveActions(to: self.url.appendingPathComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME, isDirectory: true),
+            let actions = try o.saveActions(to: self.projectPackage.appendingPathComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME, isDirectory: true),
                                             overrideChangeCheck: overrideChangeCheck)
             allActions.append(contentsOf: actions)
         }
         
         // Setup User Data List save actions
         if let o = self._userdataList {
-            let actions = try o.saveActions(to: self.url.appendingPathComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME, isDirectory: true),
+            let actions = try o.saveActions(to: self.projectPackage.appendingPathComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME, isDirectory: true),
                                             overrideChangeCheck: overrideChangeCheck)
             allActions.append(contentsOf: actions)
         }
@@ -545,11 +545,15 @@ public class XcodeProject {
     
 }
 
-extension XcodeProject: LeveledDescripition {
+extension XcodeProject: LeveledDescripition, CustomStringConvertible, CustomDebugStringConvertible {
+    
+    public var description: String { return self.leveledDescription(0, indent: "\t", indentOpening: false, sortKeys: true) }
+    public var debugDescription: String { return self.leveledDebugDescription(0, indent: "\t", indentOpening: false, sortKeys: true) }
+    
     public func leveledDescription(_ level: Int, indent: String, indentOpening: Bool, sortKeys: Bool) -> String {
         var rtn: String = ""
         if indentOpening { rtn += String(repeating: indent, count: level) }
-        rtn += "XcodeProject(\(self.url.path))"
+        rtn += "XcodeProject(\(self.projectPackage.path))"
         return rtn
     }
     
