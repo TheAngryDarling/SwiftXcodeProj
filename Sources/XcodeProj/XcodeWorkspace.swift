@@ -46,9 +46,9 @@ public class XcodeWorkspace  {
         /// - Returns: Returns a relative path from url otherwise the full path if its not possible
         fileprivate func url(relativeTo url: XcodeFileSystemURLResource) -> String {
             switch self {
-                case .existing(let p): return p.url.relative(to: url).absoluteString
-                case .missing(let u): return u.relative(to: url).absoluteString
-                case .loadError(let u, _): return u.relative(to: url).absoluteString
+                case .existing(let p): return p.projectPackage.relative(to: url).path
+                case .missing(let u): return u.relative(to: url).path
+                case .loadError(let u, _): return u.relative(to: url).path
                 case .badURL(let s): return s
             }
         }
@@ -147,12 +147,9 @@ public class XcodeWorkspace  {
             if locStr.hasPrefix("group:") { locStr.removeFirst(6) }
             
             //guard let projURL = URL(string: locStr, relativeTo: parentFolder) else {
-            guard let projURL = XcodeFileSystemURLResource(string: locStr, relativeTo: parentFolder, isDirectory: true) else {
-                self.projects.append(.badURL(locStr))
-                continue
-            }
+            let projURL = XcodeFileSystemURLResource(directory: locStr, base: parentFolder)
             
-            guard !projURL.isFileURL || (FileManager.default.fileExists(atPath: projURL.path)) else {
+            guard projURL.isDirectory || (FileManager.default.fileExists(atPath: projURL.path)) else {
                 self.projects.append(.missing(projURL))
                 continue
             }
