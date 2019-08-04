@@ -36,6 +36,10 @@ class PBXProjTests: XCTestCase {
     static let testPackageResourcePath: String = testPackageRootPath + "/resources"
     static let testPackageResourceTestProjectPath: String = testPackageResourcePath + "/test_proj"
     
+    var isXcodeTesting: Bool {
+        return (ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil)
+    }
+    
     /*func testPrintAllCodableFiles() {
         let fileTypeKeys = PBXFileType.fileTypeDetails.keys
         for fileTypeIdent in fileTypeKeys {
@@ -47,17 +51,17 @@ class PBXProjTests: XCTestCase {
         }
     }*/
     func loadProject(_ url: URL) throws {
-        print("Loading: \(url.path)")
+        if isXcodeTesting { print("Loading: \(url.path)") }
         let tr: (TimeInterval, PBXProj) = try Timer.timeWithResults {
             return try PBXProj(fromURL: url)
         }
-        print("Loaded project (\(url.lastPathComponent)) in \(tr.0) s")
-        debugPrint(tr.1)
+        if isXcodeTesting { print("Loaded project (\(url.lastPathComponent)) in \(tr.0) s") }
+        if isXcodeTesting { debugPrint(tr.1) }
         let tr2: (TimeInterval, [PBXObject]) = Timer.timeWithResults {
             return tr.1.danglingObjects()
         }
-        print("Finding dangling objets took: \(tr2.0) s")
-        print(tr2.1)
+        if isXcodeTesting { print("Finding dangling objets took: \(tr2.0) s") }
+        if isXcodeTesting { print(tr2.1) }
     }
     
     func testLocalSwiftProject() {
