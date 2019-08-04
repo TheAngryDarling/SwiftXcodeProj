@@ -11,8 +11,8 @@ public final class XCUserData {
     
     public enum Error: Swift.Error {
         //case urlNotFileBased(URL)
-        case userDataFolderMissing(URL)
-        case invalidUserDataPackageExtension(URL)
+        case userDataFolderMissing(XcodeFileSystemURLResource)
+        case invalidUserDataPackageExtension(XcodeFileSystemURLResource)
     }
     
     /// The extension for User Data package
@@ -37,11 +37,11 @@ public final class XCUserData {
         }*/
         
         guard try provider.itemExists(at: url) else {
-            throw Error.userDataFolderMissing(url.realURL)
+            throw Error.userDataFolderMissing(url)
         }
         
         guard url.lastPathComponent.lowercased().hasSuffix(XCUserData.USER_DATA_PACKAGE_EXT) else {
-            throw Error.invalidUserDataPackageExtension(url.realURL)
+            throw Error.invalidUserDataPackageExtension(url)
         }
         
         self.user = NSString(string: url.lastPathComponent).deletingPathExtension
