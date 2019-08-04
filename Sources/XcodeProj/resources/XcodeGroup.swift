@@ -349,7 +349,7 @@ public class XcodeGroup: XcodeGroupResource {
                                     savePBXFile: Bool = true) throws -> XcodeFileResource {
         
         let ft = PBXFileType.fileType(forExt: path.pathExtension)
-        let strPath = path.relative(to: self.project.parentURL).path
+        let strPath = path.relative(to: self.project.projectFolder).path
         
         let subPBXProjectPath = path.appendingPathComponent("project.pbxproj", isDirectory: false)
         
@@ -530,7 +530,7 @@ public class XcodeGroup: XcodeGroupResource {
                                  copyLocally: Bool = true,
                                  savePBXFile: Bool = true) throws -> XcodeFileResource {
         
-       var strPath = path.relative(to: self.project.parentURL).path
+       var strPath = path.relative(to: self.project.projectFolder).path
         if copyLocally  {
             strPath = path.lastPathComponent
             // Must copy files in

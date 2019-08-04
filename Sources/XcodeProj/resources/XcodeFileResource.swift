@@ -29,21 +29,21 @@ public class XcodeFileResource: XcodeResource {
         
         if let pbxPath = self.pbxFileResource.path, pbxPath.contains("/") {
             if pbxPath.hasPrefix("/") {
-                var comps = URLComponents(url: self.project.url.realURL, resolvingAgainstBaseURL: false)
+                var comps = URLComponents(url: self.project.projectPackage.url, resolvingAgainstBaseURL: false)
                 comps?.path = pbxPath
                 guard let newURL = comps?.url else {
-                    fatalError("Failed to create XcodeFileResource.fullURL for absolute path '\(pbxPath)' having project Parent: \(self.project.url)")
+                    fatalError("Failed to create XcodeFileResource.fullURL for absolute path '\(pbxPath)' having project Parent: \(self.project.projectPackage)")
                 }
-                return XcodeFileSystemURLResource(path: newURL, isDirectory: isFolder)
+                return XcodeFileSystemURLResource(path: newURL.path, isDirectory: isFolder)
                 //return URL(fileURLWithPath: pbxPath, isDirectory: isFolder)
             }
-            else { return self.project.url.deletingLastPathComponent().appendingPathComponent(pbxPath, isDirectory: isFolder) }
+            else { return self.project.projectPackage.deletingLastPathComponent().appendingPathComponent(pbxPath, isDirectory: isFolder) }
         }
         if self.parent != nil {
             return self.parent.fullURL.appendingPathComponent(self.name, isDirectory: isFolder)
         } else {
             let n = self.name
-            var rtn = self.project.url.deletingLastPathComponent()
+            var rtn = self.project.projectPackage.deletingLastPathComponent()
             if !n.isEmpty {
                 rtn.appendPathComponent(n, isDirectory: isFolder)
             }

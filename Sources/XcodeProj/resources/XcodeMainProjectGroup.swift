@@ -70,15 +70,26 @@ public class XcodeMainProjectGroup: XcodeGroup {
     public override func sort() {
         func srtFnc(_ lhs: XcodeFileResource, _ rhs: XcodeFileResource) -> Bool {
             var lhsOrder = lhs.objectSortingOrder
-            if lhsOrder == XcodeFile.OBJECT_SORT_ORDER { lhsOrder = 0 }
+            if lhsOrder == XcodeFile.OBJECT_SORT_ORDER {
+                if lhs.name == "Package.swift" { lhsOrder = -2 }
+                else if lhs.name.lowercased().range(of: "Package\\@swift-.*\\.swift", options: .regularExpression) != nil { lhsOrder = -1  }
+                else { lhsOrder = 0 }
+            }
             var rhsOrder = rhs.objectSortingOrder
-            if rhsOrder == XcodeFile.OBJECT_SORT_ORDER { rhsOrder = 0 }
+            if rhsOrder == XcodeFile.OBJECT_SORT_ORDER {
+                if rhs.name == "Package.swift" { rhsOrder = -2 }
+                else if rhs.name.lowercased().range(of: "Package\\@swift-.*\\.swift", options: .regularExpression) != nil { rhsOrder = -1  }
+                else { rhsOrder = 0 }
+            }
             if lhsOrder < rhsOrder { return true }
             else if lhsOrder > rhsOrder { return false }
             else { return lhs.name.lowercased() < rhs.name.lowercased() }
         }
         super.sort() // This will sort main group + all sub groups
-        self.sort(by: srtFnc) // Resort main group
+        self.children.sort(by: srtFnc)
+        self.pbxGroup.childrenReferences = self.children.map({ return $0.pbxFileResource.id })
+        
+        //self.sort(by: srtFnc) // Resort main group
         
     }
 }
