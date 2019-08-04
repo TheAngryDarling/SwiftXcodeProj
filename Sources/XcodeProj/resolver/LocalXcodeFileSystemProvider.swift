@@ -30,10 +30,10 @@ public class LocalXcodeFileSystemProvider: XcodeFileSystemProvider {
     
     
     public func actions(_ actions: [XcodeFileSystemProviderAction]) throws -> [XcodeFileSystemProviderActionResponse] {
-        let failedResPreCondition = actions.validateResourceConditions({ return $0.isFileURL })
+        /*let failedResPreCondition = actions.validateResourceConditions({ return $0.isFile })
         guard failedResPreCondition == nil else {
             throw Errors.mustBeFileSystemURL(failedResPreCondition!)
-        }
+        }*/
         
         var rtn: [XcodeFileSystemProviderActionResponse] = []
         
@@ -72,11 +72,11 @@ public class LocalXcodeFileSystemProvider: XcodeFileSystemProvider {
             case .dateAttribute(item: let res, attribute: let attrib):
                 switch attrib {
                     case .creation:
-                        let attr = try FileManager.default.attributesOfItem(atPath: res.realURL.path)
+                        let attr = try FileManager.default.attributesOfItem(atPath: res.path)
                         let dt = attr[FileAttributeKey.creationDate] as! Date
                         rtn.append(.date(dt, for: res))
                     case .lastModified:
-                        let attr = try FileManager.default.attributesOfItem(atPath: res.realURL.path)
+                        let attr = try FileManager.default.attributesOfItem(atPath: res.path)
                         let dt = attr[FileAttributeKey.modificationDate] as! Date
                         rtn.append(.date(dt, for: res))
                 }
@@ -98,17 +98,17 @@ public class LocalXcodeFileSystemProvider: XcodeFileSystemProvider {
                 else { rtn.append(.bool(bool, for: res)) }
                 
             case .data(for: let res, readOptions: let options):
-                 rtn.append(.data(try Data(contentsOf: res.realURL, options: options), for: res))
+                 rtn.append(.data(try Data(contentsOf: res.url, options: options), for: res))
                 
             case .write(data: let dta, to: let res, writeOptions: let options):
-                try dta.write(to: res.realURL, options: options)
+                try dta.write(to: res.url, options: options)
                 rtn.append(.void(for: res))
                 
             case .directoryContents(for: let res, ofType: let type, withRegExFilter: let regEx):
                 if !res.isDirectory { rtn.append(.directoryContents([], for: res)) }
                 else {
                     let children = try FileManager.default.contentsOfDirectory(atPath: res.path).map {
-                        return res.realURL.appendingPathComponent($0)
+                        return res.url.appendingPathComponent($0)
                     }
                     
                     var namePattern: NSRegularExpression? = nil
@@ -135,7 +135,7 @@ public class LocalXcodeFileSystemProvider: XcodeFileSystemProvider {
                             let attr = try FileManager.default.attributesOfItem(atPath: u.path)
                             let dt = attr[FileAttributeKey.modificationDate] as! Date
                             
-                            items.append(XcodeFileSystemURLResource(path: u, isDirectory: isD, modDate: dt))
+                            items.append(XcodeFileSystemURLResource(path: u.path, isDirectory: isD, modDate: dt))
                         }
                     }
                     rtn.append(.directoryContents(items, for: res))
@@ -143,7 +143,7 @@ public class LocalXcodeFileSystemProvider: XcodeFileSystemProvider {
                 
             case .directoryRemoveContents(from: let res, ofType: let type, withRegExFilter: let regEx):
                 let children = try FileManager.default.contentsOfDirectory(atPath: res.path).map {
-                    return res.realURL.appendingPathComponent($0)
+                    return res.url.appendingPathComponent($0)
                 }
                 
                 var namePattern: NSRegularExpression? = nil
@@ -175,7 +175,7 @@ public class LocalXcodeFileSystemProvider: XcodeFileSystemProvider {
                 
             case .directoryDataContents(from: let res, readOptions: let options, withRegExFilter: let regEx):
                 let children = try FileManager.default.contentsOfDirectory(atPath: res.path).map {
-                    return res.realURL.appendingPathComponent($0)
+                    return res.url.appendingPathComponent($0)
                 }
                 
                 var namePattern: NSRegularExpression? = nil
@@ -205,7 +205,7 @@ public class LocalXcodeFileSystemProvider: XcodeFileSystemProvider {
                         
                         let dta = try Data(contentsOf: u, options: options)
                         
-                        items.append((resource: XcodeFileSystemURLResource(path: u,
+                        items.append((resource: XcodeFileSystemURLResource(path: u.path,
                                                                            isDirectory: false,
                                                                            modDate: dt),
                                       data: dta))
@@ -222,11 +222,11 @@ public class LocalXcodeFileSystemProvider: XcodeFileSystemProvider {
                 rtn.append(.void(for: res))
                 
             case .copy(source: let resSource, destination: let resDestination):
-                try FileManager.default.copyItem(at: resSource.realURL, to: resDestination.realURL)
+                try FileManager.default.copyItem(at: resSource.url, to: resDestination.url)
                 rtn.append(.void(for: resSource))
                 
             case .remove(item: let res):
-                try FileManager.default.removeItem(at: res.realURL)
+                try FileManager.default.removeItem(at: res.url)
                 rtn.append(.void(for: res))
                 
             case .actionWithDependencies(dependants: let dependancies, action: let subAction):
