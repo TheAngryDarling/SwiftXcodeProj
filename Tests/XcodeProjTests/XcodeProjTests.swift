@@ -63,27 +63,31 @@ class XcodeProjTests: XCTestCase {
     static let testPackageResourcePath: String = testPackageRootPath + "/resources"
     static let testPackageResourceTestProjectPath: String = testPackageResourcePath + "/test_proj"
     
+    var isXcodeTesting: Bool {
+        return (ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil)
+    }
+    
     
     func loadProject(_ url: URL) throws {
-        print("Loading: \(url.lastPathComponent)")
+        if isXcodeTesting { print("Loading: \(url.lastPathComponent)") }
         let tr: (TimeInterval, XcodeProject) = try Timer.timeWithResults {
             return try XcodeProject(fromURL: url)
         }
         tr.1.resources.sort()
-        print("Loaded project (\(url.lastPathComponent)) in \(tr.0) s")
-        //debugPrint(tr.1)
+        if isXcodeTesting { print("Loaded project (\(url.lastPathComponent)) in \(tr.0) s") }
+        if isXcodeTesting { debugPrint(tr.1) }
         
         let tUserList: (TimeInterval, XCUserDataList) = try Timer.timeWithResults {
             try tr.1.userdataList()
         }
-        print("Loaded User Data List in \(tUserList.0) s")
-        //debugPrint(tUserList.1)
+        if isXcodeTesting { print("Loaded User Data List in \(tUserList.0) s") }
+        if isXcodeTesting { debugPrint(tUserList.1) }
         
         let tSharedData: (TimeInterval, XCSharedData) = try Timer.timeWithResults {
             try tr.1.sharedData()
         }
-        print("Loaded Shared Data List in \(tSharedData.0) s")
-        //debugPrint(tSharedData.1)
+        if isXcodeTesting { print("Loaded Shared Data List in \(tSharedData.0) s") }
+        if isXcodeTesting { debugPrint(tSharedData.1) }
        
     }
     
@@ -256,8 +260,7 @@ class XcodeProjTests: XCTestCase {
         do {
             
             let provider = LocalXcodeFileSystemProvider.newInstance
-            let location = XcodeFileSystemURLResource(path: workingDir,
-                                                      isDirectory: true)
+            let location = XcodeFileSystemURLResource(directory: workingDir.path)
             let proj = try XcodeProjectBuilders.Swift.CommandLine.create(workingProjectName,
                                                                           in: location,
                                                                           using: provider,
@@ -277,8 +280,7 @@ class XcodeProjTests: XCTestCase {
         do {
             
             let provider = LocalXcodeFileSystemProvider.newInstance
-            let location = XcodeFileSystemURLResource(path: workingDir,
-                                                      isDirectory: true)
+            let location = XcodeFileSystemURLResource(directory: workingDir.path)
             let proj = try XcodeProjectBuilders.ObjectiveC.CommandLine.create(workingProjectName,
                                                                          in: location,
                                                                          using: provider,
@@ -298,8 +300,7 @@ class XcodeProjTests: XCTestCase {
         do {
             
             let provider = LocalXcodeFileSystemProvider.newInstance
-            let location = XcodeFileSystemURLResource(path: workingDir,
-                                                      isDirectory: true)
+            let location = XcodeFileSystemURLResource(directory: workingDir.path)
             let proj = try XcodeProjectBuilders.CrossPlatform.Empty.create(workingProjectName,
                                                                               in: location,
                                                                               using: provider,
