@@ -13,83 +13,105 @@ import Foundation
 /// - file: A file on the file system
 public enum XcodeFileSystemURLResource {
     /// A directory on the file system
-    case directory(URL, Date?)
+    case directory(path: String, modDate: Date?, basePath: String?)
     /// A file on the file system
-    case file(URL, Date?)
+    case file(path: String, modDate: Date?, basePath: String?)
     
     /// Create a new resource object
     ///
     /// - Parameters:
-    ///   - resource: The URL resource
+    ///   - resource: The resource path and directory indicator
     ///   - modDate: The modification date (Optional)
-    public init(_ resource: (path: URL, isDirectory: Bool), _ modDate: Date? = nil) {
-        if resource.isDirectory { self = .directory(resource.path, modDate) }
-        else { self = .file(resource.path, modDate) }
+    public init(_ resource: (path: String, isDirectory: Bool), _ modDate: Date? = nil, base: XcodeFileSystemURLResource? = nil) {
+        if resource.isDirectory { self = .directory(path: resource.path, modDate: modDate, basePath: base?.path) }
+        else { self = .file(path: resource.path, modDate: modDate, basePath: base?.path) }
     }
     
     /// Create a new resource object
     ///
     /// - Parameters:
-    ///   - path: URL of the resource
+    ///   - path: path of the resource
     ///   - isDirectory: Indicator if its a directory or not (Default: false)
     ///   - modDate: The modification date (Optional)
-    public init(path: URL,
+    ///   - base: The base for this path (Optional)
+    public init(path: String,
                 isDirectory: Bool = false,
-                modDate: Date? = nil) {
-        if isDirectory { self = .directory(path, modDate) }
-        else { self = .file(path, modDate) }
+                modDate: Date? = nil,
+                base: XcodeFileSystemURLResource? = nil) {
+        if isDirectory { self = .directory(path: path, modDate: modDate, basePath: base?.path) }
+        else { self = .file(path: path, modDate: modDate, basePath: base?.path) }
     }
     
-    /// <#Description#>
+    /// Create a new resource object
     ///
     /// - Parameters:
-    ///   - string: The URL string
-    ///   - relativeTo: The resource its relative to
-    ///   - isDirectory: Indicator if its a directory or not (Default: false)
+    ///   - path: Path of the directory
     ///   - modDate: The modification date (Optional)
-    public init?(string: String,
-                 relativeTo: XcodeFileSystemURLResource,
-                 isDirectory: Bool = false,
-                 modDate: Date? = nil) {
-        guard let newURL = URL(string: string, relativeTo: relativeTo.realURL) else { return nil }
-        if isDirectory {
-            self = .directory(newURL, modDate)
-        } else {
-            self = .file(newURL, modDate)
-        }
-        
+    ///   - base: The base for this path (Optional)
+    public init(directory path: String,
+                modDate: Date? = nil,
+                base: XcodeFileSystemURLResource? = nil) {
+        self = .directory(path: path, modDate: modDate, basePath: base?.path)
     }
     
-    /// The actual URL of the resource
-    public var realURL: URL {
-        switch self {
-            case .directory(let url, _) : return url
-            case .file( let url, _): return url
-        }
+    /// Create a new resource object
+    ///
+    /// - Parameters:
+    ///   - path: Path of the directory
+    ///   - modDate: The modification date (Optional)
+    ///   - basePath: The base for this path (Optional)
+    public init(directory path: String,
+                modDate: Date? = nil,
+                basePath: String?) {
+        self = .directory(path: path, modDate: modDate, basePath: basePath)
     }
     
-    /*internal var provider: XcodeFileSystemProvider {
-        switch self {
-            case .directory(_, let provider, _) : return provider
-            case .file(_, let provider, _): return provider
-        }
-    }*/
+    /// Create a new resource object
+    ///
+    /// - Parameters:
+    ///   - path: Path of the file
+    ///   - modDate: The modification date (Optional)
+    ///   - base: The base for this path (Optional)
+    public init(file path: String,
+                modDate: Date? = nil,
+                base: XcodeFileSystemURLResource? = nil) {
+        self = .file(path: path, modDate: modDate, basePath: base?.path)
+    }
+    
+    /// Create a new resource object
+    ///
+    /// - Parameters:
+    ///   - path: Path of the file
+    ///   - modDate: The modification date (Optional)
+    ///   - basePath: The base for this path (Optional)
+    public init(file path: String,
+                modDate: Date? = nil,
+                basePath: String?) {
+        self = .file(path: path, modDate: modDate, basePath: basePath)
+    }
     
     /// The modification date of the resrouce if set
     public var modificationDate: Date? {
         switch self {
-            case .directory(_, let date):
+            case .directory(_, let date, _):
                 return date
-            case .file(_, let date):
+            case .file(_, let date, _):
                 return date
         }
     }
     
     /// Indicator if this resource is a directory or not
     public var isDirectory: Bool {
-        if case XcodeFileSystemURLResource.directory(_, _) = self { return true }
+        if case XcodeFileSystemURLResource.directory(_, _, _) = self { return true }
         else { return false }
     }
+    
+    /// Indicator if this resource is a file or not
+    public var isFile: Bool {
+        if case XcodeFileSystemURLResource.file(_, _, _) = self { return true }
+        else { return false }
+    }
+    
     
     /// Gets the relative path of the resoruce to another resource
     ///
@@ -97,12 +119,14 @@ public enum XcodeFileSystemURLResource {
     /// - Returns: Returns the new relative path
     internal func relative(to url: XcodeFileSystemURLResource) -> XcodeFileSystemURLResource {
         if self.isDirectory {
-            return .directory(self.realURL.relative(to: url.realURL), self.modificationDate)
+            return .directory(path: self.path.relatvie(to: url.path), modDate: self.modificationDate, basePath: url.path)
         } else {
-            return .file(self.realURL.relative(to: url.realURL), self.modificationDate)
+            return .file(path: self.path.relatvie(to: url.path), modDate: self.modificationDate, basePath: url.path)
         }
     }
     
+    
+    /*
     /// Gets the relative path of the resoruce to another resource
     ///
     /// - Parameter url: The base path to make a relative path
@@ -110,63 +134,19 @@ public enum XcodeFileSystemURLResource {
     internal func relative(to url: URL) -> URL {
         return self.realURL.relative(to: url)
     }
-    
+    */
 }
 
 extension XcodeFileSystemURLResource: Equatable {
     public static func == (lhs: XcodeFileSystemURLResource, rhs: XcodeFileSystemURLResource) -> Bool {
-        guard lhs.isFileURL == rhs.isFileURL else { return false }
-        return lhs.realURL == rhs.realURL
+        guard lhs.path == rhs.path else { return false }
+        return true
     }
 }
-/*
- public extension XcodeFileSystemURLResource {
-    func children() throws -> [XcodeFileSystemURLResource] {
-        guard self.isDirectory else { return [] }
-        return try self.provider.contentsOfDirectory(at: self)
-    }
-}
-*/
+
 // MARK: - URL accessors
 extension XcodeFileSystemURLResource {
-    /// Returns the absolute string for the URL.
-    public var absoluteString: String { return self.realURL.absoluteString }
-    /// Returns the absolute URL.
-    ///
-    /// If the URL is itself absolute, this will return self.
-    public var absoluteURL: URL { return self.realURL.absoluteURL }
-    /// Returns the base URL.
-    ///
-    /// If the URL is itself absolute, then this value is nil.
-    public var baseURL: URL? { return self.realURL.baseURL }
-    /// If the URL conforms to RFC 1808 (the most common form of URL), returns the fragment component of the URL; otherwise it returns nil.
-    ///
-    /// - note: This function will resolve against the base `URL`.
-    public var fragment: String? { return self.realURL.fragment }
-    /// If the URL conforms to RFC 1808 (the most common form of URL), returns the host component of the URL; otherwise it returns nil.
-    ///
-    /// - note: This function will resolve against the base `URL`.
-    public var host: String? { return self.realURL.host }
-    /// Returns the last path component of the URL, or an empty string if the path is an empty string.
-    public var lastPathComponent: String { return self.realURL.lastPathComponent }
-    /// If the URL conforms to RFC 1808 (the most common form of URL), returns the path component of the URL; otherwise it returns an empty string.
-    ///
-    /// If the URL contains a parameter string, it is appended to the path with a `;`.
-    /// - note: This function will resolve against the base `URL`.
-    /// - returns: The path, or an empty string if the URL has an empty path.
-    public var path: String { return self.realURL.path }
-    /// Returns the path components of the URL, or an empty array if the path is an empty string.
-    public var pathComponents: [String] { return self.realURL.pathComponents }
-    /// Returns the path extension of the URL, or an empty string if the path is an empty string.
-    public var pathExtension: String { return self.realURL.pathExtension }
-    /// If the URL conforms to RFC 1808 (the most common form of URL), returns the port component of the URL; otherwise it returns nil.
-    ///
-    /// - note: This function will resolve against the base `URL`.
-    public var port: Int? { return self.realURL.port }
-    /// If the URL conforms to RFC 1808 (the most common form of URL), returns the query of the URL; otherwise it returns nil.
-    ///
-    /// - note: This function will resolve against the base `URL`.
-    public var query: String? { return self.realURL.query }
+    
     /// If the URL conforms to RFC 1808 (the most common form of URL), returns the relative path of the URL; otherwise it returns nil.
     ///
     /// This is the same as path if baseURL is nil.
@@ -174,115 +154,70 @@ extension XcodeFileSystemURLResource {
     ///
     /// - note: This function will resolve against the base `URL`.
     /// - returns: The relative path, or an empty string if the URL has an empty path.
-    public var relativePath: String { return self.realURL.relativePath }
-    /// The relative portion of a URL.
-    ///
-    /// If `baseURL` is nil, or if the receiver is itself absolute, this is the same as `absoluteString`.
-    public var relativeString: String { return self.realURL.relativeString }
-    /// Returns the scheme of the URL.
-    public var scheme: String? { return self.realURL.scheme }
-    /// Returns a `XcodeFileSystemURLResource` with any instances of ".." or "." removed from its path.
-    public var standardized: XcodeFileSystemURLResource {
+    public var relativePath: String {
         switch self {
-            case .directory(let url, let modDate):
-                return .directory(url.standardized, modDate)
-            case .file( let url, let modDate):
-                return .file(url.standardized, modDate)
+            case .directory(let rtn, _, _):
+                return rtn
+            case .file(let rtn, _, _):
+                return rtn
         }
     }
-    /// Standardizes the path of a file URL.
+    /// If the URL conforms to RFC 1808 (the most common form of URL), returns the path component of the URL; otherwise it returns an empty string.
     ///
-    /// If the `isFileURL` is false, this method returns `self`.
-    public var standardizedFileURL: XcodeFileSystemURLResource {
-        switch self {
-            case .directory(let url, let modDate):
-                return .directory(url.standardizedFileURL, modDate)
-            case .file( let url, let modDate):
-                return .file(url.standardizedFileURL, modDate)
-        }
+    /// If the URL contains a parameter string, it is appended to the path with a `;`.
+    /// - note: This function will resolve against the base `URL`.
+    /// - returns: The path, or an empty string if the URL has an empty path.
+    public var path: String {
+        guard !self.relativePath.hasPrefix("/") else { return self.relativePath }
+        guard let base = self.basePath else { return self.relativePath }
+        
+        return self.relativePath.path(from: base)
     }
     
-    /// If the URL conforms to RFC 1808 (the most common form of URL), returns the user component of the URL; otherwise it returns nil.
+   
+    /// If the URL conforms to RFC 1808 (the most common form of URL), returns the host component of the URL; otherwise it returns nil.
     ///
     /// - note: This function will resolve against the base `URL`.
-    public var user: String? { return self.realURL.user }
-    /// If the URL conforms to RFC 1808 (the most common form of URL), returns the password component of the URL; otherwise it returns nil.
-    ///
-    /// - note: This function will resolve against the base `URL`.
-    public var password: String? { return self.realURL.password }
+    //public var host: String? { return self.realURL.host }
+    /// Returns the last path component of the URL, or an empty string if the path is an empty string.
+    public var lastPathComponent: String { return NSString(string: self.path).lastPathComponent }
     
     
-    /// Returns true if the scheme is `file:`.
-    public var isFileURL: Bool { return self.realURL.isFileURL }
-    /// Returns true if the URL path represents a directory.
-    @available(OSX 10.11, *)
-    public var hasDirectoryPath: Bool { return self.realURL.hasDirectoryPath }
-    
-    /// Resolves any symlinks in the path of a file XcodeFileSystemURLResource.
-    ///
-    /// If the `isFileURL` is false, this method returns `self`.
-    public mutating func resolveSymlinksInPath() {
+    public var basePath: String? {
         switch self {
-            case .directory(let url, let modDate):
-                self = .directory(url.resolvingSymlinksInPath(), modDate)
-            case .file( let url, let modDate):
-                self = .file(url.resolvingSymlinksInPath(), modDate)
+            case .directory(_, _, let rtn):
+                return rtn
+            case .file(_, _, let rtn):
+                return rtn
         }
     }
-    
-    
-    /// Resolves any symlinks in the path of a file XcodeFileSystemURLResource.
-    ///
-    /// If the `isFileURL` is false, this method returns `self`.
-    public func resolvingSymlinksInPath() -> XcodeFileSystemURLResource {
-        switch self {
-            case .directory(let url, let modDate):
-                return .directory(url.resolvingSymlinksInPath(), modDate)
-            case .file( let url, let modDate):
-                return .file(url.resolvingSymlinksInPath(), modDate)
-        }
-    }
-    
-    /// Standardizes the path of a file XcodeFileSystemURLResource.
-    ///
-    /// If the `isFileURL` is false, this method does nothing.
-    public mutating func standardize() {
-        switch self {
-            case .directory(let url, let modDate):
-                self = .directory(url.standardized, modDate)
-            case .file( let url, let modDate):
-                self = .file(url.standardized, modDate)
-        }
-    }
-    
+    /// Returns the path components of the URL, or an empty array if the path is an empty string.
+    public var pathComponents: [String] { return  NSString(string: self.path).pathComponents }
+    /// Returns the path extension of the URL, or an empty string if the path is an empty string.
+    public var pathExtension: String { return  NSString(string: self.path).pathExtension }
     
     /// Appends a path component to the XcodeFileSystemURLResource.
     ///
     /// - parameter pathComponent: The path component to add.
     /// - parameter isDirectory: Use `true` if the resulting path is a directory.
-    public mutating func appendPathComponent(_ pathComponent: String, isDirectory: Bool) {
-        precondition(self.isDirectory, "appendPathComponent must be done on a directory")
-        if isDirectory {
-            self = .directory(self.realURL.appendingPathComponent(pathComponent, isDirectory: isDirectory),
-                              nil)
-        } else {
-            self = .file(self.realURL.appendingPathComponent(pathComponent, isDirectory: isDirectory),
-                         nil)
-        }
+    public mutating func appendPathComponent(_ pathComponent: String, isDirectory: Bool = false) {
+        self = self.appendingPathComponent(pathComponent, isDirectory: isDirectory)
     }
     
     /// Returns a URL constructed by appending the given path component to self.
     ///
     /// - parameter pathComponent: The path component to add.
     /// - parameter isDirectory: If `true`, then a trailing `/` is added to the resulting path.
-    public func appendingPathComponent(_ pathComponent: String, isDirectory: Bool) -> XcodeFileSystemURLResource {
+    public func appendingPathComponent(_ pathComponent: String, isDirectory: Bool = false) -> XcodeFileSystemURLResource {
         precondition(self.isDirectory, "appendPathComponent must be done on a directory")
         if isDirectory {
-            return .directory(self.realURL.appendingPathComponent(pathComponent, isDirectory: isDirectory).standardized,
-                              nil)
+            return .directory(path: NSString(string: self.path).appendingPathComponent(pathComponent),
+                              modDate: nil,
+                              basePath: self.basePath)
         } else {
-            return .file(self.realURL.appendingPathComponent(pathComponent, isDirectory: isDirectory).standardized,
-                         nil)
+            return .file(path: NSString(string: self.path).appendingPathComponent(pathComponent),
+                         modDate: nil,
+                         basePath: self.self.basePath)
         }
     }
     
@@ -292,7 +227,7 @@ extension XcodeFileSystemURLResource {
     ///
     /// If the URL has an empty path (e.g., `http://www.example.com`), then this function will do nothing.
     public mutating func deleteLastPathComponent() {
-        self = .directory(self.realURL.deletingLastPathComponent(), nil)
+        self = self.deletingLastPathComponent()
     }
     
     /// Returns a XcodeFileSystemURLResource constructed by removing the last path component of self.
@@ -301,6 +236,10 @@ extension XcodeFileSystemURLResource {
     ///
     /// If the URL has an empty path (e.g., `http://www.example.com`), then this function will do nothing.
     public func deletingLastPathComponent() -> XcodeFileSystemURLResource {
-        return .directory(self.realURL.deletingLastPathComponent(), nil)
+        return .directory(path: NSString(string: self.path).deletingLastPathComponent, modDate: nil, basePath: self.basePath)
+    }
+    
+    internal var url: URL {
+        return URL(fileURLWithPath: self.path)
     }
 }
