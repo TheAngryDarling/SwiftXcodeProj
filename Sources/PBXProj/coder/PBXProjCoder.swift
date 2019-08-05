@@ -18,6 +18,8 @@ public final class PBXProjEncoder: BasicClosedEncoder<PBXProj, Data> {
     /// Tab representation
     public var tabs: String = " "
     
+    private var proj: PBXProj? = nil
+    
     public init() {
         super.init { e, v in
             let enc: PBXProjEncoder = e as! PBXProjEncoder
@@ -27,10 +29,17 @@ public final class PBXProjEncoder: BasicClosedEncoder<PBXProj, Data> {
             }
             //print(content)
             return try PBXProjSerialization.encode(content: content,
-                                                        usingSingleIndentString: enc.tabs,
-                                                        withEncoding: enc.encoding,
-                                                        userInfo: enc.userInfo)
+                                                   usingSingleIndentString: enc.tabs,
+                                                   withEncoding: enc.encoding,
+                                                   havingObjectVersion: enc.proj!.objectVersion,
+                                                   havingArchiveVersion: enc.proj!.archiveVersion,
+                                                   userInfo: enc.userInfo)
         }
+    }
+    
+    public override func encode(_ value: PBXProj) throws -> Data {
+        self.proj = value
+        return try super.encode(value)
     }
 }
 
