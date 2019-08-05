@@ -61,13 +61,25 @@ public final class PBXCopyFilesBuildPhase: PBXBuildPhase {
     }
     
     /// Element name
-    public var name: String?
+    public var name: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Element destination path
-    public var dstPath: String
+    public var dstPath: String {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Element destination subfolder spec
-    public var dstSubfolderSpec: PBXSubFolder
+    public var dstSubfolderSpec: PBXSubFolder {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Creates a new instance of a PBXCopyFilesBuildPhase
     ///
@@ -119,6 +131,8 @@ public final class PBXCopyFilesBuildPhase: PBXBuildPhase {
                                                         inObject object: [String: Any],
                                                         inObjectList objectList: [String: Any],
                                                         inData data: [String: Any],
+                                                        havingObjectVersion objectVersion: Int,
+                                                        havingArchiveVersion archiveVersion: Int,
                                                         userInfo: [CodingUserInfoKey: Any]) -> String? {
         if path.count == 2  { return PBXBuildPhase.PBXBuildPhaseType.copyFilesBuildPhase.rawValue }
         return super.getPBXEncodingComments(forValue: value,
@@ -126,6 +140,8 @@ public final class PBXCopyFilesBuildPhase: PBXBuildPhase {
                                             inObject: object,
                                             inObjectList: objectList,
                                             inData: data,
+                                            havingObjectVersion: objectVersion,
+                                            havingArchiveVersion: archiveVersion,
                                             userInfo: userInfo)
     }
 }

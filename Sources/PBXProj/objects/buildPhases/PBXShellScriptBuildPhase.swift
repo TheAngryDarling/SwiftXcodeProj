@@ -54,17 +54,41 @@ public final class PBXShellScriptBuildPhase: PBXBuildPhase {
     public static let DEFAULT_SHELL_PATH: String = "/bin/sh"
     
     /// Element name
-    public var name: String?
+    public var name: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     ///Input files list path
-    public var inputFileListPaths: [String]
+    public var inputFileListPaths: [String] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// Input paths
-    public var inputPaths: [String]
+    public var inputPaths: [String] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// Output paths
-    public var outputPaths: [String]
+    public var outputPaths: [String] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// Path to the shell.
-    public var shellPath: String
+    public var shellPath: String {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// Shell script.
-    public var shellScript: String?
+    public var shellScript: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Create a new insatnce of Shell Script Build Phase
     ///
@@ -131,6 +155,8 @@ public final class PBXShellScriptBuildPhase: PBXBuildPhase {
                                                         inObject object: [String: Any],
                                                         inObjectList objectList: [String: Any],
                                                         inData data: [String: Any],
+                                                        havingObjectVersion objectVersion: Int,
+                                                        havingArchiveVersion archiveVersion: Int,
                                                         userInfo: [CodingUserInfoKey: Any]) -> String? {
         if path.count == 2  { return PBXBuildPhase.PBXBuildPhaseType.shellScriptBuildPhase.rawValue }
         return super.getPBXEncodingComments(forValue: value,
@@ -138,6 +164,8 @@ public final class PBXShellScriptBuildPhase: PBXBuildPhase {
                                             inObject: object,
                                             inObjectList: objectList,
                                             inData: data,
+                                            havingObjectVersion: objectVersion,
+                                            havingArchiveVersion: archiveVersion,
                                             userInfo: userInfo)
     }
 }

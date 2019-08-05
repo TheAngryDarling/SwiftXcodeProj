@@ -75,10 +75,14 @@ public class PBXObject: Codable {
     ///   - content: The content of the given object (key/value) paris
     ///   - data: The data of all objects in the file
     ///   - path: The path of the given object in the file
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     /// - Returns: Reutrns an array of the keys in the order they should be written in
     internal static func getPBXEncodingOrderKeys(_ content: [String: Any],
                                                 inData data: [String: Any],
-                                                atPath path: [String]) -> [String] {
+                                                atPath path: [String],
+                                                havingObjectVersion objectVersion: Int,
+                                                havingArchiveVersion archiveVersion: Int) -> [String] {
         if path.count == 2 {
             var workingKeys: [String] = []
             workingKeys.append(contentsOf: content.keys)
@@ -92,7 +96,10 @@ public class PBXObject: Codable {
                     workingKeys.remove(at: idx)
                 }
             }
-            var rtn = getPBXEncodingOrderKeys(workingKeys, content, atPath: path)
+            var rtn = getPBXEncodingOrderKeys(workingKeys,
+                                              content, atPath: path,
+                                              havingObjectVersion: objectVersion,
+                                              havingArchiveVersion: archiveVersion)
             //Add back in the defined keys
             rtn.insert(contentsOf: definedKeys, at: 0)
             return rtn
@@ -110,10 +117,14 @@ public class PBXObject: Codable {
     ///   - workingKeys: All current keys in the object
     ///   - content: The content of the object
     ///   - path: Current path of the object
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     /// - Returns: Reutrns an array of the keys in the order they should be written in
     internal class func getPBXEncodingOrderKeys(_ workingKeys: [String],
                                                 _ content: [String: Any],
-                                                atPath path: [String]) -> [String] {
+                                                atPath path: [String],
+                                                havingObjectVersion objectVersion: Int,
+                                                havingArchiveVersion archiveVersion: Int) -> [String] {
         guard workingKeys.count > 0 else { return [] }
         var workingKeys = workingKeys
        
@@ -164,10 +175,14 @@ public class PBXObject: Codable {
     /// - Parameters:
     ///   - content: The content of this object
     ///   - path: The path of this object with the file
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Custom user properites
     /// - Returns: Returns true if this is a multi-line object, otherwise false
     internal class func isPBXEncodingMultiLineObject(_ content: [String: Any],
                                                      atPath path: [String],
+                                                     havingObjectVersion objectVersion: Int,
+                                                     havingArchiveVersion archiveVersion: Int,
                                                      userInfo: [CodingUserInfoKey: Any])-> Bool {
         return true
     }
@@ -180,6 +195,8 @@ public class PBXObject: Codable {
     ///   - object: The current object the value is being written from
     ///   - objectList: The current PBX Object List data
     ///   - inData: Dictionary of all data from the file
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Custom user properites
     /// - Returns: Returns the object comments if any exists
     internal class func getPBXEncodingComments(forValue value: String,
@@ -187,6 +204,8 @@ public class PBXObject: Codable {
                                                inObject object: [String: Any],
                                                inObjectList objectList: [String: Any],
                                                inData: [String: Any],
+                                               havingObjectVersion objectVersion: Int,
+                                               havingArchiveVersion archiveVersion: Int,
                                                userInfo: [CodingUserInfoKey: Any]) -> String? {
         return nil
     }
@@ -201,6 +220,8 @@ public class PBXObject: Codable {
     ///   - object: Current object data
     ///   - objectList: Object List data
     ///   - inData: File Data
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Custom user properties
     /// - Returns: Reutrns true if the value should be escaped, otherwise false
     internal class func isPBXEncodinStringEscaping(_ value: String,
@@ -209,6 +230,8 @@ public class PBXObject: Codable {
                                                  inObject object: [String: Any],
                                                  inObjectList objectList: [String: Any],
                                                  inData: [String: Any],
+                                                 havingObjectVersion objectVersion: Int,
+                                                 havingArchiveVersion archiveVersion: Int,
                                                  userInfo: [CodingUserInfoKey: Any]) -> Bool {
         return hasKeyIndicators
     }

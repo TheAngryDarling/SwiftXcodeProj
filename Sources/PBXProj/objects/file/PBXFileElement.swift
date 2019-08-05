@@ -55,13 +55,25 @@ public class PBXFileElement: PBXUnknownObject {
     }
     
     /// Element name.
-    public var name: String?
+    public var name: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Element path
-    public var path: String?
+    public var path: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Element source tree.
-    public var sourceTree: PBXSourceTree?
+    public var sourceTree: PBXSourceTree? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /*public var parent: PBXGroup! {
         for obj in self.objectList {
@@ -162,6 +174,8 @@ public class PBXFileElement: PBXUnknownObject {
                                                         inObject object: [String: Any],
                                                         inObjectList objectList: [String: Any],
                                                         inData data: [String: Any],
+                                                        havingObjectVersion objectVersion: Int,
+                                                        havingArchiveVersion archiveVersion: Int,
                                                         userInfo: [CodingUserInfoKey: Any]) -> String? {
         
         if path.count == 2, let name = object[CodingKeys.name] as? String {

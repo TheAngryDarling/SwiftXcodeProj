@@ -28,7 +28,11 @@ public final class PBXBuildFile: PBXUnknownObject {
     }
     
     /// Element file reference.
-    public private(set) var fileRef: PBXReference
+    public private(set) var fileRef: PBXReference {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// The file reference for this build file
     ///
     /// This uses the fileRef to lookup the File Reference within the object list
@@ -42,7 +46,11 @@ public final class PBXBuildFile: PBXUnknownObject {
     }
     
     /// Element settings
-    public var settings: [String: Any]
+    public var settings: [String: Any] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Link to the build phase for this build file.
     ///
@@ -126,6 +134,8 @@ public final class PBXBuildFile: PBXUnknownObject {
     
     internal override class func isPBXEncodingMultiLineObject(_ content: [String: Any],
                                                               atPath path: [String],
+                                                              havingObjectVersion objectVersion: Int,
+                                                              havingArchiveVersion archiveVersion: Int,
                                                               userInfo: [CodingUserInfoKey: Any]) -> Bool {
         return (content[CodingKeys.settings] != nil)
     }
@@ -135,6 +145,8 @@ public final class PBXBuildFile: PBXUnknownObject {
                                                        inObject object: [String: Any],
                                                        inObjectList objectList: [String: Any],
                                                        inData data: [String: Any],
+                                                       havingObjectVersion objectVersion: Int,
+                                                       havingArchiveVersion archiveVersion: Int,
                                                        userInfo: [CodingUserInfoKey: Any]) -> String? {
         
         if path.count == 2 , let fileRef = object[CodingKeys.fileRef] as? String,
@@ -156,6 +168,8 @@ public final class PBXBuildFile: PBXUnknownObject {
             return PBXObjects.getPBXEncodingComments(forValue: value,
                                                      atPath:  [PBXProj.CodingKeys.objects.rawValue, value] ,
                                                      inData: data,
+                                                     havingObjectVersion: objectVersion,
+                                                     havingArchiveVersion: archiveVersion,
                                                      userInfo: userInfo)
         }
         return nil
@@ -167,6 +181,8 @@ public final class PBXBuildFile: PBXUnknownObject {
                                                             inObject object: [String: Any],
                                                             inObjectList objectList: [String: Any],
                                                             inData: [String: Any],
+                                                            havingObjectVersion objectVersion: Int,
+                                                            havingArchiveVersion archiveVersion: Int,
                                                             userInfo: [CodingUserInfoKey: Any]) -> Bool {
         if path.last == CodingKeys.fileRef { return false }
         return hasKeyIndicators

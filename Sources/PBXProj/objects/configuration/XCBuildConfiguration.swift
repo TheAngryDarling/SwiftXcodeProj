@@ -39,7 +39,11 @@ public final class XCBuildConfiguration: PBXUnknownObject {
     
     
     /// The reference to a base configuration if required
-    public private(set) var baseConfigurationReferenceReference: PBXReference?
+    public private(set) var baseConfigurationReferenceReference: PBXReference? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// The base build configuraton for this configuration if one is set
     public var baseConfigurationReference: XCBuildConfiguration? {
         get {
@@ -51,7 +55,11 @@ public final class XCBuildConfiguration: PBXUnknownObject {
         }
     }
     /// The build settings for this configuration
-    public var buildSettings: [String: Any]
+    public var buildSettings: [String: Any] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// The complete build settings for this configuration.  This will take any base configuration settings and combind them with the local settings
     public var completeBuildSettings: [String: Any] {
         var rtn: [String: Any] = [:]
@@ -64,7 +72,11 @@ public final class XCBuildConfiguration: PBXUnknownObject {
         return rtn
     }
     /// The name of this configuration
-    public var name: String
+    public var name: String {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Create an instance of a Build Configuration
     ///
@@ -120,6 +132,8 @@ public final class XCBuildConfiguration: PBXUnknownObject {
                                                         inObject object: [String: Any],
                                                         inObjectList objectList: [String: Any],
                                                         inData data: [String: Any],
+                                                        havingObjectVersion objectVersion: Int,
+                                                        havingArchiveVersion archiveVersion: Int,
                                                         userInfo: [CodingUserInfoKey: Any]) -> String? {
         
         if path.count == 2, let name = object[CodingKeys.name] as? String {
@@ -128,6 +142,8 @@ public final class XCBuildConfiguration: PBXUnknownObject {
             return PBXObjects.getPBXEncodingComments(forValue: value,
                                                      atPath:  [PBXProj.CodingKeys.objects.rawValue, value] ,
                                                      inData: data,
+                                                     havingObjectVersion: objectVersion,
+                                                     havingArchiveVersion: archiveVersion,
                                                      userInfo: userInfo)
         }
         
@@ -140,6 +156,8 @@ public final class XCBuildConfiguration: PBXUnknownObject {
                                                             inObject object: [String: Any],
                                                             inObjectList objectList: [String: Any],
                                                             inData: [String: Any],
+                                                            havingObjectVersion objectVersion: Int,
+                                                            havingArchiveVersion archiveVersion: Int,
                                                             userInfo: [CodingUserInfoKey: Any]) -> Bool {
         if path.last == CodingKeys.baseConfigurationReference { return false }
         return hasKeyIndicators

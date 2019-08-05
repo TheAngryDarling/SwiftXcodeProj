@@ -115,12 +115,16 @@ public final class PBXContainerItemProxy: PBXUnknownObject {
                                                        inObject object: [String: Any],
                                                        inObjectList objectList: [String: Any],
                                                        inData data: [String: Any],
+                                                       havingObjectVersion objectVersion: Int,
+                                                       havingArchiveVersion archiveVersion: Int,
                                                        userInfo: [CodingUserInfoKey: Any]) -> String? {
         if path.count == 2  { return PBXObjectType.containerItemProxy.rawValue }
         else if path.count == 3 && path[path.count-1] == CodingKeys.containerPortal {
             return PBXObjects.getPBXEncodingComments(forValue: value,
                                                       atPath: [PBXProj.CodingKeys.objects.rawValue, value],
                                                       inData: data,
+                                                      havingObjectVersion: objectVersion,
+                                                      havingArchiveVersion: archiveVersion,
                                                       userInfo: userInfo)
              /*return ReadWritter.getComments(forValue: value,
                                             atPath:  [PBXProj.CodingKeys.objects.rawValue, value] ,
@@ -136,6 +140,8 @@ public final class PBXContainerItemProxy: PBXUnknownObject {
                                                            inObject object: [String: Any],
                                                            inObjectList objectList: [String: Any],
                                                            inData: [String: Any],
+                                                           havingObjectVersion objectVersion: Int,
+                                                           havingArchiveVersion archiveVersion: Int,
                                                            userInfo: [CodingUserInfoKey: Any]) -> Bool {
         if path.last == CodingKeys.containerPortal ||  path.last == CodingKeys.remoteGlobalIDString { return false }
         return hasKeyIndicators

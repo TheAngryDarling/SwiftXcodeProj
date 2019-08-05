@@ -185,12 +185,16 @@ public class PBXGroup: PBXFileElement {
                                                         inObject object: [String: Any],
                                                         inObjectList objectList: [String: Any],
                                                         inData data: [String: Any],
+                                                        havingObjectVersion objectVersion: Int,
+                                                        havingArchiveVersion archiveVersion: Int,
                                                         userInfo: [CodingUserInfoKey: Any]) -> String? {
         
         if path.count == 4 && path[2] == CodingKeys.children {
             return PBXObjects.getPBXEncodingComments(forValue: value,
                                                      atPath:  [PBXProj.CodingKeys.objects.rawValue, value],
                                                      inData: data,
+                                                     havingObjectVersion: objectVersion,
+                                                     havingArchiveVersion: archiveVersion,
                                                      userInfo: userInfo)
         }
         
@@ -199,6 +203,8 @@ public class PBXGroup: PBXFileElement {
                                             inObject: object,
                                             inObjectList: objectList,
                                             inData: data,
+                                            havingObjectVersion: objectVersion,
+                                            havingArchiveVersion: archiveVersion,
                                             userInfo: userInfo)
     }
     
@@ -208,6 +214,8 @@ public class PBXGroup: PBXFileElement {
                                                             inObject object: [String: Any],
                                                             inObjectList objectList: [String: Any],
                                                             inData: [String: Any],
+                                                            havingObjectVersion objectVersion: Int,
+                                                            havingArchiveVersion archiveVersion: Int,
                                                             userInfo: [CodingUserInfoKey: Any]) -> Bool {
         if path.count > 2 && (path[path.count-2] == CodingKeys.children) { return false }
         return hasKeyIndicators

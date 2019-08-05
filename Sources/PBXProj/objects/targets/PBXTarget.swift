@@ -114,7 +114,11 @@ public class PBXTarget: PBXUnknownObject {
     public static let COPY_FILES_BUILD_PHASE_DEFAULT_DEST_PATH: String = "/usr/share/man/man1/"
     
     /// The object is a reference to a XCConfigurationList element.
-    public var buildConfigurationListReference: PBXReference
+    public var buildConfigurationListReference: PBXReference {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// The XCConfigurationList for the given object if one exists
     public var buildConfigurationList: XCConfigurationList! {
         get {
@@ -127,7 +131,11 @@ public class PBXTarget: PBXUnknownObject {
     }
 
     /// The objects are a reference to a PBXBuildPhase elements.
-    public private(set) var buildPhaseReferences: [PBXReference]
+    public private(set) var buildPhaseReferences: [PBXReference] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// An array of all the PBXBuildPhase's for this object
     public var buildPhases: [PBXBuildPhase] {
         get {
@@ -154,7 +162,11 @@ public class PBXTarget: PBXUnknownObject {
     
     
     /// The objects are a reference to a PBXBuildRule elements.
-    public private(set) var buildRuleReferences: [PBXReference]
+    public private(set) var buildRuleReferences: [PBXReference] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// An array of all the PBXBuildRule's for this object
     public var buildRules: [PBXBuildRule] {
         get {
@@ -178,7 +190,11 @@ public class PBXTarget: PBXUnknownObject {
     }
     
     /// The objects are a reference to a PBXTargetDependency elements.
-    public private(set)  var dependencyRefernces: [PBXReference]
+    public private(set)  var dependencyRefernces: [PBXReference] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// An array of all the PBXTargetDependency's for this object
     public var dependencies: [PBXTargetDependency] {
         get {
@@ -214,7 +230,11 @@ public class PBXTarget: PBXUnknownObject {
     }
     
     /// Target name.
-    public var name: String
+    public var name: String {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /*
     /// Target product name.
@@ -685,6 +705,8 @@ public class PBXTarget: PBXUnknownObject {
                                                         inObject object: [String: Any],
                                                         inObjectList objectList: [String: Any],
                                                         inData data: [String: Any],
+                                                        havingObjectVersion objectVersion: Int,
+                                                        havingArchiveVersion archiveVersion: Int,
                                                         userInfo: [CodingUserInfoKey: Any]) -> String? {
         
         if path.count == 2, let name = object[CodingKeys.name] as? String {
@@ -704,6 +726,8 @@ public class PBXTarget: PBXUnknownObject {
              return PBXObjects.getPBXEncodingComments(forValue: value,
                                                       atPath:  [PBXProj.CodingKeys.objects.rawValue, value] ,
                                                       inData: data,
+                                                      havingObjectVersion: objectVersion,
+                                                      havingArchiveVersion: archiveVersion,
                                                       userInfo: userInfo)
         }
         return nil
@@ -715,6 +739,8 @@ public class PBXTarget: PBXUnknownObject {
                                                             inObject object: [String: Any],
                                                             inObjectList objectList: [String: Any],
                                                             inData: [String: Any],
+                                                            havingObjectVersion objectVersion: Int,
+                                                            havingArchiveVersion archiveVersion: Int,
                                                             userInfo: [CodingUserInfoKey: Any]) -> Bool {
         if [CodingKeys.buildConfigurationList/*,
             CodingKeys.productReference*/].contains(path.last) { return false }

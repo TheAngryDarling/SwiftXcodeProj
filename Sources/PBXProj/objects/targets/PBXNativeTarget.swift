@@ -38,10 +38,18 @@ public final class PBXNativeTarget: PBXTarget {
     
     
     /// Target product name.
-    public var productName: String?
+    public var productName: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// The object is a reference to a PBXFileReference element.
-    public private(set) var productReference: PBXReference?
+    public private(set) var productReference: PBXReference? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// The PBXFileReference for the given object if one exists
     public var product: PBXFileReference! {
         get {
@@ -54,7 +62,11 @@ public final class PBXNativeTarget: PBXTarget {
     }
     
     /// Target product type.
-    public var productType: PBXProductType?
+    public var productType: PBXProductType? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// The PBXContainerItemProxy for the given object if one exists
     public var containerProxyItem: PBXContainerItemProxy! {
@@ -140,12 +152,16 @@ public final class PBXNativeTarget: PBXTarget {
                                                         inObject object: [String: Any],
                                                         inObjectList objectList: [String: Any],
                                                         inData data: [String: Any],
+                                                        havingObjectVersion objectVersion: Int,
+                                                        havingArchiveVersion archiveVersion: Int,
                                                         userInfo: [CodingUserInfoKey: Any]) -> String? {
         
         if path.last == CodingKeys.productReference {
             return PBXObjects.getPBXEncodingComments(forValue: value,
                                                      atPath:  [PBXProj.CodingKeys.objects.rawValue, value],
                                                      inData: data,
+                                                     havingObjectVersion: objectVersion,
+                                                     havingArchiveVersion: archiveVersion,
                                                      userInfo: userInfo)
         } else {
             return super.getPBXEncodingComments(forValue: value,
@@ -153,6 +169,8 @@ public final class PBXNativeTarget: PBXTarget {
                                                 inObject: object,
                                                 inObjectList: objectList,
                                                 inData: data,
+                                                havingObjectVersion: objectVersion,
+                                                havingArchiveVersion: archiveVersion,
                                                 userInfo: userInfo)
         }
     }
@@ -163,6 +181,8 @@ public final class PBXNativeTarget: PBXTarget {
                                                             inObject object: [String: Any],
                                                             inObjectList objectList: [String: Any],
                                                             inData: [String: Any],
+                                                            havingObjectVersion objectVersion: Int,
+                                                            havingArchiveVersion archiveVersion: Int,
                                                             userInfo: [CodingUserInfoKey: Any]) -> Bool {
         if [CodingKeys.productReference].contains(path.last) { return false }
         else {
@@ -172,6 +192,8 @@ public final class PBXNativeTarget: PBXTarget {
                                                     inObject: object,
                                                     inObjectList: objectList,
                                                     inData: inData,
+                                                    havingObjectVersion: objectVersion,
+                                                    havingArchiveVersion: archiveVersion,
                                                     userInfo: userInfo)
         }
         

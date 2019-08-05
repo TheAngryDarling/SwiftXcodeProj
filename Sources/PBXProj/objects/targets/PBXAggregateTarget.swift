@@ -30,7 +30,11 @@ public final class PBXAggregateTarget: PBXTarget {
     }
     
     /// Target product name.
-    public var productName: String?
+    public var productName: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Create a new instance of an Aggregate Target
     ///

@@ -192,8 +192,7 @@ public final class PBXObjects: Codable {
     ///
     /// - Parameter object: The object to add
     public func append(_ object: PBXObject) {
-        self.objects.append(object)
-        object.objectList = self
+        self.append(contentsOf: [object])
     }
     
     /// Addes a list of objects
@@ -201,8 +200,10 @@ public final class PBXObjects: Codable {
     /// - Parameter newElements: A list of object to add
     public func append<S>(contentsOf newElements: S) where S : Sequence, S.Element: PBXObject {
         for o in newElements {
-            self.append(o)
+            self.objects.append(o)
+            o.objectList = self
         }
+        self.proj?.sendChangedNotification()
     }
     
     /// Removes an object from the list
@@ -210,42 +211,36 @@ public final class PBXObjects: Codable {
     /// - Parameter object: The object to remove
     public func remove(_ object: PBXObject!) {
         guard let obj = object else { return }
-        obj.deleting()
-        var idx = 0
-        while idx < self.objects.endIndex {
-            if self.objects[idx].id == object.id {
-                self.objects.remove(at: idx)
-            } else {
-                idx += 1
-            }
+        if let idx = self.objects.firstIndex(where: {$0.id == object.id}) {
+             self.objects.remove(at: idx)
         }
-        //self.objects.removeAll(where: { $0.id == obj.id })
+        obj.deleting()
         obj.objectList = nil
+        self.proj?.sendChangedNotification()
     }
     
     /// Remove all objects with the given reference
     ///
     /// - Parameter reference: The reference of an object to remove
     public func remove(objectWithReference reference: PBXReference) {
-        var idx = 0
-        while idx < self.objects.endIndex {
-            let obj = self.objects[idx]
-            if obj.id == reference {
-                obj.deleting()
-                self.objects.remove(at: idx)
-                
-            } else {
-                idx += 1
-            }
-        }
+        self.remove(objectsWithReferences: [reference])
     }
     
     /// Removes all objects with the given references
     ///
     /// - Parameter references: An array of references of objects to remove
     public func remove(objectsWithReferences references: [PBXReference]) {
+        var hasRemovedObject: Bool = false
         for ref in references {
-            remove(objectWithReference: ref)
+            if let idx = self.objects.firstIndex(where: { $0.id == ref }) {
+                let obj = self.objects[idx]
+                obj.deleting()
+                self.objects.remove(at: idx)
+                hasRemovedObject = true
+            }
+        }
+        if hasRemovedObject {
+            self.proj?.sendChangedNotification()
         }
     }
     
@@ -274,7 +269,9 @@ public final class PBXObjects: Codable {
     /// - Returns: Reutrns an array of the keys in the order they should be written in
     internal static func getPBXEncodingOrderKeys(_ content: [String: Any],
                                                 inData data: [String: Any],
-                                                atPath path: [String]) -> [String] {
+                                                atPath path: [String],
+                                                havingObjectVersion objectVersion: Int,
+                                                havingArchiveVersion archiveVersion: Int) -> [String] {
         // If we are encoding at a path level of /objects/{object} then we will sort based on object type, then reference id
         if path.count == 1 && path[0] == PBXProj.CodingKeys.objects {
             var rtn: [String] = []
@@ -296,32 +293,6 @@ public final class PBXObjects: Codable {
                 if lhsVal < rhsVal { return true }
                 else if lhsVal > rhsVal { return false }
                 else { return PBXReference(lhs) < PBXReference(rhs)  }
-                /*else if lhs.contains("OBJ_") && rhs.contains("\"") { return true }
-                else if lhs.contains("\"") && rhs.contains("OBJ_") { return false }
-                else if lhs.contains("OBJ_") && rhs.contains("OBJ_") {
-                    var sLhs = lhs
-                    var sRhs = rhs
-                    if sLhs.hasPrefix("\"") && sLhs.hasSuffix("\"") {
-                        sLhs = String(sLhs[sLhs.index(after: sLhs.startIndex)..<sLhs.index(before: sLhs.endIndex)])
-                    }
-                    if sRhs.hasPrefix("\"") && sRhs.hasSuffix("\"") {
-                        sRhs = String(sRhs[sRhs.index(after: sRhs.startIndex)..<sRhs.index(before: sRhs.endIndex)])
-                    }
-                    
-                    sLhs = String(sLhs.suffix(sLhs.count - 4))
-                    sRhs = String(sRhs.suffix(sRhs.count - 4))
-                    
-                    if let iLhs = Int(sLhs), let iRhs = Int(sRhs) {
-                        return iLhs < iRhs
-                    } else {
-                        return sLhs < sRhs
-                    }
-                }
-                else if lhs.hasPrefix("\"") && !rhs.hasPrefix("\"") { return false }
-                else if !lhs.hasPrefix("\"") && rhs.hasPrefix("\"") { return true }
-                else if lhs.contains("OBJ_") { return false }
-                else if rhs.contains("OBJ_") { return true }
-                else { return lhs < rhs }*/
             }
             return rtn
         } else if path.count >= 2 && path[0] == PBXProj.CodingKeys.objects,
@@ -332,7 +303,9 @@ public final class PBXObjects: Codable {
             
             return PBXObjectType(isa).objectContainerType.getPBXEncodingOrderKeys(content,
                                                                                   inData: data,
-                                                                                  atPath: path)
+                                                                                  atPath: path,
+                                                                                  havingObjectVersion: objectVersion,
+                                                                                  havingArchiveVersion: archiveVersion)
         } else {
             // Otherwise we will sort based on key names
             return content.keys.sorted()
@@ -349,6 +322,8 @@ public final class PBXObjects: Codable {
     internal class func getPBXEncodingComments(forValue value: String,
                                                 atPath path: [String],
                                                 inData data: [String: Any],
+                                                havingObjectVersion objectVersion: Int,
+                                                havingArchiveVersion archiveVersion: Int,
                                                 userInfo: [CodingUserInfoKey: Any]) -> String? {
         if path.count == 1 && path[0] == PBXProj.CodingKeys.objects {
             return nil
@@ -362,6 +337,8 @@ public final class PBXObjects: Codable {
                                                                                  inObject: obj,
                                                                                  inObjectList: objList,
                                                                                  inData: data,
+                                                                                 havingObjectVersion: objectVersion,
+                                                                                 havingArchiveVersion: archiveVersion,
                                                                                  userInfo: userInfo)
         }
         return nil
@@ -381,6 +358,8 @@ public final class PBXObjects: Codable {
                                                  hasKeyIndicators: Bool,
                                                  atPath path: [String],
                                                  inData data: [String: Any],
+                                                 havingObjectVersion objectVersion: Int,
+                                                 havingArchiveVersion archiveVersion: Int,
                                                  userInfo: [CodingUserInfoKey: Any]) -> Bool {
         if path.count >= 2 && path[0] == PBXProj.CodingKeys.objects,
             let objList = data[path[0]] as? [String: Any],
@@ -393,6 +372,8 @@ public final class PBXObjects: Codable {
                                                                                      inObject: obj,
                                                                                      inObjectList: objList,
                                                                                      inData: data,
+                                                                                     havingObjectVersion: objectVersion,
+                                                                                     havingArchiveVersion: archiveVersion,
                                                                                      userInfo: userInfo)
         } else {
             return hasKeyIndicators

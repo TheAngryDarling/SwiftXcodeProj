@@ -39,16 +39,32 @@ public final class PBXLegacyTarget: PBXTarget {
     
     
     /// Path to the build tool that is invoked (required)
-    public var buildToolPath: String?
+    public var buildToolPath: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Build arguments to be passed to the build tool.
-    public var buildArgumentsString: String?
+    public var buildArgumentsString: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Whether or not to pass Xcode build settings as environment variables down to the tool when invoked
-    public var passBuildSettingsInEnvironment: Bool
+    public var passBuildSettingsInEnvironment: Bool {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// The directory where the build tool will be invoked during a build
-    public var buildWorkingDirectory: String?
+    public var buildWorkingDirectory: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     //public var productInstallPath: String?
     

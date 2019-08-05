@@ -33,7 +33,11 @@ public final class XCVersionGroup: PBXGroup {
         return rtn
     }
     /// The object is a reference to a curent version PBXGroup element.
-    public private(set) var currentVersionReference: PBXReference?
+    public private(set) var currentVersionReference: PBXReference? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// The current version PBXGroup for the given object if one exists
     public var currentVersion: PBXGroup? {
         get {
@@ -46,7 +50,11 @@ public final class XCVersionGroup: PBXGroup {
     }
     
     /// Version group type.
-    public var versionGroupType: String?
+    public var versionGroupType: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Create a new instance of a Version Group
     ///
@@ -100,6 +108,8 @@ public final class XCVersionGroup: PBXGroup {
                                                             inObject object: [String: Any],
                                                             inObjectList objectList: [String: Any],
                                                             inData data: [String: Any],
+                                                            havingObjectVersion objectVersion: Int,
+                                                            havingArchiveVersion archiveVersion: Int,
                                                             userInfo: [CodingUserInfoKey: Any]) -> Bool {
         if path.last == CodingKeys.currentVersion { return false }
         return super.isPBXEncodinStringEscaping(value,
@@ -108,6 +118,8 @@ public final class XCVersionGroup: PBXGroup {
                                                 inObject: object,
                                                 inObjectList: objectList,
                                                 inData: data,
+                                                havingObjectVersion: objectVersion,
+                                                havingArchiveVersion: archiveVersion,
                                                 userInfo: userInfo)
     }
 }

@@ -46,6 +46,8 @@ public class PBXAppleScriptBuildPhase: PBXBuildPhase {
                                                         inObject object: [String: Any],
                                                         inObjectList objectList: [String: Any],
                                                         inData data: [String: Any],
+                                                        havingObjectVersion objectVersion: Int,
+                                                        havingArchiveVersion archiveVersion: Int,
                                                         userInfo: [CodingUserInfoKey: Any]) -> String? {
         if path.count == 2  { return PBXBuildPhase.PBXBuildPhaseType.appleScriptBuildPhase.rawValue }
         return super.getPBXEncodingComments(forValue: value,
@@ -53,6 +55,8 @@ public class PBXAppleScriptBuildPhase: PBXBuildPhase {
                                             inObject: object,
                                             inObjectList: objectList,
                                             inData: data,
+                                            havingObjectVersion: objectVersion,
+                                            havingArchiveVersion: archiveVersion,
                                             userInfo: userInfo)
     }
 }

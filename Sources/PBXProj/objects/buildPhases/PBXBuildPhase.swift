@@ -75,7 +75,11 @@ public class PBXBuildPhase: PBXUnknownObject {
     public let buildActionMask: UInt
     
     /// Element file references .
-    public internal(set) var fileReferences: [PBXReference]
+    public internal(set) var fileReferences: [PBXReference] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// The files within this build phase
     ///
     /// This property looks up all  build files from the object list for this build phase
@@ -163,12 +167,16 @@ public class PBXBuildPhase: PBXUnknownObject {
                                                         inObject object: [String: Any],
                                                         inObjectList objectList: [String: Any],
                                                         inData data: [String: Any],
+                                                        havingObjectVersion objectVersion: Int,
+                                                        havingArchiveVersion archiveVersion: Int,
                                                         userInfo: [CodingUserInfoKey: Any]) -> String? {
         
         if path.count == 4 && path[path.count-2] == CodingKeys.files {
             return PBXObjects.getPBXEncodingComments(forValue: value,
                                                      atPath:  [PBXProj.CodingKeys.objects.rawValue, value] ,
                                                      inData: data,
+                                                     havingObjectVersion: objectVersion,
+                                                     havingArchiveVersion: archiveVersion,
                                                      userInfo: userInfo)
         }
         
@@ -181,6 +189,8 @@ public class PBXBuildPhase: PBXUnknownObject {
                                                             inObject object: [String: Any],
                                                             inObjectList objectList: [String: Any],
                                                             inData: [String: Any],
+                                                            havingObjectVersion objectVersion: Int,
+                                                            havingArchiveVersion archiveVersion: Int,
                                                             userInfo: [CodingUserInfoKey: Any]) -> Bool {
         if path.count > 2 && (path[path.count-2] == CodingKeys.files) { return false }
         return hasKeyIndicators

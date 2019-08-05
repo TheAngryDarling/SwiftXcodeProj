@@ -32,7 +32,11 @@ public final class PBXTargetDependency: PBXUnknownObject {
     }
     
     /// Reference to the target associated with this Target Dependency
-    public private(set) var targetReference: PBXReference
+    public private(set) var targetReference: PBXReference {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// Target associated with this Target Dependency
     ///
     /// This is a dynamic property and does object list lookups on every call
@@ -48,7 +52,11 @@ public final class PBXTargetDependency: PBXUnknownObject {
     }
     
     /// Reference to the target proxy associated with this Target Dependency
-    public private(set) var targetProxyReference: PBXReference?
+    public private(set) var targetProxyReference: PBXReference? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// Target Proxy associated with this Target Dependency
     ///
     /// This is a dynamic property and does object list lookups on every call
@@ -116,6 +124,8 @@ public final class PBXTargetDependency: PBXUnknownObject {
                                                         inObject object: [String: Any],
                                                         inObjectList objectList: [String: Any],
                                                         inData data: [String: Any],
+                                                        havingObjectVersion objectVersion: Int,
+                                                        havingArchiveVersion archiveVersion: Int,
                                                         userInfo: [CodingUserInfoKey: Any]) -> String? {
         if path.count == 2  { return PBXObjectType.targetDependency.rawValue }
         return nil 
@@ -127,6 +137,8 @@ public final class PBXTargetDependency: PBXUnknownObject {
                                                             inObject object: [String: Any],
                                                             inObjectList objectList: [String: Any],
                                                             inData: [String: Any],
+                                                            havingObjectVersion objectVersion: Int,
+                                                            havingArchiveVersion archiveVersion: Int,
                                                             userInfo: [CodingUserInfoKey: Any]) -> Bool {
         if [CodingKeys.target, CodingKeys.targetProxy].contains(path.last) { return false }
         return hasKeyIndicators

@@ -39,28 +39,60 @@ public final class PBXBuildRule: PBXUnknownObject {
     }
     
     /// Element compiler spec.
-    public var compilerSpec: String
+    public var compilerSpec: String {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Element file patterns.
-    public var filePatterns: String?
+    public var filePatterns: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Element file type.
-    public var fileType: PBXFileType
+    public var fileType: PBXFileType {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Element is editable.
-    public var editable: Bool
+    public var editable: Bool {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Element name.
-    public var name: String?
+    public var name: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Element output files.
-    public var outputFiles: [String]
+    public var outputFiles: [String] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Element output files compiler flags.
-    public var outputFilesCompilerFlags: [String]?
+    public var outputFilesCompilerFlags: [String]? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Element script.
-    public var script: String?
+    public var script: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Create a new instance of PBXBuildRule
     ///

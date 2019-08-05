@@ -36,10 +36,18 @@ public final class PBXReferenceProxy: PBXFileElement {
     
     
     /// Element file type
-    public var fileType: PBXFileType?
+    public var fileType: PBXFileType? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Element remote reference.
-    public private(set) var remoteReference: PBXReference?
+    public private(set) var remoteReference: PBXReference? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     public var remote: PBXContainerItemProxy? {
         get {
             guard let r = self.remoteReference else { return nil }
@@ -111,12 +119,16 @@ public final class PBXReferenceProxy: PBXFileElement {
                                                         inObject object: [String: Any],
                                                         inObjectList objectList: [String: Any],
                                                         inData data: [String: Any],
+                                                        havingObjectVersion objectVersion: Int,
+                                                        havingArchiveVersion archiveVersion: Int,
                                                         userInfo: [CodingUserInfoKey: Any]) -> String? {
         
         if path.count == 3 && path[2] == CodingKeys.remoteReference {
             return PBXObjects.getPBXEncodingComments(forValue: value,
                                                      atPath:  [PBXProj.CodingKeys.objects.rawValue, value] ,
                                                      inData: data,
+                                                     havingObjectVersion: objectVersion,
+                                                     havingArchiveVersion: archiveVersion,
                                                      userInfo: userInfo)
         }
         
@@ -125,6 +137,8 @@ public final class PBXReferenceProxy: PBXFileElement {
                                             inObject: object,
                                             inObjectList: objectList,
                                             inData: data,
+                                            havingObjectVersion: objectVersion,
+                                            havingArchiveVersion: archiveVersion,
                                             userInfo: userInfo)
     }
     
@@ -134,6 +148,8 @@ public final class PBXReferenceProxy: PBXFileElement {
                                                             inObject object: [String: Any],
                                                             inObjectList objectList: [String: Any],
                                                             inData: [String: Any],
+                                                            havingObjectVersion objectVersion: Int,
+                                                            havingArchiveVersion archiveVersion: Int,
                                                             userInfo: [CodingUserInfoKey: Any]) -> Bool {
         if path.last == CodingKeys.remoteReference { return false }
         return hasKeyIndicators

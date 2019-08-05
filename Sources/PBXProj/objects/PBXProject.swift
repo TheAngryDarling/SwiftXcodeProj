@@ -314,16 +314,32 @@ public final class PBXProject: PBXUnknownObject {
     }
     
     /// A string representation of the XcodeCompatibilityVersion.
-    public var compatibilityVersion: String
+    public var compatibilityVersion: String {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// The region of development.
-    public var developmentRegion: PBXRegion?
+    public var developmentRegion: PBXRegion? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Whether file encodings have been scanned.
-    public var hasScannedForEncodings: Int?
+    public var hasScannedForEncodings: Int? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// The known regions for localized files.
-    public var knownRegions: [PBXRegion]
+    public var knownRegions: [PBXRegion] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// The object is a reference to a PBXGroup element.
     public private(set) var mainGroupReference: PBXReference
@@ -341,17 +357,30 @@ public final class PBXProject: PBXUnknownObject {
         }
         set {
             self.productRefGroupReference = newValue?.id
+             self.proj?.sendChangedNotification()
         }
     }
     
     /// The relative path of the project.
-    public var projectDirPath: String?
+    public var projectDirPath: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Project references.
-    public var projectReferences: [PBXProjectReference]
+    public var projectReferences: [PBXProjectReference] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// The relative root path of the project.
-    public var projectRoot: String?
+    public var projectRoot: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// The objects are a reference to a PBXTarget element.
     public private(set) var targetReferences: [PBXReference]
@@ -362,11 +391,16 @@ public final class PBXProject: PBXUnknownObject {
         }
         set {
             self.targetReferences = newValue.map { $0.id }
+            self.proj?.sendChangedNotification()
         }
     }
     
     /// Project attributes.
-    public var attributes: [String: Any]
+    public var attributes: [String: Any] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     private static let targetAttributesKey = "TargetAttributes"
     
@@ -494,6 +528,8 @@ public final class PBXProject: PBXUnknownObject {
                                                         inObject object: [String: Any],
                                                         inObjectList objectList: [String: Any],
                                                         inData data: [String: Any],
+                                                        havingObjectVersion objectVersion: Int,
+                                                        havingArchiveVersion archiveVersion: Int,
                                                         userInfo: [CodingUserInfoKey: Any]) -> String? {
         
         if path.count == 2  { return "Project object" }
@@ -503,11 +539,15 @@ public final class PBXProject: PBXUnknownObject {
             return PBXObjects.getPBXEncodingComments(forValue: value,
                                                      atPath:  [PBXProj.CodingKeys.objects.rawValue, value] ,
                                                      inData: data,
+                                                     havingObjectVersion: objectVersion,
+                                                     havingArchiveVersion: archiveVersion,
                                                      userInfo: userInfo)
         } else if path.count == 4 && path[2] == ProjectCodingKeys.targets {
             return PBXObjects.getPBXEncodingComments(forValue: value,
                                                      atPath:  [PBXProj.CodingKeys.objects.rawValue, value] ,
                                                      inData: data,
+                                                     havingObjectVersion: objectVersion,
+                                                     havingArchiveVersion: archiveVersion,
                                                      userInfo: userInfo)
         }
         return nil
@@ -520,6 +560,8 @@ public final class PBXProject: PBXUnknownObject {
                                                             inObject object: [String: Any],
                                                             inObjectList objectList: [String: Any],
                                                             inData: [String: Any],
+                                                            havingObjectVersion objectVersion: Int,
+                                                            havingArchiveVersion archiveVersion: Int,
                                                             userInfo: [CodingUserInfoKey: Any]) -> Bool {
         if path.count == 3 && [CodingKeys.buildConfigurationList,
                                CodingKeys.mainGroup,

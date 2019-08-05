@@ -42,7 +42,11 @@ public final class XCConfigurationList: PBXUnknownObject {
     public static let DEFAULT_CONFIGURATION_NAME: String = "Debug"
     
     /// An array of references to build configurations
-    public private(set) var buildConfigurationReferences: [PBXReference]
+    public private(set) var buildConfigurationReferences: [PBXReference] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// An array of build configurations for this list
     ///
     /// This will use the buildConfigurationReferences and search through the object list to find all build configurations
@@ -58,7 +62,11 @@ public final class XCConfigurationList: PBXUnknownObject {
     /// Indicator if the default configuration is visible
     public let defaultConfigurationIsVisible: Int
     /// The name of the default configuration
-    public var defaultConfigurationName: String
+    public var defaultConfigurationName: String {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Create a new instance of Configuration List
     ///
@@ -115,6 +123,8 @@ public final class XCConfigurationList: PBXUnknownObject {
                                                         inObject object: [String: Any],
                                                         inObjectList objectList: [String: Any],
                                                         inData data: [String: Any],
+                                                        havingObjectVersion objectVersion: Int,
+                                                        havingArchiveVersion archiveVersion: Int,
                                                         userInfo: [CodingUserInfoKey: Any]) -> String? {
         
         if path.count == 2 {
@@ -147,6 +157,8 @@ public final class XCConfigurationList: PBXUnknownObject {
             return PBXObjects.getPBXEncodingComments(forValue: value,
                                                      atPath:  [PBXProj.CodingKeys.objects.rawValue, value] ,
                                                      inData: data,
+                                                     havingObjectVersion: objectVersion,
+                                                     havingArchiveVersion: archiveVersion,
                                                      userInfo: userInfo)
         }
         
@@ -159,8 +171,26 @@ public final class XCConfigurationList: PBXUnknownObject {
                                                             inObject object: [String: Any],
                                                             inObjectList objectList: [String: Any],
                                                             inData: [String: Any],
+                                                            havingObjectVersion objectVersion: Int,
+                                                            havingArchiveVersion archiveVersion: Int,
                                                             userInfo: [CodingUserInfoKey: Any]) -> Bool {
         if path.count > 2 && path[path.count-2] == CodingKeys.buildConfigurations { return false }
         return hasKeyIndicators
+    }
+}
+
+extension XCConfigurationList: Collection {
+    
+    
+    public var startIndex: Int { return 0 }
+    public var endIndex: Int { return self.buildConfigurationReferences.count }
+    
+    public subscript(position: Int) -> XCBuildConfiguration {
+        return self.objectList.object(withReference: self.buildConfigurationReferences[position],
+                                      asType: XCBuildConfiguration.self)!
+    }
+    
+    public func index(after i: Int) -> Int {
+        return self.buildConfigurationReferences.index(after: i)
     }
 }

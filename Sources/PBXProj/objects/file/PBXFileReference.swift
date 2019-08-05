@@ -80,30 +80,70 @@ public final class PBXFileReference: PBXFileElement {
     }
     
     /// Element file encoding.
-    public var fileEncoding: String.Encoding?
+    public var fileEncoding: String.Encoding? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// Element explicit file type.
-    public var explicitFileType: PBXFileType?
+    public var explicitFileType: PBXFileType? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// Element last known file type.
-    public var lastKnownFileType: PBXFileType?
+    public var lastKnownFileType: PBXFileType? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// Element line ending
-    public var lineEnding: PBXLineEnding?
+    public var lineEnding: PBXLineEnding? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     
     
-    public var includeInIndex: Int?
+    public var includeInIndex: Int? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Indicator whether to use tabs in file or not
-    public var usingTabs: Bool
+    public var usingTabs: Bool {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// Indent width in file
-    public var indentWidth: UInt?
+    public var indentWidth: UInt? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     /// Tab width in file
-    public var tabWidth: UInt?
+    public var tabWidth: UInt? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Wrap lines in file
-    public var wrapsLines: Bool
+    public var wrapsLines: Bool {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// The language of the file
-    public var languageSpecificationIdentifier: String?
+    public var languageSpecificationIdentifier: String? {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Returns the PBXBuildFile references to this file if any exists
     public var buildFiles: [PBXBuildFile] {
@@ -236,6 +276,8 @@ public final class PBXFileReference: PBXFileElement {
     
     internal override class func isPBXEncodingMultiLineObject(_ content: [String: Any],
                                                               atPath path: [String],
+                                                              havingObjectVersion objectVersion: Int,
+                                                              havingArchiveVersion archiveVersion: Int,
                                                               userInfo: [CodingUserInfoKey: Any]) -> Bool {
         return false
     }
