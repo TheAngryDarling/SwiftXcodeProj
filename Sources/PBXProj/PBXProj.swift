@@ -56,31 +56,6 @@ public class PBXProj: Codable {
         }
     }
     
-    
-    /*
-    //#if !(os(macOS) || os(iOS) || os(tvOS) || os(watchOS))
-    #if !_runtime(_ObjC)
-    /// Patch hack to allow for synchronized code execution on Linux using the same API definitons as on Mac
-    internal class DispatchQueue {
-        private let locker: NSLock
-        public init(label: String) {
-            self.locker = NSLock()
-        }
-        
-        public func sync<T>(execute work: () throws -> T) rethrows -> T {
-            self.locker.lock()
-            defer { self.locker.unlock() }
-            return try work()
-        }
-        
-        
-    }
-    #endif
-    */
-    
-    
-    
-    
     /// Archive version of the given file
     public let archiveVersion: Int
     /// Object version of the given file
@@ -308,12 +283,20 @@ public class PBXProj: Codable {
     ///   - content: The content of the given object (key/value) paris
     ///   - data: The data of all objects in the file
     ///   - path: The path of the given object in the file
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     /// - Returns: Reutrns an array of the keys in the order they should be written in
     internal static func getPBXEncodingOrderKeys(_ content: [String: Any],
                                                  inData data: [String: Any],
-                                                 atPath path: [String]) -> [String] {
+                                                 atPath path: [String],
+                                                 havingObjectVersion objectVersion: Int,
+                                                 havingArchiveVersion archiveVersion: Int) -> [String] {
         if path.count >= 1 && path[0] == CodingKeys.objects {
-            return PBXObjects.getPBXEncodingOrderKeys(content, inData: data, atPath: path)
+            return PBXObjects.getPBXEncodingOrderKeys(content,
+                                                      inData: data,
+                                                      atPath: path,
+                                                      havingObjectVersion: objectVersion,
+                                                      havingArchiveVersion: archiveVersion)
         } else {
             return content.keys.sorted()
         }
@@ -331,22 +314,30 @@ public class PBXProj: Codable {
     ///   - value: The value being written
     ///   - path: The path of this object within the file
     ///   - inData: Dictionary of all data from the file
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Custom user properites
     /// - Returns: Returns the object comments if any exists
     internal class func getPBXEncodingComments(forValue value: String,
                                                atPath path: [String],
                                                inData data: [String: Any],
+                                               havingObjectVersion objectVersion: Int,
+                                               havingArchiveVersion archiveVersion: Int,
                                                userInfo: [CodingUserInfoKey: Any]) -> String? {
         if path.count == 1 && path[0] == CodingKeys.rootObject.rawValue {
             return PBXObjects.getPBXEncodingComments(forValue: value,
                                                      atPath: [CodingKeys.objects.rawValue, value],
                                                      inData: data,
+                                                     havingObjectVersion: objectVersion,
+                                                     havingArchiveVersion: archiveVersion,
                                                      userInfo: userInfo)
             //return ReadWritter.getComments(forValue: value, atPath: [CodingKeys.objects.rawValue, value] , inData: data)
         } else if path.count >= 1 && path[0] == CodingKeys.objects.rawValue {
             return PBXObjects.getPBXEncodingComments(forValue: value,
                                                      atPath: path,
                                                      inData: data,
+                                                     havingObjectVersion: objectVersion,
+                                                     havingArchiveVersion: archiveVersion,
                                                      userInfo: userInfo)
         }
         return nil 
@@ -359,18 +350,24 @@ public class PBXProj: Codable {
     ///   - hasKeyIndicators: Indicator whether this value had characters that needed to be escaped
     ///   - path: Path of the current object
     ///   - inData: File Data
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Custom user properties
     /// - Returns: Reutrns true if the value should be escaped, otherwise false
     internal class func isPBXEncodinStringEscaping(_ value: String,
                                                    hasKeyIndicators: Bool,
                                                    atPath path: [String],
                                                    inData data: [String: Any],
+                                                   havingObjectVersion objectVersion: Int,
+                                                   havingArchiveVersion archiveVersion: Int,
                                                    userInfo: [CodingUserInfoKey: Any]) -> Bool {
         if path.count >= 1 && path[0] == CodingKeys.objects.rawValue {
             return PBXObjects.isPBXEncodinStringEscaping(value,
                                                          hasKeyIndicators: hasKeyIndicators,
                                                          atPath: path,
                                                          inData: data,
+                                                         havingObjectVersion: objectVersion,
+                                                         havingArchiveVersion: archiveVersion,
                                                          userInfo: userInfo)
         } else {
             return hasKeyIndicators
@@ -569,5 +566,18 @@ extension PBXProj {
         self.objects.append(rtn)
         return rtn
         
+    }
+}
+
+public extension Notification.Name {
+    public struct PBXProj {
+        public static let Changed = Notification.Name(rawValue: "org.xcodeproj.pbxproj.notification.name.Changed")
+    }
+}
+
+extension PBXProj {
+    internal func sendChangedNotification() {
+        NotificationCenter.default.post(name: Notification.Name.PBXProj.Changed,
+                                        object: self)
     }
 }
