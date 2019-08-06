@@ -45,7 +45,7 @@ extension XcodeProjectBuilders.UserDetails {
     }
     
     public static var testUserDetails: XcodeProjectBuilders.UserDetails {
-        if ProcessInfo.processInfo.environment["REAL_USER"]  != nil { return envUserDetails }
+        if ProcessInfo.processInfo.environment["REAL_USER_NAME"]  != nil { return envUserDetails }
         else { return XcodeProjectBuilders.UserDetails() }
     }
         
@@ -67,8 +67,8 @@ class XcodeProjTests: XCTestCase {
         return (ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil)
     }
     
-    
-    func loadProject(_ url: URL) throws {
+    @discardableResult
+    func loadProject(_ url: URL) throws -> XcodeProject {
         if isXcodeTesting { print("Loading: \(url.lastPathComponent)") }
         let tr: (TimeInterval, XcodeProject) = try Timer.timeWithResults {
             return try XcodeProject(fromURL: url)
@@ -88,7 +88,7 @@ class XcodeProjTests: XCTestCase {
         }
         if isXcodeTesting { print("Loaded Shared Data List in \(tSharedData.0) s") }
         if isXcodeTesting { debugPrint(tSharedData.1) }
-       
+       return tr.1
     }
     
     func testLocalSwiftProject() {
