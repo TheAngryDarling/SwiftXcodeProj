@@ -122,6 +122,8 @@ public class XcodeProject {
                 }
             }
         }
+        
+        setupPBXFileChangedNotificationMonitor()
     }
     
     /// Create a new Xcode project
@@ -257,6 +259,8 @@ public class XcodeProject {
         //let initDuration = initStart.timeIntervalSinceNow.magnitude
         //debugPrint("XcodeProject.init: \(initDuration) s")
         
+        setupPBXFileChangedNotificationMonitor()
+        
     }
     
     /// Open up an Xcode project
@@ -269,6 +273,18 @@ public class XcodeProject {
         try self.init(fromURL: XcodeFileSystemURLResource(directory: url.path), usingFSProvider: provider)
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    private func setupPBXFileChangedNotificationMonitor() {
+        _ = NotificationCenter.default.addObserver(forName: Notification.Name.PBXProj.Changed,
+                                                   object: self.proj,
+                                                   queue: nil,
+                                                   using: self.onPBXFileChangedNotificationMonitor)
+    }
+    private func onPBXFileChangedNotificationMonitor(notification: Notification) -> Void {
+    }
     
     
     
