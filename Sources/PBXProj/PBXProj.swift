@@ -570,7 +570,7 @@ extension PBXProj {
 }
 
 public extension Notification.Name {
-    public struct PBXProj {
+    struct PBXProj {
         public static let Changed = Notification.Name(rawValue: "org.xcodeproj.pbxproj.notification.name.Changed")
     }
 }
