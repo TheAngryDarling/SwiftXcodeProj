@@ -75,7 +75,7 @@ extension PBXReference: Codable {
         var value = self.rawValue
         
         if let p = encoder.userInfo[CodingUserInfoKey(rawValue: "PBXProj")!] as? PBXProj {
-            value = PBXProjSerialization.getEncapsulatdReference(for: value,
+            value = PBXProjSerialization.getEncapsulatedReference(for: value,
                                                                  havingObjectVersion: p.objectVersion,
                                                                  havingArchiveVersion: p.archiveVersion)
         }
@@ -88,7 +88,7 @@ extension PBXReference: Codable {
         var value = try container.decode(String.self)
         if let objectVersion = decoder.userInfo[CodingUserInfoKey(rawValue: "objectVersion")!] as? Int,
             let archiveVersion = decoder.userInfo[CodingUserInfoKey(rawValue: "archiveVersion")!] as? Int {
-            value = PBXProjSerialization.getUnencapsulatdReference(for: value,
+            value = PBXProjSerialization.getUnencapsulatedReference(for: value,
                                                                    havingObjectVersion: objectVersion,
                                                                    havingArchiveVersion: archiveVersion)
         }
