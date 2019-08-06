@@ -18,6 +18,7 @@ public final class PBXShellScriptBuildPhase: PBXBuildPhase {
         case outputPaths
         case shellPath
         case shellScript
+        case showEnvVarsInLog
     }
     
     private typealias CodingKeys = ShellScriptBuildPhaseCodingKeys
@@ -32,6 +33,7 @@ public final class PBXShellScriptBuildPhase: PBXBuildPhase {
         }
         rtn.append(CodingKeys.shellPath)
         rtn.append(CodingKeys.shellScript)
+        rtn.append(CodingKeys.showEnvVarsInLog)
         return rtn
 
     }
@@ -44,12 +46,17 @@ public final class PBXShellScriptBuildPhase: PBXBuildPhase {
         rtn.append(CodingKeys.outputPaths)
         rtn.append(CodingKeys.shellPath)
         rtn.append(CodingKeys.shellScript)
+        rtn.append(CodingKeys.showEnvVarsInLog)
         return rtn
     }
     
     
     /// The default building action mask
-    public static let DEFAULT_BUILD_ACTION_MAKS: UInt = 2147483647
+    public static let DEFAULT_BUILD_ACTION_MAKS: UInt = 12
+    
+    /// The Action mask for Install Script
+    public static let INSTALL_BUILD_ACTION_MAKS: UInt = 8
+    
     /// The default shell path
     public static let DEFAULT_SHELL_PATH: String = "/bin/sh"
     
@@ -89,6 +96,23 @@ public final class PBXShellScriptBuildPhase: PBXBuildPhase {
             self.proj?.sendChangedNotification()
         }
     }
+    /// Show Environmental variables in log
+    public var showEnvVarsInLog: Bool {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
+    /// Only run script when installing
+    public var runScriptOnlyWhenInstalling: Bool {
+        get {
+            return (self.buildActionMask == PBXShellScriptBuildPhase.INSTALL_BUILD_ACTION_MAKS)
+        }
+        set {
+            guard newValue != runScriptOnlyWhenInstalling else { return }
+            if newValue { self.buildActionMask = PBXShellScriptBuildPhase.INSTALL_BUILD_ACTION_MAKS }
+            else { self.buildActionMask =  PBXShellScriptBuildPhase.DEFAULT_BUILD_ACTION_MAKS }
+        }
+    }
     
     /// Create a new insatnce of Shell Script Build Phase
     ///
@@ -112,7 +136,8 @@ public final class PBXShellScriptBuildPhase: PBXBuildPhase {
                 inputPaths: [String] = [],
                 outputPaths: [String] = [],
                 shellPath: String = PBXShellScriptBuildPhase.DEFAULT_SHELL_PATH,
-                shellScript: String? = nil) {
+                shellScript: String? = nil,
+                showEnvVarsInLog: Bool = true) {
         
         self.name = name
         self.inputFileListPaths = inputFileListPaths
@@ -120,6 +145,7 @@ public final class PBXShellScriptBuildPhase: PBXBuildPhase {
         self.outputPaths = outputPaths
         self.shellPath = shellPath
         self.shellScript = shellScript
+        self.showEnvVarsInLog = showEnvVarsInLog
         
         super.init(id: id,
                    buildPhaseType: .shellScriptBuildPhase,
@@ -131,11 +157,12 @@ public final class PBXShellScriptBuildPhase: PBXBuildPhase {
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.name = try container.decodeIfPresent(String.self, forKey: .name)
-        self.inputFileListPaths = (try container.decodeIfPresent([String].self, forKey: .inputFileListPaths)) ?? []
-        self.inputPaths = (try container.decodeIfPresent([String].self, forKey: .inputPaths)) ?? []
-        self.outputPaths = (try container.decodeIfPresent([String].self, forKey: .outputPaths)) ?? []
+        self.inputFileListPaths = try container.decodeIfPresent([String].self, forKey: .inputFileListPaths, withDefaultValue: [])
+        self.inputPaths = try container.decodeIfPresent([String].self, forKey: .inputPaths, withDefaultValue: [])
+        self.outputPaths = try container.decodeIfPresent([String].self, forKey: .outputPaths, withDefaultValue: [])
         self.shellPath = try container.decode(String.self, forKey: .shellPath)
         self.shellScript = try container.decodeIfPresent(String.self, forKey: .shellScript)
+        self.showEnvVarsInLog = (try container.decodeIfPresent(Int.self, forKey: .showEnvVarsInLog, withDefaultValue: 1)) > 0
         try super.init(from: decoder)
     }
     
@@ -147,6 +174,10 @@ public final class PBXShellScriptBuildPhase: PBXBuildPhase {
         try container.encode(self.outputPaths, forKey: .outputPaths)
         try container.encode(self.shellPath, forKey: .shellPath)
         try container.encodeIfPresent(self.shellScript, forKey: .shellScript)
+        try container.encode(0, forKey: .showEnvVarsInLog, ifNot: (self.showEnvVarsInLog ? 1 : 0))
+        /*if !self.showEnvVarsInLog {
+            try container.encode(0, forKey: .showEnvVarsInLog)
+        }*/
         try super.encode(to: encoder)
     }
     
