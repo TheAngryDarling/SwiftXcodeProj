@@ -21,7 +21,7 @@ let package = Package(
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/TheAngryDarling/SwiftStringIANACharacterSetEncoding.git", from: "2.0.1"),
         .package(url: "https://github.com/TheAngryDarling/SwiftNillable.git", from: "1.0.3"),
-        .package(url: "https://github.com/TheAngryDarling/SwiftCodableHelpers.git", from: "1.0.8"),
+        .package(url: "https://github.com/TheAngryDarling/SwiftCodableHelpers.git", from: "1.0.10"),
         .package(url: "https://github.com/TheAngryDarling/SwiftCodeTimer.git", from: "1.0.0"),
         .package(url: "https://github.com/TheAngryDarling/SwiftClassCollections.git", from: "1.0.0"),
         .package(url: "https://github.com/TheAngryDarling/SwiftVersionKit.git", from: "1.0.3"),
