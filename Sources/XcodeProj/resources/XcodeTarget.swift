@@ -43,6 +43,12 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
         set { self.pbxTarget.dependencies = newValue.map({ return $0.pbxTargetDependancy }) }
     }
     
+    
+    /// A list of the build confirations
+    public var buildConfigurationList: XCConfigurationList {
+        get { return self.pbxTarget.buildConfigurationList }
+    }
+    
     /// The Xcode target info properties
     public var info: [String: Any] {
         didSet { hasInfoChanged = true }
