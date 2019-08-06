@@ -72,14 +72,27 @@ extension PBXReference: CustomStringConvertible {
 extension PBXReference: Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        try container.encode(self.rawValue)
+        var value = self.rawValue
+        
+        if let p = encoder.userInfo[CodingUserInfoKey(rawValue: "PBXProj")!] as? PBXProj {
+            value = PBXProjSerialization.getEncapsulatdReference(for: value,
+                                                                 havingObjectVersion: p.objectVersion,
+                                                                 havingArchiveVersion: p.archiveVersion)
+        }
+        try container.encode(value)
     }
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         //let pth = container.codingPath.stringPath
         //print("Reference: " + pth)
-        let rawValue = try container.decode(String.self)
-        self.init(rawValue)
+        var value = try container.decode(String.self)
+        if let objectVersion = decoder.userInfo[CodingUserInfoKey(rawValue: "objectVersion")!] as? Int,
+            let archiveVersion = decoder.userInfo[CodingUserInfoKey(rawValue: "archiveVersion")!] as? Int {
+            value = PBXProjSerialization.getUnencapsulatdReference(for: value,
+                                                                   havingObjectVersion: objectVersion,
+                                                                   havingArchiveVersion: archiveVersion)
+        }
+        self.init(value)
     }
 }
 
