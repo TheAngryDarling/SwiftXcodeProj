@@ -174,7 +174,7 @@ public final class PBXShellScriptBuildPhase: PBXBuildPhase {
         try container.encode(self.outputPaths, forKey: .outputPaths)
         try container.encode(self.shellPath, forKey: .shellPath)
         try container.encodeIfPresent(self.shellScript, forKey: .shellScript)
-        try container.encode(0, forKey: .showEnvVarsInLog, ifNot: (self.showEnvVarsInLog ? 1 : 0))
+        try container.encode(Int(self.showEnvVarsInLog), forKey: .showEnvVarsInLog, ifNot: Int(true))
         /*if !self.showEnvVarsInLog {
             try container.encode(0, forKey: .showEnvVarsInLog)
         }*/
