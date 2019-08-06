@@ -45,9 +45,13 @@ public final class PBXProjSerialization {
                                                                     "/objects/[^/]+/buildSettings/[^/]+_DEPLOYMENT_TARGET$"]*/
     /// Some values read in look like Floats but arn't, We needt to keep the trailing 0's so we must force them to be read as string
     /// Any build setting simple values will now be read as strings
-    private static let FORCE_STRING_ENCODING_END_PATHS: [String] = ["/objects/[^/]+/buildSettings/.+",
-                                                                    "/object/[^/]+/attributes/.+",
-                                                                    "/objects/[^/]/defaultConfigurationIsVisible"]
+    private static let FORCE_STRING_ENCODING_END_PATHS: [String] = ["/archiveVersion",
+                                                                   "/objectVersion",
+                                                                   "/objects/[^/]+/attributes/.+",
+                                                                   "/objects/[^/]+/buildSettings/.+",
+                                                                   "/objects/[^/]+/hasScannedForEncodings",
+                                                                   "/objects/[^/]/defaultConfigurationIsVisible"]
+    
     
     /// Characters to escape and their replacement within strings
     private static let esacpedCharacters: [(raw: String, escaped: String)] = [
@@ -70,6 +74,7 @@ public final class PBXProjSerialization {
         for pattern in FORCE_STRING_ENCODING_END_PATHS {
             if strPath.match(pattern) { return true }
         }
+        
         return false
     }
     
@@ -166,8 +171,10 @@ public final class PBXProjSerialization {
         let objectVersion: Int = propIntValue(for: "objectVersion", in: projStr)
         let archiveVersion: Int = propIntValue(for: "archiveVersion", in: projStr)
         
+        var usrInfo: [CodingUserInfoKey: Any] = userInfo
         
-        
+        usrInfo[CodingUserInfoKey(rawValue: "objectVersion")!] = objectVersion
+        usrInfo[CodingUserInfoKey(rawValue: "archiveVersion")!] = archiveVersion
         
         let fileObjects = try decodeComplexObject(from: projStr,
                                                   startingAt: beginningOfRootObject.lowerBound,
@@ -176,7 +183,7 @@ public final class PBXProjSerialization {
                                                   isRootObject: true,
                                                   havingObjectVersion: objectVersion,
                                                   havingArchiveVersion: archiveVersion,
-                                                  userInfo: userInfo).content
+                                                  userInfo: usrInfo).content
         
         return (encoding: encoding, singleIndent: indents, content: fileObjects)
         
@@ -1353,13 +1360,13 @@ public final class PBXProjSerialization {
         
         if !(content.hasPrefix("\"") &&
             content.hasSuffix("\"")) &&
-            (objectVersion >= 46 || PBXProj.isPBXEncodinStringEscaping(rtn,
-                                                                       hasKeyIndicators: stringHasRequiredEscapingCharacters(rtn),
-                                                                       atPath: path,
-                                                                       inData: rootContent,
-                                                                       havingObjectVersion: objectVersion,
-                                                                       havingArchiveVersion: archiveVersion,
-                                                                       userInfo: userInfo)) {
+            PBXProj.isPBXEncodinStringEscaping(rtn,
+                                               hasKeyIndicators: stringHasRequiredEscapingCharacters(rtn),
+                                               atPath: path,
+                                               inData: rootContent,
+                                               havingObjectVersion: objectVersion,
+                                               havingArchiveVersion: archiveVersion,
+                                               userInfo: userInfo) {
             rtn = "\""
             // Taken from https://github.com/apple/swift-corelibs-foundation/blob/master/Foundation/JSONSerialization.swift
             var workingString = content
@@ -1375,6 +1382,40 @@ public final class PBXProjSerialization {
         return rtn
         
         
+    }
+    
+    /// Returns a formatted reference ID.
+    ///
+    /// - Parameters:
+    ///   - value: value of the reference id
+    ///   - objectVersion: Project object version
+    ///   - archiveVersion: Project archive version
+    /// - Returns: Returns a formatted reference ID.  This may be encapsulated in double quotes or not depending on the value and object version
+    public static func getEncapsulatedReference(for value: String,
+                                               havingObjectVersion objectVersion: Int,
+                                               havingArchiveVersion archiveVersion: Int) -> String {
+        guard !(value.hasPrefix("\"") && value.hasSuffix("\"")) else { return value }
+        guard !value.contains("::") else { return "\"" + value + "\"" }
+        if objectVersion >= 46 { return "\"" + value + "\"" }
+        return value
+    }
+    
+    /// Returns an unformatted reference ID
+    ///
+    /// - Parameters:
+    ///   - value: value of the reference id
+    ///   - objectVersion: Project object version
+    ///   - archiveVersion: Project archive version
+    /// - Returns: Returns an unformatted reference ID.  This will remove any double quote encapsulation
+    public static func getUnencapsulatedReference(for value: String,
+                                               havingObjectVersion objectVersion: Int,
+                                               havingArchiveVersion archiveVersion: Int) -> String {
+        var val = value
+        if val.hasPrefix("\"") && val.hasSuffix("\"") {
+            val.removeFirst()
+            val.removeLast()
+        }
+        return val
     }
     
     
