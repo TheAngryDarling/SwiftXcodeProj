@@ -142,9 +142,15 @@ public class PBXBuildPhase: PBXUnknownObject {
     public override func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
-        try container.encode(self.buildActionMask, forKey: .buildActionMask)
+        if self.proj.objectVersion < 46 || self.buildActionMask != 0 {
+            try container.encode(self.buildActionMask, forKey: .buildActionMask)
+        }
+        
         try container.encode(self.fileReferences, forKey: .files)
-        try container.encode(self.runOnlyForDeploymentPostprocessing, forKey: .runOnlyForDeploymentPostprocessing)
+        
+        if self.proj.objectVersion < 46 || self.runOnlyForDeploymentPostprocessing != 0 {
+            try container.encode(self.runOnlyForDeploymentPostprocessing, forKey: .runOnlyForDeploymentPostprocessing)
+        }
         
         try super.encode(to: encoder)
     }
