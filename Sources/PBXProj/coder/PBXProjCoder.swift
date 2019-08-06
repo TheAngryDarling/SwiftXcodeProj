@@ -18,8 +18,6 @@ public final class PBXProjEncoder: BasicClosedEncoder<PBXProj, Data> {
     /// Tab representation
     public var tabs: String = " "
     
-    private var proj: PBXProj? = nil
-    
     public init() {
         super.init { e, v in
             let enc: PBXProjEncoder = e as! PBXProjEncoder
@@ -27,18 +25,25 @@ public final class PBXProjEncoder: BasicClosedEncoder<PBXProj, Data> {
             guard let content = v as? [String: Any] else {
                 throw EncodingError.invalidValue(v, EncodingError.Context(codingPath: [], debugDescription: "Top-level expected [String: Any] but found \(type(of: v))"))
             }
+            
+            let proj = enc.userInfo[CodingUserInfoKey(rawValue: "PBXProj")!] as! PBXProj
             //print(content)
             return try PBXProjSerialization.encode(content: content,
                                                    usingSingleIndentString: enc.tabs,
                                                    withEncoding: enc.encoding,
-                                                   havingObjectVersion: enc.proj!.objectVersion,
-                                                   havingArchiveVersion: enc.proj!.archiveVersion,
+                                                   havingObjectVersion: proj.objectVersion,
+                                                   havingArchiveVersion: proj.archiveVersion,
                                                    userInfo: enc.userInfo)
         }
     }
     
     public override func encode(_ value: PBXProj) throws -> Data {
-        self.proj = value
+        let key = CodingUserInfoKey(rawValue: "PBXProj")!
+        self.userInfo[key] = value
+        defer {
+            self.userInfo.removeValue(forKey: key)
+        }
+       
         return try super.encode(value)
     }
 }

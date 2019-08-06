@@ -40,6 +40,15 @@ public final class PBXProjSerialization {
         case invalidStartOfObject(objectType: ObjectType, expecting: String, found: String, atIndex: String.Index, atLocation: (line: Int, column: Int))
     }
     
+    /// Some values read in look like Floats but arn't, We needt to keep the trailing 0's so we must force them to be read as string
+    /*private static let FORCE_STRING_ENCODING_END_PATHS: [String] = ["/objects/[^/]+/buildSettings/SWIFT_VERSION$",
+                                                                    "/objects/[^/]+/buildSettings/[^/]+_DEPLOYMENT_TARGET$"]*/
+    /// Some values read in look like Floats but arn't, We needt to keep the trailing 0's so we must force them to be read as string
+    /// Any build setting simple values will now be read as strings
+    private static let FORCE_STRING_ENCODING_END_PATHS: [String] = ["/objects/[^/]+/buildSettings/.+",
+                                                                    "/object/[^/]+/attributes/.+",
+                                                                    "/objects/[^/]/defaultConfigurationIsVisible"]
+    
     /// Characters to escape and their replacement within strings
     private static let esacpedCharacters: [(raw: String, escaped: String)] = [
         ("\\", "\\\\"),
@@ -54,12 +63,22 @@ public final class PBXProjSerialization {
     
     private init() { }
     
+    private static func isForcedStringType(atPath path: [String],
+                                           havingObjectVersion objectVersion: Int,
+                                           havingArchiveVersion archiveVersion: Int) -> Bool {
+        let strPath: String = "/" + path.joined(separator: "/")
+        for pattern in FORCE_STRING_ENCODING_END_PATHS {
+            if strPath.match(pattern) { return true }
+        }
+        return false
+    }
+    
     /// Checks to see of a given string has characters that require escaping
     ///
     /// - Parameter string: The string to check and see if it has escaping characters
     /// - Returns: Returns true if the string contains any characters that require escaping otherwise false
     private static func stringHasRequiredEscapingCharacters(_ string: String) -> Bool {
-        let requiredEscapingFor: [String] = ["@","$","(",")"," ","\t","\n","<",">","=","-","+"]
+        let requiredEscapingFor: [String] = ["@","$","(",")"," ","\t","\n","<",">","=","-","+", "::"]
         for r in requiredEscapingFor {
             if string.contains(r) { return true }
         }
@@ -115,11 +134,48 @@ public final class PBXProjSerialization {
         
         
         
+        func propIntValue(for prop: String, in string: String) -> Int {
+            var rtn: Int = -1
+            
+            if let r = string.range(of: prop) {
+                var endIdx = r.upperBound
+                //Find end if property
+                while string[endIdx] != ";" { endIdx = string.index(after: endIdx) }
+                let propStr = String(string[r.lowerBound..<endIdx])
+                let components = propStr.split(separator: "=").map(String.init)
+                var value = components[1]
+                
+                while value.hasPrefix(" ") { value.removeFirst() }
+                while value.hasSuffix(" ") { value.removeLast() }
+                
+                if value.hasPrefix("\"") && value.hasSuffix("\"") {
+                    value.removeFirst()
+                    value.removeLast()
+                }
+                
+                if let r = Int(value) {
+                    rtn = r
+                }
+ 
+            }
+            
+            
+            return rtn
+        }
+        
+        let objectVersion: Int = propIntValue(for: "objectVersion", in: projStr)
+        let archiveVersion: Int = propIntValue(for: "archiveVersion", in: projStr)
+        
+        
+        
+        
         let fileObjects = try decodeComplexObject(from: projStr,
                                                   startingAt: beginningOfRootObject.lowerBound,
                                                   atPath: [],
                                                   inData: [:],
                                                   isRootObject: true,
+                                                  havingObjectVersion: objectVersion,
+                                                  havingArchiveVersion: archiveVersion,
                                                   userInfo: userInfo).content
         
         return (encoding: encoding, singleIndent: indents, content: fileObjects)
@@ -226,6 +282,8 @@ public final class PBXProjSerialization {
     ///   - data: The complete dictonary of the decoded data so far
     ///   - acceptableEndingSequences: An array containing the possible ending sequences for this object type (Default: ;)
     ///   - isRootObject: Indicator of this is a root object.  Root objects have no ending sequence characters (Default: false)
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Any user info
     /// - Returns: Returns a tuple containind a dictionary of the given complex object, and the string index just after the object in the file
     private static func decodeComplexObject(from string: String,
@@ -234,6 +292,8 @@ public final class PBXProjSerialization {
                                             inData data: [String: Any],
                                             acceptableEndingSequences: [String] = [";"],
                                             isRootObject: Bool = false,
+                                            havingObjectVersion objectVersion: Int,
+                                            havingArchiveVersion archiveVersion: Int,
                                             userInfo: [CodingUserInfoKey: Any]) throws -> (content: [String: Any], endingAt: String.Index) {
         
         
@@ -306,6 +366,8 @@ public final class PBXProjSerialization {
                                                                    startingAt: objectTypeRange.lowerBound,
                                                                    atPath: path.appending(objectName),
                                                                    inData: adding(rtn, to: data, atPath: path),
+                                                                   havingObjectVersion: objectVersion,
+                                                                   havingArchiveVersion: archiveVersion,
                                                                    userInfo: userInfo)
                         rtn[objectName] = innerObjects.content
                         workingIndex = innerObjects.endingAt
@@ -314,6 +376,8 @@ public final class PBXProjSerialization {
                                                                 startingAt: objectTypeRange.lowerBound,
                                                                 atPath: path.appending(objectName),
                                                                 inData: adding(rtn, to: data, atPath: path),
+                                                                havingObjectVersion: objectVersion,
+                                                                havingArchiveVersion: archiveVersion,
                                                                 userInfo: userInfo)
                         rtn[objectName] = innerObjects.content
                         workingIndex = innerObjects.endingAt
@@ -323,6 +387,8 @@ public final class PBXProjSerialization {
                                                                        atPath: path.appending(objectName),
                                                                        inData: adding(rtn, to: data, atPath: path),
                                                                        acceptableEndingSequences: [";"],
+                                                                       havingObjectVersion: objectVersion,
+                                                                       havingArchiveVersion: archiveVersion,
                                                                        userInfo: userInfo)
                         rtn[objectName] = childObjectDetails.content
                         workingIndex = childObjectDetails.endingAt
@@ -359,12 +425,16 @@ public final class PBXProjSerialization {
     ///   - index: The starting index of the object
     ///   - path: The current path of the object
     ///   - data: The complete dictonary of the decoded data so far
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Any user info
     /// - Returns: Returns a tuple containing an array of the given objects, and the string index just after the array in the file
     private static func decodeObjectList(from string: String,
                                          startingAt index: String.Index,
                                          atPath path: [String],
                                          inData data: [String: Any],
+                                         havingObjectVersion objectVersion: Int,
+                                         havingArchiveVersion archiveVersion: Int,
                                          userInfo: [CodingUserInfoKey: Any])  throws ->(content: [Any], endingAt: String.Index) {
         guard string[index] == "(" else {
             throw Error.invalidStartOfObject(objectType: .array,
@@ -398,6 +468,8 @@ public final class PBXProjSerialization {
                                                                          atPath: path.appending("[\(rtn.count)]"),
                                                                          inData: adding(rtn, to: data, atPath: path),
                                                                          acceptableEndingSequences: [","],
+                                                                         havingObjectVersion: objectVersion,
+                                                                         havingArchiveVersion: archiveVersion,
                                                                          userInfo: userInfo)
                         rtn.append(childObjectDetails.content)
                         workingIndex = childObjectDetails.endingAt
@@ -407,6 +479,8 @@ public final class PBXProjSerialization {
                                                                       startingAt: workingIndex,
                                                                       atPath: path.appending("[\(rtn.count)]"),
                                                                       inData: adding(rtn, to: data, atPath: path),
+                                                                      havingObjectVersion: objectVersion,
+                                                                      havingArchiveVersion: archiveVersion,
                                                                       userInfo: userInfo)
                         
                         rtn.append(childObjectDetails.content)
@@ -419,6 +493,8 @@ public final class PBXProjSerialization {
                                                                        inData: adding(rtn, to: data, atPath: path),
                                                                        acceptableEndingSequences: ["\\,","\n"],
                                                                        specialExcludeCharacters: ",",
+                                                                       havingObjectVersion: objectVersion,
+                                                                       havingArchiveVersion: archiveVersion,
                                                                        userInfo: userInfo)
                         rtn.append(childObjectDetails.content)
                         workingIndex = childObjectDetails.endingAt
@@ -455,6 +531,8 @@ public final class PBXProjSerialization {
     ///   - data: The complete dictonary of the decoded data so far
     ///   - acceptableEndingSequences: An array containing the possible ending sequences for this object type
     ///   - specialExcludeCharacters: Characters to exclude when trying to find object pattern
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Any user info
     /// - Returns: Returns a tuple containing the content of the given object, and the string index just after the object in the file
     private static func decodeObjectValue(from string: String,
@@ -463,6 +541,8 @@ public final class PBXProjSerialization {
                                           inData data: [String: Any],
                                           acceptableEndingSequences: [String],
                                           specialExcludeCharacters: String = "",
+                                          havingObjectVersion objectVersion: Int,
+                                          havingArchiveVersion archiveVersion: Int,
                                           userInfo: [CodingUserInfoKey: Any])  throws -> (content: Any, endingAt: String.Index) {
         
         var endingSequeneces: String = ""
@@ -521,55 +601,27 @@ public final class PBXProjSerialization {
             
         }
         
-        /*guard let lineEnd = string.range(of: "\n", range: index..<string.endIndex) else {
-            let location = geftLineCharPos(from: string, atIndex: index)
-            throw Error.unableToParseObjectValue(line: location.line, column: location.column)
-        }
         
-        //let endOfObject = string.index(before: lineEnd.lowerBound)
-        let wholeRange = index..<lineEnd.lowerBound
-        
-        var objectValue = string[index..<string.index(before: lineEnd.lowerBound)].replacingOccurrences(of: "\\s+/\\*.*\\* /", with: "", options: .regularExpression)*/
-        
-        /*
-        //let pattern = "\(patternPrefix)([^\(KEY_REGEX_CHARACTERS)]+)( /\\*([^\(KEY_REGEX_CHARACTERS)]+)\\* /)?(\(endingSequeneces))"
-        //let pattern = "([^\(KEY_REGEX_CHARACTERS)]+)( /\\*([^\(KEY_REGEX_CHARACTERS)]+)\\* /)?(\(endingSequeneces))"
-        let pattern = "([^\(KEY_REGEX_CHARACTERS + specialExcludeCharacters)]+)( /\\*([^\(KEY_REGEX_CHARACTERS)]+)\\* /)?(\(endingSequeneces))"
-        let objectRegex = try! NSRegularExpression(pattern: pattern)
-        var range = index..<string.endIndex
-        
-        #if !_runtime(_ObjC)
-        var eol = string.index(after: index)
-        while eol != string.endIndex && string[eol] != "\n" { eol = string.index(after: eol) }
-        if eol != string.endIndex { eol = string.index(after: eol) }
-        range = index..<eol
-        #endif
-        //let range = index..<(string.index(index, offsetBy: 256, limitedBy: string.endIndex) ?? string.endIndex)
-        
-        //let innerRange = String(string[range])
-        guard let firstValuetMatch = objectRegex.firstMatch(in: string, range: NSRange(range, in: string)) else {
-            let location = getLineCharPos(from: string, atIndex: range.lowerBound)
-            throw Error.unableToParseObjectValue(line: location.line, column: location.column)
-            
-        }
-        
-        var objectValue = String(string[Range(firstValuetMatch.range(at: 1), in: string)!])
-        
-        let wholeRange: Range<String.Index> = Range<String.Index>(firstValuetMatch.range, in: string)!
-        */
         // Will have to process objectValue here for real types
         
-        if objectValue.hasPrefix("\"") && objectValue.hasSuffix("\"") {
+        if (objectValue.hasPrefix("\"") && objectValue.hasSuffix("\"")) ||
+            isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) {
             
-            objectValue.removeFirst()
-            objectValue.removeLast()
+            var wasQuoted: Bool = false
+            if (objectValue.hasPrefix("\"") && objectValue.hasSuffix("\"")) {
+                wasQuoted = true
+                objectValue.removeFirst()
+                objectValue.removeLast()
+            }
             // Strings that aren't already enclosed in quotes
-            if PBXProj.isPBXEncodinStringEscaping(objectValue,
-                                                  //hasKeyIndicators: stringHasRequiredEscapingCharacters(string),
-                                                  hasKeyIndicators: stringHasRequiredEscapingCharacters(objectValue),
-                                                  atPath: path,
-                                                  inData: adding(string, to: data, atPath: path),
-                                                  userInfo: userInfo) {
+            if wasQuoted && PBXProj.isPBXEncodinStringEscaping(objectValue,
+                                                          //hasKeyIndicators: stringHasRequiredEscapingCharacters(string),
+                                                          hasKeyIndicators: stringHasRequiredEscapingCharacters(objectValue),
+                                                          atPath: path,
+                                                          inData: adding(string, to: data, atPath: path),
+                                                          havingObjectVersion: objectVersion,
+                                                          havingArchiveVersion: archiveVersion,
+                                                          userInfo: userInfo) {
                 var workingString = objectValue
                 //workingString.removeFirst() // Remove beginning quote
                 //workingString.removeLast() // Remove ending quote
@@ -577,34 +629,13 @@ public final class PBXProjSerialization {
                 for e in esacpedCharacters.reversed() {
                     workingString = workingString.replacingOccurrences(of: e.escaped, with: e.raw)
                 }
-                objectValue = workingString//.replacingOccurrences(of: "\\\\", with: "\\").replacingOccurrences(of: "\\\\", with: "\\")
-                //objectValue = workingString
-                /*var rtn: String = ""
-                
-                for scalar in workingString.unicodeScalars {
-                    switch scalar.value {
-                        case 0x22: rtn += "\""
-                        case 0x5C: rtn += "\\"
-                        case 0x2F: rtn += "/"
-                        case 0x62: rtn += "\u{08}" // \b
-                        case 0x66: rtn += "\u{0C}" // \f
-                        case 0x6E: rtn += "\u{0A}" // \n
-                        case 0x72: rtn += "\u{0D}" // \r
-                        case 0x74: rtn += "\u{09}" // \t
-                        //case 0x75: rtn += try parseUnicodeSequence(index)
-                        //default: fatalError("Invalid code \(scalar)")
-                        default: rtn += String(scalar)
-                    }
-                }*/
-                //objectValue = rtn
+                objectValue = workingString
             }
             
             return (content: objectValue, endingAt: wholeRange.upperBound)
             
             
         } else {
-            //Parsing Non complex values like null, bool, ints, doubles, decimals
-            
             if objectValue.lowercased() == "true" { return (content: NSNumber(value: true), endingAt: wholeRange.upperBound) }
             else if objectValue.lowercased() == "false" { return (content: NSNumber(value: false), endingAt: wholeRange.upperBound) }
             else if objectValue.lowercased() == "null" { return (content: NSNull(), endingAt: wholeRange.upperBound) }
@@ -668,11 +699,15 @@ public final class PBXProjSerialization {
     ///   - content: The content to encode
     ///   - indents: The representation of a single indent/tab
     ///   - encoding: The type of string encoding to use
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Any user info passed along
     /// - Returns: Returns the data representing a PBX Project file
     public static func encode(content: [String: Any],
                               usingSingleIndentString indents: String,
                               withEncoding encoding: String.Encoding,
+                              havingObjectVersion objectVersion: Int,
+                              havingArchiveVersion archiveVersion: Int,
                               userInfo: [CodingUserInfoKey: Any]) throws -> Data {
         
         guard let encodName = encoding.noDashIANACharSetName else {
@@ -685,6 +720,8 @@ public final class PBXProjSerialization {
                                       usingSingleIndentString: indents,
                                       currentLevel: 1,
                                       atPath: [],
+                                      havingObjectVersion: objectVersion,
+                                      havingArchiveVersion: archiveVersion,
                                       userInfo: userInfo)
         stringData += "\n}"
         
@@ -701,14 +738,22 @@ public final class PBXProjSerialization {
     ///   - content: The complex objet content
     ///   - data:  The complete data being encoded
     ///   - path: The current coding path
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Any user info passed along
     /// - Returns: Returns the complex object keys in encoding order
     private static func getComplexObjectOrder(forContent content: [String: Any],
                                               inData data: [String: Any],
                                               atPath path: [String],
+                                              havingObjectVersion objectVersion: Int,
+                                              havingArchiveVersion archiveVersion: Int,
                                               userInfo: [CodingUserInfoKey: Any]) -> [String] {
        
-        return PBXProj.getPBXEncodingOrderKeys(content, inData: data, atPath: path)
+        return PBXProj.getPBXEncodingOrderKeys(content,
+                                               inData: data,
+                                               atPath: path,
+                                               havingObjectVersion: objectVersion,
+                                               havingArchiveVersion: archiveVersion )
        
         /*if path == [] {
             return PBXProj.orderKeys(content, atPath: path)
@@ -730,13 +775,22 @@ public final class PBXProjSerialization {
     ///   - value: The value to get comments for
     ///   - path: The current coding path
     ///   - data: The complete encoded data
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Any user info passed along
     /// - Returns: Returns a comment if one exists, otherwise nil
     internal static func getComments(forValue value: String,
                                     atPath path: [String],
                                     inData data: [String: Any],
+                                    havingObjectVersion objectVersion: Int,
+                                    havingArchiveVersion archiveVersion: Int,
                                      userInfo: [CodingUserInfoKey: Any]) -> String? {
-        return PBXProj.getPBXEncodingComments(forValue: value, atPath: path, inData: data, userInfo: userInfo)
+        return PBXProj.getPBXEncodingComments(forValue: value,
+                                              atPath: path,
+                                              inData: data,
+                                              havingObjectVersion: objectVersion,
+                                              havingArchiveVersion: archiveVersion,
+                                              userInfo: userInfo)
     }
     
     /// Determins of the current complex object should be multi-line or single line
@@ -744,15 +798,23 @@ public final class PBXProjSerialization {
     /// - Parameters:
     ///   - content: The complex object dictionary
     ///   - path: The current coding path
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Any user info passed along
     /// - Returns: Returns true if this complex object should be multi-lined otherwise false
     private static func isMultiLineComplexObject(_ content: [String: Any],
                                                  atPath path: [String],
+                                                 havingObjectVersion objectVersion: Int,
+                                                 havingArchiveVersion archiveVersion: Int,
                                                  userInfo: [CodingUserInfoKey: Any]) -> Bool {
        
         if let isa = content[PBXObject.ObjectCodingKeys.type] as? String {
             // For PBXObject, lets check the object type for indications if it is a multi line object or not
-            return PBXObjectType.init(isa).objectContainerType.isPBXEncodingMultiLineObject(content, atPath: path, userInfo: userInfo)
+            return PBXObjectType.init(isa).objectContainerType.isPBXEncodingMultiLineObject(content,
+                                                                                            atPath: path,
+                                                                                            havingObjectVersion: objectVersion,
+                                                                                            havingArchiveVersion: archiveVersion,
+                                                                                            userInfo: userInfo)
         } else {
             // Any other type of complex object is by default a multi line object.  That includs empty objects
             return true
@@ -768,6 +830,8 @@ public final class PBXProjSerialization {
     ///   - indents: The representation of a single indent/tab
     ///   - currentLevel: The current level within the encoding process (0 means root, then the value increases on each level)
     ///   - path: The coding path
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Any user info passed along
     /// - Returns: Returns an encoded string representing the content
     private static func encodeObject(content: [String: Any],
@@ -775,6 +839,8 @@ public final class PBXProjSerialization {
                                      usingSingleIndentString indents: String,
                                      currentLevel: Int,
                                      atPath path: [String],
+                                     havingObjectVersion objectVersion: Int,
+                                     havingArchiveVersion archiveVersion: Int,
                                      userInfo: [CodingUserInfoKey: Any]) throws -> String {
         //let objects: [String: Any] = (rootContent["objects"] as? [String: Any]) ?? [:]
         let currentIndents = indents.repeated(currentLevel)
@@ -784,9 +850,14 @@ public final class PBXProjSerialization {
         let objectOrder = getComplexObjectOrder(forContent: content,
                                                 inData: rootContent,
                                                 atPath: path,
+                                                havingObjectVersion: objectVersion,
+                                                havingArchiveVersion: archiveVersion,
                                                 userInfo: userInfo)
         
-        let oneObjectPerLine: Bool = isMultiLineComplexObject(content, atPath: path, userInfo: userInfo)
+        let oneObjectPerLine: Bool = isMultiLineComplexObject(content, atPath: path,
+                                                              havingObjectVersion: objectVersion,
+                                                              havingArchiveVersion: archiveVersion,
+                                                              userInfo: userInfo)
         
         for key in objectOrder {
             let val = content[key]!
@@ -813,12 +884,18 @@ public final class PBXProjSerialization {
                 if let keyComments = getComments(forValue: key,
                                                  atPath: path.appending(key),
                                                  inData: rootContent,
+                                                 havingObjectVersion: objectVersion,
+                                                 havingArchiveVersion: archiveVersion,
                                                  userInfo: userInfo) {
                     line += " /* \(keyComments) */"
                 }
                
                 line += " = {"
-                let isInnerMultiLine = isMultiLineComplexObject(v, atPath: path.appending(key), userInfo: userInfo)
+                let isInnerMultiLine = isMultiLineComplexObject(v,
+                                                                atPath: path.appending(key),
+                                                                havingObjectVersion: objectVersion,
+                                                                havingArchiveVersion: archiveVersion,
+                                                                userInfo: userInfo)
                 if isInnerMultiLine && v.count > 0 { line += "\n" }
                 else { line += " " }
                 line += try encodeObject(content: v,
@@ -826,6 +903,8 @@ public final class PBXProjSerialization {
                                          usingSingleIndentString: indents,
                                          currentLevel: currentLevel + 1,
                                          atPath: path.appending(key),
+                                         havingObjectVersion: objectVersion,
+                                         havingArchiveVersion: archiveVersion,
                                          userInfo: userInfo)
                 if isInnerMultiLine { line += currentIndents }
                 line += "};"
@@ -839,6 +918,8 @@ public final class PBXProjSerialization {
                                      usingSingleIndentString: indents,
                                      currentLevel: currentLevel + 1,
                                      atPath: path.appending(key),
+                                     havingObjectVersion: objectVersion,
+                                     havingArchiveVersion: archiveVersion,
                                      userInfo: userInfo)
                 line += currentIndents + ");"
             } else {
@@ -847,12 +928,19 @@ public final class PBXProjSerialization {
                                               usingSingleIndentString: indents,
                                               currentLevel: currentLevel + 1 ,
                                               atPath: path.appending(key),
+                                              havingObjectVersion: objectVersion,
+                                              havingArchiveVersion: archiveVersion,
                                               userInfo: userInfo))
                 if let s = val as? String {
                     /*if let valueComments = getComments(forValue: s,inObject: content, lookingInObjectList: objects, atPath: path.appending(key)) {
                         line += " /* \(valueComments) */"
                     }*/
-                    if let valueComments = getComments(forValue: s, atPath: path.appending(key), inData: rootContent, userInfo: userInfo) {
+                    if let valueComments = getComments(forValue: s,
+                                                       atPath: path.appending(key),
+                                                       inData: rootContent,
+                                                       havingObjectVersion: objectVersion,
+                                                       havingArchiveVersion: archiveVersion,
+                                                       userInfo: userInfo) {
                         line += " /* \(valueComments) */"
                     }
                 }
@@ -880,6 +968,8 @@ public final class PBXProjSerialization {
     ///   - indents: The representation of a single indent/tab
     ///   - currentLevel: The current level within the encoding process (0 means root, then the value increases on each level)
     ///   - path: The coding path
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Any user info passed along
     /// - Returns: Returns an encoded string representing the content
     private static func encodeObject(content: [Any],
@@ -887,6 +977,8 @@ public final class PBXProjSerialization {
                                      usingSingleIndentString indents: String,
                                      currentLevel: Int,
                                      atPath path: [String],
+                                     havingObjectVersion objectVersion: Int,
+                                     havingArchiveVersion archiveVersion: Int,
                                      userInfo: [CodingUserInfoKey: Any]) throws -> String {
         let currentIndents = indents.repeated(currentLevel)
         var rtn: String = ""
@@ -897,6 +989,8 @@ public final class PBXProjSerialization {
                                                  usingSingleIndentString: indents,
                                                  currentLevel: currentLevel + 1,
                                                  atPath: path.appending("[\(i)]"),
+                                                 havingObjectVersion: objectVersion,
+                                                 havingArchiveVersion: archiveVersion,
                                                  userInfo: userInfo))
             if let s = value as? String {
                 /*let objects: [String: Any] = (rootContent["objects"] as? [String: Any]) ?? [:]
@@ -906,6 +1000,8 @@ public final class PBXProjSerialization {
                 if let valueComments = getComments(forValue: s,
                                                    atPath: path.appending("[\(i)]"),
                                                    inData: rootContent,
+                                                   havingObjectVersion: objectVersion,
+                                                   havingArchiveVersion: archiveVersion,
                                                    userInfo: userInfo) {
                     rtn += " /* \(valueComments) */"
                 }
@@ -925,6 +1021,8 @@ public final class PBXProjSerialization {
     ///   - indents: The representation of a single indent/tab
     ///   - currentLevel: The current level within the encoding process (0 means root, then the value increases on each level)
     ///   - path: The coding path
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Any user info passed along
     /// - Returns: Returns an encoded string representing the content
     private static func encodeObject(content: Any,
@@ -932,6 +1030,8 @@ public final class PBXProjSerialization {
                                      usingSingleIndentString indents: String,
                                      currentLevel: Int,
                                      atPath path: [String],
+                                     havingObjectVersion objectVersion: Int,
+                                     havingArchiveVersion archiveVersion: Int,
                                      userInfo: [CodingUserInfoKey: Any]) throws -> String {
         if let v = content as? [String: Any] {
             return try encodeObject(content: v,
@@ -939,6 +1039,8 @@ public final class PBXProjSerialization {
                                     usingSingleIndentString: indents,
                                     currentLevel: currentLevel + 1,
                                     atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
                                     userInfo: userInfo)
         } else if let v = content as? [Any] {
             return try encodeObject(content: v,
@@ -946,49 +1048,199 @@ public final class PBXProjSerialization {
                                     usingSingleIndentString: indents,
                                     currentLevel: currentLevel + 1,
                                     atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
                                     userInfo: userInfo)
         } else if let v = content as? Int {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if let v = content as? Int64 {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if let v = content as? Int32 {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if let v = content as? Int16 {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if let v = content as? Int8 {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if let v = content as? UInt {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if let v = content as? UInt64 {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if let v = content as? UInt32 {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if let v = content as? UInt16 {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if let v = content as? UInt8 {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if let v = content as? Float {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if let v = content as? Double {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if let v = content as? Decimal {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if let v = content as? NSDecimalNumber {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if isNil(content) {
             return "null"
-        /*} else if content is NSNull {
-            return "null"
-        } else if let v = content as? NilableProtocol, v.isNil {
-            return "null"*/
         } else if let v = content as? NSNumber {
-            return v.description
+            guard isForcedStringType(atPath: path, havingObjectVersion: objectVersion, havingArchiveVersion: archiveVersion) else {
+                return v.description
+            }
+            return try encodeObject(content: v.description,
+                                    rootContent: rootContent,
+                                    usingSingleIndentString: indents,
+                                    currentLevel: currentLevel,
+                                    atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
+                                    userInfo: userInfo)
         } else if let v = content as? String {
             return try encodeObject(content: v,
                                     rootContent: rootContent,
                                     usingSingleIndentString: indents,
                                     currentLevel: currentLevel,
                                     atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
                                     userInfo: userInfo)
         } else if let v = content as? NSString {
             let s = v.substring(from: 0)
@@ -997,6 +1249,8 @@ public final class PBXProjSerialization {
                                     usingSingleIndentString: indents,
                                     currentLevel: currentLevel,
                                     atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
                                     userInfo: userInfo)
         } else {
             throw NSError(domain: NSCocoaErrorDomain, code: CocoaError.propertyListReadCorrupt.rawValue, userInfo: ["NSDebugDescription" : "Invalid object cannot be serialized"])
@@ -1011,6 +1265,8 @@ public final class PBXProjSerialization {
     ///   - indents: The representation of a single indent/tab
     ///   - currentLevel: The current level within the encoding process (0 means root, then the value increases on each level)
     ///   - path: The coding path
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Any user info passed along
     /// - Returns: Returns an encoded string representing the content
     private static func encodeObject(content: NSNumber,
@@ -1018,6 +1274,8 @@ public final class PBXProjSerialization {
                                      usingSingleIndentString indents: String,
                                      currentLevel: Int,
                                      atPath path: [String],
+                                     havingObjectVersion objectVersion: Int,
+                                     havingArchiveVersion archiveVersion: Int,
                                      userInfo: [CodingUserInfoKey: Any]) throws -> String {
         if CFNumberIsFloatType(content.cfObject) {
             return try encodeObject(content: content.doubleValue,
@@ -1025,6 +1283,8 @@ public final class PBXProjSerialization {
                                     usingSingleIndentString: indents,
                                     currentLevel: currentLevel,
                                     atPath: path,
+                                    havingObjectVersion: objectVersion,
+                                    havingArchiveVersion: archiveVersion,
                                     userInfo: userInfo)
         } else {
             switch content.cfTypeID {
@@ -1044,6 +1304,8 @@ public final class PBXProjSerialization {
     ///   - indents: The representation of a single indent/tab
     ///   - currentLevel: The current level within the encoding process (0 means root, then the value increases on each level)
     ///   - path: The coding path
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Any user info passed along
     /// - Returns: Returns an encoded string representing the content
     private static func encodeObject<T: FloatingPoint & LosslessStringConvertible>(content: T,
@@ -1051,6 +1313,8 @@ public final class PBXProjSerialization {
                                      usingSingleIndentString indents: String,
                                      currentLevel: Int,
                                      atPath path: [String],
+                                     havingObjectVersion objectVersion: Int,
+                                     havingArchiveVersion archiveVersion: Int,
                                      userInfo: [CodingUserInfoKey: Any]) throws -> String {
         guard content.isFinite else {
             throw NSError(domain: NSCocoaErrorDomain,
@@ -1073,6 +1337,8 @@ public final class PBXProjSerialization {
     ///   - indents: The representation of a single indent/tab
     ///   - currentLevel: The current level within the encoding process (0 means root, then the value increases on each level)
     ///   - path: The coding path
+    ///   - objectVersion: The object version of the pbx file
+    ///   - archiveVersion: The archive version of the pbx file
     ///   - userInfo: Any user info passed along
     /// - Returns: Returns an encoded string representing the content
     private static func encodeObject(content: String,
@@ -1080,15 +1346,20 @@ public final class PBXProjSerialization {
                                      usingSingleIndentString indents: String,
                                      currentLevel: Int,
                                      atPath path: [String],
+                                     havingObjectVersion objectVersion: Int,
+                                     havingArchiveVersion archiveVersion: Int,
                                      userInfo: [CodingUserInfoKey: Any]) throws -> String {
         var rtn: String = content
+        
         if !(content.hasPrefix("\"") &&
             content.hasSuffix("\"")) &&
-            PBXProj.isPBXEncodinStringEscaping(rtn,
-                                               hasKeyIndicators: stringHasRequiredEscapingCharacters(rtn),
-                                               atPath: path,
-                                               inData: rootContent,
-                                               userInfo: userInfo) {
+            (objectVersion >= 46 || PBXProj.isPBXEncodinStringEscaping(rtn,
+                                                                       hasKeyIndicators: stringHasRequiredEscapingCharacters(rtn),
+                                                                       atPath: path,
+                                                                       inData: rootContent,
+                                                                       havingObjectVersion: objectVersion,
+                                                                       havingArchiveVersion: archiveVersion,
+                                                                       userInfo: userInfo)) {
             rtn = "\""
             // Taken from https://github.com/apple/swift-corelibs-foundation/blob/master/Foundation/JSONSerialization.swift
             var workingString = content
@@ -1096,33 +1367,6 @@ public final class PBXProjSerialization {
                 workingString = workingString.replacingOccurrences(of: e.raw, with: e.escaped)
             }
             rtn += workingString
-
-            /*for scalar in content.unicodeScalars {
-                switch scalar {
-                case "\"":
-                    rtn += "\\\"" // U+0022 quotation mark
-                case "\\":
-                    rtn += "\\\\" // U+005C reverse solidus
-                case "/":
-                    rtn += "\\/" // U+002F solidus
-                case "\u{8}":
-                    rtn += "\\b" // U+0008 backspace
-                case "\u{c}":
-                    rtn += "\\f" // U+000C form feed
-                case "\n":
-                    rtn += "\\n" // U+000A line feed
-                case "\r":
-                    rtn += "\\r" // U+000D carriage return
-                case "\t":
-                    rtn += "\\t" // U+0009 tab
-                case "\u{0}"..."\u{f}":
-                    rtn += "\\u000\(String(scalar.value, radix: 16))" // U+0000 to U+000F
-                case "\u{10}"..."\u{1f}":
-                    rtn += "\\u00\(String(scalar.value, radix: 16))" // U+0010 to U+001F
-                default:
-                    rtn += String(scalar)
-                }
-            }*/
             
             rtn += "\""
         }
@@ -1130,49 +1374,7 @@ public final class PBXProjSerialization {
         if rtn.isEmpty { rtn = "\"\"" }
         return rtn
         
-        /*if content.contains("@") ||
-            content.contains("$") ||
-            //content.contains(":") ||
-            content.contains("(") ||
-            content.contains(")") ||
-            content.contains(" ") ||
-            content.contains("\t") ||
-            content.contains("\n") {
-            
-            var rtn: String = "\""
-            // Taken from https://github.com/apple/swift-corelibs-foundation/blob/master/Foundation/JSONSerialization.swift
-            for scalar in content.unicodeScalars {
-                switch scalar {
-                case "\"":
-                    rtn += "\\\"" // U+0022 quotation mark
-                case "\\":
-                    rtn += "\\\\" // U+005C reverse solidus
-                case "/":
-                    rtn += "\\/" // U+002F solidus
-                case "\u{8}":
-                    rtn += "\\b" // U+0008 backspace
-                case "\u{c}":
-                    rtn += "\\f" // U+000C form feed
-                case "\n":
-                    rtn += "\\n" // U+000A line feed
-                case "\r":
-                    rtn += "\\r" // U+000D carriage return
-                case "\t":
-                    rtn += "\\t" // U+0009 tab
-                case "\u{0}"..."\u{f}":
-                    rtn += "\\u000\(String(scalar.value, radix: 16))" // U+0000 to U+000F
-                case "\u{10}"..."\u{1f}":
-                    rtn += "\\u00\(String(scalar.value, radix: 16))" // U+0010 to U+001F
-                default:
-                    rtn += String(scalar)
-                }
-            }
-            
-            rtn += "\""
-            return rtn
-        } else {
-            return content
-        }*/
+        
     }
     
     
