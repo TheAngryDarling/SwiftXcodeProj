@@ -72,7 +72,11 @@ public class PBXBuildPhase: PBXUnknownObject {
     }
     
     /// Element build action mask
-    public let buildActionMask: UInt
+    public var buildActionMask: UInt {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
     
     /// Element file references .
     public internal(set) var fileReferences: [PBXReference] {
