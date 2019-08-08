@@ -399,6 +399,20 @@ public class PBXTarget: PBXUnknownObject {
         
     }
     
+    /// Create a new build rule
+    ///
+    /// - Parameters:
+    ///   - name: Name of the build rule
+    ///   - compilerSpec: Compiler Specs
+    ///   - fileType: FileType
+    ///   - editable: Is editable
+    ///   - filePatterns: File Pattern
+    ///   - outputFiles: Output Files
+    ///   - outputFilesCompilerFlags: Compiler Flags
+    ///   - script: Script to execute
+    ///   - location:  The location where to add, at the beginning or end (Default: .end)
+    /// - Returns: Returns a newly crated build rule
+    @discardableResult
     public func createBuildRule(name: String? = nil,
                                 compilerSpec: String = "com.apple.compilers.proxy.script",
                                 fileType: PBXFileType,
@@ -406,7 +420,8 @@ public class PBXTarget: PBXUnknownObject {
                                 filePatterns: String? = nil,
                                 outputFiles: [String] = [],
                                 outputFilesCompilerFlags: [String]? = nil,
-                                script: String? = nil) throws -> PBXBuildRule {
+                                script: String? = nil,
+                                atLocation location: AddLocation<PBXReference> = .end) throws -> PBXBuildRule {
         
         
        var scrpt = script
@@ -436,6 +451,40 @@ public class PBXTarget: PBXUnknownObject {
         
     }
     
+    /// Create a new build rule
+    ///
+    /// - Parameters:
+    ///   - name: Name of the build rule
+    ///   - compilerSpec: Compiler Specs
+    ///   - fileType: FileType
+    ///   - editable: Is editable
+    ///   - filePatterns: File Pattern
+    ///   - outputFiles: Output Files
+    ///   - outputFilesCompilerFlags: Compiler Flags
+    ///   - script: Script to execute
+    ///   - location:  The location where to add, at the beginning or end
+    /// - Returns: Returns a newly crated build rule
+    @discardableResult
+    public func createBuildRule(name: String? = nil,
+                                compilerSpec: String = "com.apple.compilers.proxy.script",
+                                fileType: PBXFileType,
+                                editable: Bool = true,
+                                filePatterns: String? = nil,
+                                outputFiles: [String] = [],
+                                outputFilesCompilerFlags: [String]? = nil,
+                                script: String? = nil,
+                                atLocation location: AddLocation<PBXBuildRule>) throws -> PBXBuildRule {
+        return try createBuildRule(name: name,
+                                   compilerSpec: compilerSpec,
+                                   fileType: fileType,
+                                   editable: editable,
+                                   filePatterns: filePatterns,
+                                   outputFiles: outputFiles,
+                                   outputFilesCompilerFlags: outputFilesCompilerFlags,
+                                   script: script,
+                                   atLocation: location.referencedLocation)
+    }
+    
     @discardableResult
     public func removeBuildRule(_ buildRule: PBXBuildRule) -> Bool {
         for d in self.buildRuleReferences {
@@ -453,11 +502,13 @@ public class PBXTarget: PBXUnknownObject {
     ///   - buildActionMask: The action mask (Has Default)
     ///   - files: Any build file id's for this build phase
     ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
+    ///   - location: The location where to add, at the beginning or end (Default: .end)
     /// - Returns: Returns the newly created framework build phase
     @discardableResult
     public func createFrameworkBuildPhase(buildActionMask: UInt = PBXFrameworksBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
                                              files: [PBXReference] = [],
-                                             runOnlyForDeploymentPostprocessing: UInt = 0) throws -> PBXFrameworksBuildPhase {
+                                             runOnlyForDeploymentPostprocessing: UInt = 0,
+                                             atLocation location: AddLocation<PBXReference> = .end) throws -> PBXFrameworksBuildPhase {
         
         guard self.firstBuildPhase(forType: PBXFrameworksBuildPhase.self) == nil else {
             throw Error.buildPhaseAlreadyExists(PBXFrameworksBuildPhase.self)
@@ -466,10 +517,29 @@ public class PBXTarget: PBXUnknownObject {
                                           buildActionMask: buildActionMask,
                                           files: files,
                                           runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing)
-        
+        try location.add(rtn.id, to: &self.buildPhaseReferences)
         self.objectList.append(rtn)
-        self.buildPhaseReferences.append(rtn.id)
+        //self.buildPhaseReferences.append(rtn.id)
         return rtn
+    }
+    
+    /// Create a framework build phase for this target
+    ///
+    /// - Parameters:
+    ///   - buildActionMask: The action mask (Has Default)
+    ///   - files: Any build file id's for this build phase
+    ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
+    ///   - location: The location where to add, at the beginning or end
+    /// - Returns: Returns the newly created framework build phase
+    @discardableResult
+    public func createFrameworkBuildPhase(buildActionMask: UInt = PBXFrameworksBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
+                                          files: [PBXReference] = [],
+                                          runOnlyForDeploymentPostprocessing: UInt = 0,
+                                          atLocation location: AddLocation<PBXBuildPhase>) throws -> PBXFrameworksBuildPhase {
+        return try createFrameworkBuildPhase(buildActionMask: buildActionMask,
+                                             files: files,
+                                             runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing,
+                                             atLocation: location.referencedLocation)
     }
     
     /// Create a headers build phase for this target
@@ -477,12 +547,14 @@ public class PBXTarget: PBXUnknownObject {
     /// - Parameters:
     ///   - buildActionMask: The action mask (Has Default)
     ///   - files: Any build file id's for this build phase
-    ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
+    ///   - runOnlyForDeploymentPostprocessing: The Run only for deployment post processing (Default: 0)
+    ///   - location: The location where to add, at the beginning or end (Default: .end)
     /// - Returns: Returns the newly created headers build phase
     @discardableResult
     public func createHeadersBuildPhase(buildActionMask: UInt = PBXHeadersBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
                                             files: [PBXReference] = [],
-                                             runOnlyForDeploymentPostprocessing: UInt = 0) throws -> PBXHeadersBuildPhase {
+                                            runOnlyForDeploymentPostprocessing: UInt = 0,
+                                            atLocation location: AddLocation<PBXReference> = .end) throws -> PBXHeadersBuildPhase {
         guard self.firstBuildPhase(forType: PBXHeadersBuildPhase.self) == nil else {
             throw Error.buildPhaseAlreadyExists(PBXHeadersBuildPhase.self)
         }
@@ -491,8 +563,55 @@ public class PBXTarget: PBXUnknownObject {
                                         files: files,
                                         runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing)
         
+        try location.add(rtn.id, to: &self.buildPhaseReferences)
         self.objectList.append(rtn)
-        self.buildPhaseReferences.append(rtn.id)
+        //self.buildPhaseReferences.append(rtn.id)
+        return rtn
+    }
+    
+    /// Create a headers build phase for this target
+    ///
+    /// - Parameters:
+    ///   - buildActionMask: The action mask (Has Default)
+    ///   - files: Any build file id's for this build phase
+    ///   - runOnlyForDeploymentPostprocessing: The Run only for deployment post processing (Default: 0)
+    ///   - location: The location where to add, at the beginning or end
+    /// - Returns: Returns the newly created headers build phase
+    @discardableResult
+    public func createHeadersBuildPhase(buildActionMask: UInt = PBXHeadersBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
+                                        files: [PBXReference] = [],
+                                        runOnlyForDeploymentPostprocessing: UInt = 0,
+                                        atLocation location: AddLocation<PBXBuildPhase>) throws -> PBXHeadersBuildPhase {
+        return try self.createHeadersBuildPhase(buildActionMask: buildActionMask,
+                                                files: files,
+                                                runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing,
+                                                atLocation: location.referencedLocation)
+    }
+    
+    /// Create a resources build phase for this target
+    ///
+    /// - Parameters:
+    ///   - buildActionMask: The action mask (Has Default)
+    ///   - files: Any build file id's for this build phase
+    ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
+    ///   - location: The location where to add, at the beginning or end (Default: .end)
+    /// - Returns: Returns the newly created resources build phase
+    @discardableResult
+    public func createResourcesBuildPhase(buildActionMask: UInt = PBXResourcesBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
+                                           files: [PBXReference] = [],
+                                           runOnlyForDeploymentPostprocessing: UInt = 0,
+                                           atLocation location: AddLocation<PBXReference> = .end) throws -> PBXResourcesBuildPhase {
+        guard self.firstBuildPhase(forType: PBXResourcesBuildPhase.self) == nil else {
+            throw Error.buildPhaseAlreadyExists(PBXResourcesBuildPhase.self)
+        }
+        let rtn  = PBXResourcesBuildPhase(id: self.proj.generateNewReference(),
+                                          buildActionMask: buildActionMask,
+                                          files: files,
+                                          runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing)
+        
+        try location.add(rtn.id, to: &self.buildPhaseReferences)
+        self.objectList.append(rtn)
+        //self.buildPhaseReferences.append(rtn.id)
         return rtn
     }
     
@@ -502,21 +621,43 @@ public class PBXTarget: PBXUnknownObject {
     ///   - buildActionMask: The action mask (Has Default)
     ///   - files: Any build file id's for this build phase
     ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
+    ///   - location: The location where to add, at the beginning or end
     /// - Returns: Returns the newly created resources build phase
     @discardableResult
     public func createResourcesBuildPhase(buildActionMask: UInt = PBXResourcesBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
-                                           files: [PBXReference] = [],
-                                           runOnlyForDeploymentPostprocessing: UInt = 0) throws -> PBXResourcesBuildPhase {
-        guard self.firstBuildPhase(forType: PBXResourcesBuildPhase.self) == nil else {
-            throw Error.buildPhaseAlreadyExists(PBXResourcesBuildPhase.self)
+                                          files: [PBXReference] = [],
+                                          runOnlyForDeploymentPostprocessing: UInt = 0,
+                                          atLocation location: AddLocation<PBXBuildPhase>) throws -> PBXResourcesBuildPhase {
+        return try self.createResourcesBuildPhase(buildActionMask: buildActionMask,
+                                                  files: files,
+                                                  runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing,
+                                                  atLocation: location.referencedLocation)
+    }
+    
+    /// Create a rez build phase for this target
+    ///
+    /// - Parameters:
+    ///   - buildActionMask: The action mask (Has Default)
+    ///   - files: Any build file id's for this build phase
+    ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
+    ///   - location: The location where to add, at the beginning or end (Default: .end)
+    /// - Returns: Returns the newly created rez build phase
+    @discardableResult
+    public func createRezBuildPhase(buildActionMask: UInt = PBXRezBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
+                                             files: [PBXReference] = [],
+                                             runOnlyForDeploymentPostprocessing: UInt = 0,
+                                             atLocation location: AddLocation<PBXReference> = .end) throws -> PBXRezBuildPhase {
+        guard self.firstBuildPhase(forType: PBXRezBuildPhase.self) == nil else {
+            throw Error.buildPhaseAlreadyExists(PBXRezBuildPhase.self)
         }
-        let rtn  = PBXResourcesBuildPhase(id: self.proj.generateNewReference(),
-                                          buildActionMask: buildActionMask,
-                                          files: files,
-                                          runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing)
+        let rtn  = PBXRezBuildPhase(id: self.proj.generateNewReference(),
+                                      buildActionMask: buildActionMask,
+                                      files: files,
+                                      runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing)
         
+        try location.add(rtn.id, to: &self.buildPhaseReferences)
         self.objectList.append(rtn)
-        self.buildPhaseReferences.append(rtn.id)
+        //self.buildPhaseReferences.append(rtn.id)
         return rtn
     }
     
@@ -526,21 +667,43 @@ public class PBXTarget: PBXUnknownObject {
     ///   - buildActionMask: The action mask (Has Default)
     ///   - files: Any build file id's for this build phase
     ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
+    ///   - location: The location where to add, at the beginning or end
     /// - Returns: Returns the newly created rez build phase
     @discardableResult
     public func createRezBuildPhase(buildActionMask: UInt = PBXRezBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
-                                             files: [PBXReference] = [],
-                                             runOnlyForDeploymentPostprocessing: UInt = 0) throws -> PBXRezBuildPhase {
-        guard self.firstBuildPhase(forType: PBXRezBuildPhase.self) == nil else {
-            throw Error.buildPhaseAlreadyExists(PBXRezBuildPhase.self)
+                                    files: [PBXReference] = [],
+                                    runOnlyForDeploymentPostprocessing: UInt = 0,
+                                    atLocation location: AddLocation<PBXBuildPhase>) throws -> PBXRezBuildPhase {
+        return try self.createRezBuildPhase(buildActionMask: buildActionMask,
+                                             files: files,
+                                             runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing,
+                                             atLocation: location.referencedLocation)
+    }
+    
+    /// Create a sources build phase for this target
+    ///
+    /// - Parameters:
+    ///   - buildActionMask: The action mask (Has Default)
+    ///   - files: Any build file id's for this build phase
+    ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
+    ///   - location: The location where to add, at the beginning or end (Default: .end)
+    /// - Returns: Returns the newly created sources build phase
+    @discardableResult
+    public func createSourcesBuildPhase(buildActionMask: UInt = PBXSourcesBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
+                                           files: [PBXReference] = [],
+                                           runOnlyForDeploymentPostprocessing: UInt = 0,
+                                           atLocation location: AddLocation<PBXReference> = .end) throws -> PBXSourcesBuildPhase {
+        guard self.firstBuildPhase(forType: PBXSourcesBuildPhase.self) == nil else {
+            throw Error.buildPhaseAlreadyExists(PBXSourcesBuildPhase.self)
         }
-        let rtn  = PBXRezBuildPhase(id: self.proj.generateNewReference(),
-                                      buildActionMask: buildActionMask,
-                                      files: files,
-                                      runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing)
+        let rtn  = PBXSourcesBuildPhase(id: self.proj.generateNewReference(),
+                                        buildActionMask: buildActionMask,
+                                        files: files,
+                                        runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing)
         
+        try location.add(rtn.id, to: &self.buildPhaseReferences)
         self.objectList.append(rtn)
-        self.buildPhaseReferences.append(rtn.id)
+        //self.buildPhaseReferences.append(rtn.id)
         return rtn
     }
     
@@ -550,22 +713,17 @@ public class PBXTarget: PBXUnknownObject {
     ///   - buildActionMask: The action mask (Has Default)
     ///   - files: Any build file id's for this build phase
     ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
+    ///   - location: The location where to add, at the beginning or end
     /// - Returns: Returns the newly created sources build phase
     @discardableResult
     public func createSourcesBuildPhase(buildActionMask: UInt = PBXSourcesBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
-                                           files: [PBXReference] = [],
-                                           runOnlyForDeploymentPostprocessing: UInt = 0) throws -> PBXSourcesBuildPhase {
-        guard self.firstBuildPhase(forType: PBXSourcesBuildPhase.self) == nil else {
-            throw Error.buildPhaseAlreadyExists(PBXSourcesBuildPhase.self)
-        }
-        let rtn  = PBXSourcesBuildPhase(id: self.proj.generateNewReference(),
-                                        buildActionMask: buildActionMask,
-                                        files: files,
-                                        runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing)
-        
-        self.objectList.append(rtn)
-        self.buildPhaseReferences.append(rtn.id)
-        return rtn
+                                        files: [PBXReference] = [],
+                                        runOnlyForDeploymentPostprocessing: UInt = 0,
+                                        atLocation location: AddLocation<PBXBuildPhase>) throws -> PBXSourcesBuildPhase {
+        return try self.createSourcesBuildPhase(buildActionMask: buildActionMask,
+                                                files: files,
+                                                runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing,
+                                                atLocation: location.referencedLocation)
     }
     
     /// Create a copy files build phase for this target
@@ -577,6 +735,7 @@ public class PBXTarget: PBXUnknownObject {
     ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
     ///   - dstPath: Destination path
     ///   - dstSubfolderSpec: Destination subfolder specification
+    ///   - location: The location where to add, at the beginning or end (Default: .end)
     /// - Returns: Returns the newly created copy files build phase
     @discardableResult
     public func createCopyFilesBuildPhase(name: String? = nil,
@@ -584,7 +743,8 @@ public class PBXTarget: PBXUnknownObject {
                                              files: [PBXReference] = [],
                                              runOnlyForDeploymentPostprocessing: UInt = 0,
                                              dstPath: String = COPY_FILES_BUILD_PHASE_DEFAULT_DEST_PATH,
-                                             dstSubfolderSpec: PBXCopyFilesBuildPhase.PBXSubFolder = .absolutePath) -> PBXCopyFilesBuildPhase {
+                                             dstSubfolderSpec: PBXCopyFilesBuildPhase.PBXSubFolder = .absolutePath,
+                                             atLocation location: AddLocation<PBXReference> = .end) throws -> PBXCopyFilesBuildPhase {
         
         let rtn  = PBXCopyFilesBuildPhase(id: self.proj.generateNewReference(),
                                           name: name,
@@ -594,10 +754,40 @@ public class PBXTarget: PBXUnknownObject {
                                           dstPath: dstPath,
                                           dstSubfolderSpec: dstSubfolderSpec)
         
+        try location.add(rtn.id, to: &self.buildPhaseReferences)
+        
         self.objectList.append(rtn)
-        self.buildPhaseReferences.append(rtn.id)
+        //self.buildPhaseReferences.append(rtn.id)
         return rtn
         
+    }
+    
+    /// Create a copy files build phase for this target
+    ///
+    /// - Parameters:
+    ///   - name: The name of the build phase (Optional)
+    ///   - buildActionMask: The action mask (Has Default)
+    ///   - files: Any build file id's for this build phase
+    ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
+    ///   - dstPath: Destination path
+    ///   - dstSubfolderSpec: Destination subfolder specification
+    ///   - location: The location where to add, at the beginning or end
+    /// - Returns: Returns the newly created copy files build phase
+    @discardableResult
+    public func createCopyFilesBuildPhase(name: String? = nil,
+                                          buildActionMask: UInt = PBXCopyFilesBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
+                                          files: [PBXReference] = [],
+                                          runOnlyForDeploymentPostprocessing: UInt = 0,
+                                          dstPath: String = COPY_FILES_BUILD_PHASE_DEFAULT_DEST_PATH,
+                                          dstSubfolderSpec: PBXCopyFilesBuildPhase.PBXSubFolder = .absolutePath,
+                                          atLocation location: AddLocation<PBXBuildPhase>) throws -> PBXCopyFilesBuildPhase {
+        return try self.createCopyFilesBuildPhase(name: name,
+                                                  buildActionMask: buildActionMask,
+                                                  files: files,
+                                                  runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing,
+                                                  dstPath: dstPath,
+                                                  dstSubfolderSpec: dstSubfolderSpec,
+                                                  atLocation: location.referencedLocation)
     }
     
     /// Create a shell script build phase for this target
@@ -612,6 +802,7 @@ public class PBXTarget: PBXUnknownObject {
     ///   - outputPaths: The output paths (Default: Empty Array)
     ///   - shellPath: The path to the shell to use (Default: DEFAULT_SHELL_PATH)
     ///   - shellScript: The script to execute (Optional)
+    ///   - location: The location where to add, at the beginning or end (Default: .end)
     /// - Returns: Returns the newly created shell script build phase
     @discardableResult
     public func createShellScriptBuildPhase(name: String? = nil,
@@ -622,7 +813,8 @@ public class PBXTarget: PBXUnknownObject {
                                                inputPaths: [String] = [],
                                                outputPaths: [String] = [],
                                                shellPath: String = PBXShellScriptBuildPhase.DEFAULT_SHELL_PATH,
-                                               shellScript: String? = nil) -> PBXShellScriptBuildPhase {
+                                               shellScript: String? = nil,
+                                               atLocation location: AddLocation<PBXReference> = .end) throws -> PBXShellScriptBuildPhase {
         let rtn  = PBXShellScriptBuildPhase(id: self.proj.generateNewReference(),
                                             name: name,
                                             buildActionMask: buildActionMask,
@@ -634,9 +826,48 @@ public class PBXTarget: PBXUnknownObject {
                                             shellPath: shellPath,
                                             shellScript: shellScript)
         
+        try location.add(rtn.id, to: &self.buildPhaseReferences)
+        
         self.objectList.append(rtn)
-        self.buildPhaseReferences.append(rtn.id)
+        //self.buildPhaseReferences.append(rtn.id)
         return rtn
+    }
+    
+    /// Create a shell script build phase for this target
+    ///
+    /// - Parameters:
+    ///   - name: The name of the build action (Optional)
+    ///   - buildActionMask: he build action for this build phase (Default: DEFAULT_BUILD_ACTION_MAKS)
+    ///   - files: An array of references to Build Files
+    ///   - runOnlyForDeploymentPostprocessing: An indicator if should run only for deployment post processing
+    ///   - inputFileListPaths: The input file list paths (Default: Empty Array)
+    ///   - inputPaths: The input  paths (Default: Empty Array)
+    ///   - outputPaths: The output paths (Default: Empty Array)
+    ///   - shellPath: The path to the shell to use (Default: DEFAULT_SHELL_PATH)
+    ///   - shellScript: The script to execute (Optional)
+    ///   - location: The location where to add, at the beginning or end
+    /// - Returns: Returns the newly created shell script build phase
+    @discardableResult
+    public func createShellScriptBuildPhase(name: String? = nil,
+                                            buildActionMask: UInt = PBXShellScriptBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
+                                            files: [PBXReference] = [],
+                                            runOnlyForDeploymentPostprocessing: UInt = 0,
+                                            inputFileListPaths: [String] = [],
+                                            inputPaths: [String] = [],
+                                            outputPaths: [String] = [],
+                                            shellPath: String = PBXShellScriptBuildPhase.DEFAULT_SHELL_PATH,
+                                            shellScript: String? = nil,
+                                            atLocation location: AddLocation<PBXBuildPhase>) throws -> PBXShellScriptBuildPhase {
+        return try self.createShellScriptBuildPhase(name: name,
+                                                    buildActionMask: buildActionMask,
+                                                    files: files,
+                                                    runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing,
+                                                    inputFileListPaths: inputFileListPaths,
+                                                    inputPaths: inputPaths,
+                                                    outputPaths: outputPaths,
+                                                    shellPath: shellPath,
+                                                    shellScript: shellScript,
+                                                    atLocation: location.referencedLocation)
     }
     
     /// Removes a build phase from the target
