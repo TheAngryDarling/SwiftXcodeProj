@@ -193,7 +193,7 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     @discardableResult
     public func createBuildRule(name: String? = nil,
                                 compilerSpec: String = "com.apple.compilers.proxy.script",
-                                fileType: PBXFileType,
+                                fileType: XcodeFileType,
                                 editable: Bool = true,
                                 filePatterns: String? = nil,
                                 outputFiles: [String] = [],

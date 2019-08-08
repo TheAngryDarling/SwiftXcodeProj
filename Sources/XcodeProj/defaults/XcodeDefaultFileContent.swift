@@ -9,10 +9,10 @@ import Foundation
 import PBXProj
 
 public extension PBXFileType.SourceCode.Swift {
-    static var main: XcodeFile.FileType { return XcodeFile.FileType("sourcecode.swift.main") }
+    static var main: XcodeFileType { return XcodeFileType("sourcecode.swift.main") }
 }
 public extension PBXFileType.SourceCode.ObjectiveC {
-    static var main: XcodeFile.FileType { return XcodeFile.FileType("sourcecode.c.objc.main") }
+    static var main: XcodeFileType { return XcodeFileType("sourcecode.c.objc.main") }
 }
 
 /// Generates different default file content
@@ -20,33 +20,33 @@ public final class XcodeDefaultFileContent {
     public typealias FileContentProvider = (_ name: String, _ userName: String?, _ project: XcodeProject, _ targets: [XcodeTarget], _ additionalDetails: [String: Any]) -> Data
     
     /// List of pre-defined default file content generators
-    private static var DEFAULT_CONTENT: [XcodeFile.FileType: FileContentProvider] = [
-        XcodeFile.FileType.SourceCode.Swift.source: newSwiftFile,
-        XcodeFile.FileType.SourceCode.Swift.main: newSwiftMainFile,
-        XcodeFile.FileType.SourceCode.C.header: newHeaderFile,
-        XcodeFile.FileType.SourceCode.C.source: newCFile,
-        XcodeFile.FileType.SourceCode.CPP.header: newHeaderFile,
-        XcodeFile.FileType.SourceCode.CPP.source: newCFile,
-        XcodeFile.FileType.SourceCode.ObjectiveC.main: newObjCMainFile,
+    private static var DEFAULT_CONTENT: [XcodeFileType: FileContentProvider] = [
+        XcodeFileType.SourceCode.Swift.source: newSwiftFile,
+        XcodeFileType.SourceCode.Swift.main: newSwiftMainFile,
+        XcodeFileType.SourceCode.C.header: newHeaderFile,
+        XcodeFileType.SourceCode.C.source: newCFile,
+        XcodeFileType.SourceCode.CPP.header: newHeaderFile,
+        XcodeFileType.SourceCode.CPP.source: newCFile,
+        XcodeFileType.SourceCode.ObjectiveC.main: newObjCMainFile,
         
     ]
     
     /// Register custom file content generator
-    private static var CUSTOM_CONTENT: [XcodeFile.FileType: FileContentProvider] = [:]
+    private static var CUSTOM_CONTENT: [XcodeFileType: FileContentProvider] = [:]
     
     
     /// Register a new file content generator
-    public static func registerCustomContentProvider(for type: XcodeFile.FileType,
+    public static func registerCustomContentProvider(for type: XcodeFileType,
                                                      provider: @escaping FileContentProvider) {
         CUSTOM_CONTENT[type] = provider
     }
     /// Unregister a registered file content generator
-    public static func unregisterCustomContentProvider(for type: XcodeFile.FileType) {
+    public static func unregisterCustomContentProvider(for type: XcodeFileType) {
         CUSTOM_CONTENT.removeValue(forKey: type)
     }
     
     /// Get the default content for a specific fil type
-    public static func getContentFor(fileType type: XcodeFile.FileType,
+    public static func getContentFor(fileType type: XcodeFileType,
                                      withName name: String,
                                      forUser userName: String? = nil,
                                      havingMembership membership: [XcodeTarget],
@@ -64,7 +64,7 @@ public final class XcodeDefaultFileContent {
     }
     
     /// Get the default content for a specific fil type
-    public static func getContentFor(fileType type: XcodeFile.FileType,
+    public static func getContentFor(fileType type: XcodeFileType,
                                      withName name: String,
                                      forUser userName: String? = nil,
                                      havingMembership membership: XcodeTarget,

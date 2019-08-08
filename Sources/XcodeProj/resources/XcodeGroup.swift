@@ -199,7 +199,7 @@ public class XcodeGroup: XcodeGroupResource {
     ///   - savePBXFile: An indicator if the PBX Project File should be saved at this time (Default: true)
     ///   - actionBeforeModification: An action to call before the PBX Project file is saved
     /// - Returns: Returns the newly created file
-    public func createFileReference(ofType fileType: XcodeFile.FileType,
+    public func createFileReference(ofType fileType: XcodeFileType,
                                     withName name: String,
                                     havingMembership membership: [XcodeTarget],
                                     atLocation location: AddLocation<XcodeFileResource> = .end,
@@ -281,7 +281,7 @@ public class XcodeGroup: XcodeGroupResource {
     ///   - location: The location witin this group the child object should be set. Either the beginning or end. (Default: .end)
     /// - Returns: Returns the newly created file
     @discardableResult
-    public func createFile(ofType fileType: XcodeFile.FileType,
+    public func createFile(ofType fileType: XcodeFileType,
                            withName name: String,
                            withInitialData data: Data? = nil,
                            havingMembership membership: [XcodeTarget],
@@ -317,7 +317,7 @@ public class XcodeGroup: XcodeGroupResource {
     ///   - location: The location witin this group the child object should be set. Either the beginning or end. (Default: .end)
     /// - Returns: Returns the newly created file
     @discardableResult
-    public func createFile(ofType fileType: XcodeFile.FileType,
+    public func createFile(ofType fileType: XcodeFileType,
                            withName name: String,
                            withInitialData data: Data? = nil,
                            havingMembership membership: XcodeTarget,

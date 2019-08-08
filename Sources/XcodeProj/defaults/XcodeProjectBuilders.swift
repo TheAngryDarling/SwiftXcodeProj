@@ -723,7 +723,7 @@ public struct XcodeProjectBuilders {
                 
                 let mainFileName: String = "main.swift"
                 
-                let dta = XcodeDefaultFileContent.getContentFor(fileType: XcodeFile.FileType.SourceCode.Swift.main,
+                let dta = XcodeDefaultFileContent.getContentFor(fileType: XcodeFileType.SourceCode.Swift.main,
                                                                 withName: mainFileName,
                                                                 forUser: userDetails.displayName,
                                                                 havingMembership: target,
@@ -826,7 +826,7 @@ public struct XcodeProjectBuilders {
                 
                 let mainFileName: String = "main.m"
                 
-                let dta = XcodeDefaultFileContent.getContentFor(fileType: XcodeFile.FileType.SourceCode.ObjectiveC.main,
+                let dta = XcodeDefaultFileContent.getContentFor(fileType: XcodeFileType.SourceCode.ObjectiveC.main,
                                                                 withName: mainFileName,
                                                                 forUser: userDetails.displayName,
                                                                 havingMembership: target,
