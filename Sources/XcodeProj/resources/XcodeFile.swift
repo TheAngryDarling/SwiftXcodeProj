@@ -12,7 +12,7 @@ import PBXProj
 public class XcodeFile: XcodeFileResource {
     
     /// An indicator for the kind of file
-    public typealias FileType = PBXFileType
+    //public typealias FileType = PBXFileType
     /// New Line Indications
     ///
     /// - macOS: \n
@@ -34,12 +34,12 @@ public class XcodeFile: XcodeFileResource {
         set { self.pbxFileReference.fileEncoding = newValue }
     }
     /// Element explicit file type.
-    public var explicitFileType: FileType? {
+    public var explicitFileType: XcodeFileType? {
         get { return self.pbxFileReference.explicitFileType }
         set { self.pbxFileReference.explicitFileType = newValue }
     }
     /// Element last known file type.
-    public var lastKnownFileType: FileType? {
+    public var lastKnownFileType: XcodeFileType? {
         get { return self.pbxFileReference.lastKnownFileType }
         set { self.pbxFileReference.lastKnownFileType = newValue }
     }
