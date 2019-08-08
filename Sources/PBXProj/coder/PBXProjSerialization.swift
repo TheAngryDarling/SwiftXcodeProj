@@ -83,7 +83,7 @@ public final class PBXProjSerialization {
     /// - Parameter string: The string to check and see if it has escaping characters
     /// - Returns: Returns true if the string contains any characters that require escaping otherwise false
     private static func stringHasRequiredEscapingCharacters(_ string: String) -> Bool {
-        let requiredEscapingFor: [String] = ["@","$","(",")"," ","\t","\n","<",">","=","-","+", "::"]
+        let requiredEscapingFor: [String] = ["*","@","$","(",")"," ","\t","\n","<",">","=","-","+", "::"]
         for r in requiredEscapingFor {
             if string.contains(r) { return true }
         }
