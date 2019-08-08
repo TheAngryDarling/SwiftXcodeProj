@@ -445,8 +445,9 @@ public class PBXTarget: PBXUnknownObject {
                                  outputFiles: outputFiles,
                                  outputFilesCompilerFlags: outputFilesCompilerFlags,
                                  script: scrpt)
+        try location.add(rule.id, to: &self.buildRuleReferences)
         self.objectList.append(rule)
-        self.buildRuleReferences.append(rule.id)
+        //self.buildRuleReferences.append(rule.id)
         return rule
         
     }
