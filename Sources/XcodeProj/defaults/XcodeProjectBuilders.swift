@@ -738,7 +738,7 @@ public struct XcodeProjectBuilders {
                 sourcesBuildPhase.createBuildFile(for: sourceFile)
                 /// Ensures we create the framework build phase
                 target.frameworkBuildPhase()
-                target.createCopyFilesBuildPhase(dstPath: "/usr/share/man/man1/", dstSubfolderSpec: .absolutePath)
+                try target.createCopyFilesBuildPhase(dstPath: "/usr/share/man/man1/", dstSubfolderSpec: .absolutePath)
                 
                 
                 try rtn.save()
@@ -841,7 +841,7 @@ public struct XcodeProjectBuilders {
                 sourcesBuildPhase.createBuildFile(for: sourceFile)
                 /// Ensures we create the framework build phase
                 target.frameworkBuildPhase()
-                target.createCopyFilesBuildPhase(dstPath: "/usr/share/man/man1/", dstSubfolderSpec: .absolutePath)
+                try target.createCopyFilesBuildPhase(dstPath: "/usr/share/man/man1/", dstSubfolderSpec: .absolutePath)
                 
                 
                 try rtn.save()
