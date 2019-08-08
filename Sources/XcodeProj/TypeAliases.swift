@@ -10,7 +10,7 @@ import Foundation
 import PBXProj
 
 public typealias XcodeProductType = PBXProductType
-
+public typealias XcodeFileType = PBXFileType
 public typealias XcodeBuildPhase = PBXBuildPhase
 public typealias XcodeBuildRule = PBXBuildRule
 public typealias XcodeCopyFilesBuildPhase = PBXCopyFilesBuildPhase
