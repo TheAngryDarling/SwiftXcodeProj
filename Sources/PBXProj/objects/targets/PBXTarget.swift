@@ -485,6 +485,8 @@ public class PBXTarget: PBXUnknownObject {
                                    atLocation: location.referencedLocation)
     }
     
+    /// Remove the given build rule
+    /// - Returns: Returns true if the rule was removed or not
     @discardableResult
     public func removeBuildRule(_ buildRule: PBXBuildRule) -> Bool {
         for d in self.buildRuleReferences {
