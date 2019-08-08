@@ -28,19 +28,19 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     /// The build phases for this target
     public var buildPhases: [XcodeBuildPhase] {
         get { return self.pbxTarget.buildPhases }
-        set { self.pbxTarget.buildPhases = newValue }
+        //set { self.pbxTarget.buildPhases = newValue }
     }
     
     /// The build rules of this target
     public var buildRules: [XcodeBuildRule] {
         get { return self.pbxTarget.buildRules }
-        set { self.pbxTarget.buildRules = newValue }
+        //set { self.pbxTarget.buildRules = newValue }
     }
     
     /// The dependencies of this target
     public var dependencies: [XcodeTargetDependency] {
         get { return self.pbxTarget.dependencies.map( { return XcodeTargetDependency(self.project, $0) }) }
-        set { self.pbxTarget.dependencies = newValue.map({ return $0.pbxTargetDependancy }) }
+        //set { self.pbxTarget.dependencies = newValue.map({ return $0.pbxTargetDependancy }) }
     }
     
     
@@ -175,6 +175,51 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
         
         return withCallback
     }
+    
+    
+    /// Create a new build rule
+    ///
+    /// - Parameters:
+    ///   - name: Name of the build rule
+    ///   - compilerSpec: Compiler Specs
+    ///   - fileType: FileType
+    ///   - editable: Is editable
+    ///   - filePatterns: File Pattern
+    ///   - outputFiles: Output Files
+    ///   - outputFilesCompilerFlags: Compiler Flags
+    ///   - script: Script to execute
+    ///   - location:  The location where to add, at the beginning or end (Default: .end)
+    /// - Returns: Returns a newly crated build rule
+    @discardableResult
+    public func createBuildRule(name: String? = nil,
+                                compilerSpec: String = "com.apple.compilers.proxy.script",
+                                fileType: PBXFileType,
+                                editable: Bool = true,
+                                filePatterns: String? = nil,
+                                outputFiles: [String] = [],
+                                outputFilesCompilerFlags: [String]? = nil,
+                                script: String? = nil,
+                                atLocation location: AddLocation<XcodeBuildRule> = .end) throws -> XcodeBuildRule {
+        return try self.pbxTarget.createBuildRule(name: name,
+                                                  compilerSpec: compilerSpec,
+                                                  fileType: fileType,
+                                                  editable: editable,
+                                                  filePatterns: filePatterns,
+                                                  outputFiles: outputFiles,
+                                                  outputFilesCompilerFlags: outputFilesCompilerFlags,
+                                                  script: script,
+                                                  atLocation: location)
+        
+    }
+    
+    /// Remove the given build rule
+    /// - Returns: Returns true if the rule was removed or not
+    @discardableResult
+    public func removeBuildRule(_ buildRule: XcodeBuildRule) -> Bool {
+        return self.pbxTarget.removeBuildRule(buildRule)
+    }
+    
+    
     /*
     /// Create a framework build phase for this target
     ///
@@ -222,7 +267,7 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     
     /// Returns the headers build phase.  If it does not exists, it will be created first
     @discardableResult
-    public func headersBuildPhase(atLocation location: AddLocation<PBXBuildPhase> = .end) -> XcodeHeadersBuildPhase {
+    public func headersBuildPhase(atLocation location: AddLocation<XcodeBuildPhase> = .end) -> XcodeHeadersBuildPhase {
         if let sources = self.pbxTarget.buildPhases.first(where: {return $0 is XcodeHeadersBuildPhase}) {
             return sources as! XcodeHeadersBuildPhase
         }
@@ -248,7 +293,7 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     */
     /// Returns the resources build phase.  If it does not exists, it will be created first
     @discardableResult
-    public func resourcesBuildPhase(atLocation location: AddLocation<PBXBuildPhase> = .end) -> XcodeResourcesBuildPhase {
+    public func resourcesBuildPhase(atLocation location: AddLocation<XcodeBuildPhase> = .end) -> XcodeResourcesBuildPhase {
         if let sources = self.pbxTarget.buildPhases.first(where: {return $0 is XcodeResourcesBuildPhase}) {
             return sources as! XcodeResourcesBuildPhase
         }
@@ -274,7 +319,7 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     */
     /// Returns the rez build phase.  If it does not exists, it will be created first
     @discardableResult
-    public func rezBuildPhase(atLocation location: AddLocation<PBXBuildPhase> = .end) -> XcodeRezBuildPhase {
+    public func rezBuildPhase(atLocation location: AddLocation<XcodeBuildPhase> = .end) -> XcodeRezBuildPhase {
         if let sources = self.pbxTarget.buildPhases.first(where: {return $0 is XcodeRezBuildPhase}) {
             return sources as! XcodeRezBuildPhase
         }
@@ -301,7 +346,7 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     
     /// Returns the sources build phase.  If it does not exists, it will be created first
     @discardableResult
-    public func sourcesBuildPhase(atLocation location: AddLocation<PBXBuildPhase> = .end) -> XcodeSourcesBuildPhase {
+    public func sourcesBuildPhase(atLocation location: AddLocation<XcodeBuildPhase> = .end) -> XcodeSourcesBuildPhase {
         if let sources = self.pbxTarget.buildPhases.first(where: {return $0 is XcodeSourcesBuildPhase}) {
             return sources as! XcodeSourcesBuildPhase
         }
@@ -325,7 +370,7 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
                                              runOnlyForDeploymentPostprocessing: UInt = 0,
                                              dstPath: String = PBXTarget.COPY_FILES_BUILD_PHASE_DEFAULT_DEST_PATH,
                                              dstSubfolderSpec: PBXCopyFilesBuildPhase.PBXSubFolder = .absolutePath,
-                                             atLocation location: AddLocation<PBXBuildPhase> = .end) throws -> XcodeCopyFilesBuildPhase {
+                                             atLocation location: AddLocation<XcodeBuildPhase> = .end) throws -> XcodeCopyFilesBuildPhase {
         
         return try self.pbxTarget.createCopyFilesBuildPhase(name: name,
                                                            buildActionMask: buildActionMask,
@@ -360,7 +405,7 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
                                                outputPaths: [String] = [],
                                                shellPath: String = PBXShellScriptBuildPhase.DEFAULT_SHELL_PATH,
                                                shellScript: String = "# Type a script or drag a script file from your workspace to insert its path.\n",
-                                               atLocation location: AddLocation<PBXBuildPhase> = .end) throws -> XcodeShellScriptBuildPhase {
+                                               atLocation location: AddLocation<XcodeBuildPhase> = .end) throws -> XcodeShellScriptBuildPhase {
         return try self.pbxTarget.createShellScriptBuildPhase(name: name,
                                                                 buildActionMask: buildActionMask,
                                                                 files: files.map({ return $0.id }),
