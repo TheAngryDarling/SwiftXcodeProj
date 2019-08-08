@@ -25,6 +25,18 @@ public final class PBXBuildRule: PBXUnknownObject {
     
     private typealias CodingKeys = BuildRuleCodingKeys
     
+    internal override class var CODING_KEY_ORDER: [String] {
+        var rtn = super.CODING_KEY_ORDER
+        rtn.append(CodingKeys.compilerSpec)
+        rtn.append(CodingKeys.filePatterns)
+        rtn.append(CodingKeys.fileType)
+        rtn.append(CodingKeys.name)
+        rtn.append(CodingKeys.outputFiles)
+        rtn.append(CodingKeys.outputFilesCompilerFlags)
+        rtn.append(CodingKeys.script)
+        return rtn
+    }
+    
     internal override class var knownProperties: [String] {
         var rtn: [String] = super.knownProperties
         rtn.append(CodingKeys.compilerSpec)
