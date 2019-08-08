@@ -195,11 +195,11 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     */
     /// Returns the framework build phase.  If it does not exists, it will be created first
     @discardableResult
-    public func frameworkBuildPhase() -> XcodeFrameworksBuildPhase {
+    public func frameworkBuildPhase(atLocation location: AddLocation<PBXBuildPhase> = .end) -> XcodeFrameworksBuildPhase {
         if let sources = self.pbxTarget.buildPhases.first(where: {return $0 is XcodeFrameworksBuildPhase}) {
             return sources as! XcodeFrameworksBuildPhase
         }
-        return try! self.pbxTarget.createFrameworkBuildPhase()
+        return try! self.pbxTarget.createFrameworkBuildPhase(atLocation: location)
     }
     
     /*
@@ -222,11 +222,11 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     
     /// Returns the headers build phase.  If it does not exists, it will be created first
     @discardableResult
-    public func headersBuildPhase() -> XcodeHeadersBuildPhase {
+    public func headersBuildPhase(atLocation location: AddLocation<PBXBuildPhase> = .end) -> XcodeHeadersBuildPhase {
         if let sources = self.pbxTarget.buildPhases.first(where: {return $0 is XcodeHeadersBuildPhase}) {
             return sources as! XcodeHeadersBuildPhase
         }
-        return try! self.pbxTarget.createHeadersBuildPhase()
+        return try! self.pbxTarget.createHeadersBuildPhase(atLocation: location)
     }
     
     /*
@@ -248,11 +248,11 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     */
     /// Returns the resources build phase.  If it does not exists, it will be created first
     @discardableResult
-    public func resourcesBuildPhase() -> XcodeResourcesBuildPhase {
+    public func resourcesBuildPhase(atLocation location: AddLocation<PBXBuildPhase> = .end) -> XcodeResourcesBuildPhase {
         if let sources = self.pbxTarget.buildPhases.first(where: {return $0 is XcodeResourcesBuildPhase}) {
             return sources as! XcodeResourcesBuildPhase
         }
-        return try! self.pbxTarget.createResourcesBuildPhase()
+        return try! self.pbxTarget.createResourcesBuildPhase(atLocation: location)
     }
     
     /*
@@ -274,11 +274,11 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     */
     /// Returns the rez build phase.  If it does not exists, it will be created first
     @discardableResult
-    public func rezBuildPhase() -> XcodeRezBuildPhase {
+    public func rezBuildPhase(atLocation location: AddLocation<PBXBuildPhase> = .end) -> XcodeRezBuildPhase {
         if let sources = self.pbxTarget.buildPhases.first(where: {return $0 is XcodeRezBuildPhase}) {
             return sources as! XcodeRezBuildPhase
         }
-        return try! self.pbxTarget.createRezBuildPhase()
+        return try! self.pbxTarget.createRezBuildPhase(atLocation: location)
     }
     
     /*
@@ -301,11 +301,11 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     
     /// Returns the sources build phase.  If it does not exists, it will be created first
     @discardableResult
-    public func sourcesBuildPhase() -> XcodeSourcesBuildPhase {
+    public func sourcesBuildPhase(atLocation location: AddLocation<PBXBuildPhase> = .end) -> XcodeSourcesBuildPhase {
         if let sources = self.pbxTarget.buildPhases.first(where: {return $0 is XcodeSourcesBuildPhase}) {
             return sources as! XcodeSourcesBuildPhase
         }
-        return try! self.pbxTarget.createSourcesBuildPhase()
+        return try! self.pbxTarget.createSourcesBuildPhase(atLocation: location)
     }
     
     /// Create a copy files build phase for this target
@@ -324,14 +324,16 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
                                              files: [PBXBuildFile] = [],
                                              runOnlyForDeploymentPostprocessing: UInt = 0,
                                              dstPath: String = PBXTarget.COPY_FILES_BUILD_PHASE_DEFAULT_DEST_PATH,
-                                             dstSubfolderSpec: PBXCopyFilesBuildPhase.PBXSubFolder = .absolutePath) -> XcodeCopyFilesBuildPhase {
+                                             dstSubfolderSpec: PBXCopyFilesBuildPhase.PBXSubFolder = .absolutePath,
+                                             atLocation location: AddLocation<PBXBuildPhase> = .end) throws -> XcodeCopyFilesBuildPhase {
         
-        return self.pbxTarget.createCopyFilesBuildPhase(name: name,
-                                                               buildActionMask: buildActionMask,
-                                                               files: files.map({ return $0.id }),
-                                                               runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing,
-                                                               dstPath: dstPath,
-                                                               dstSubfolderSpec: dstSubfolderSpec)
+        return try self.pbxTarget.createCopyFilesBuildPhase(name: name,
+                                                           buildActionMask: buildActionMask,
+                                                           files: files.map({ return $0.id }),
+                                                           runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing,
+                                                           dstPath: dstPath,
+                                                           dstSubfolderSpec: dstSubfolderSpec,
+                                                           atLocation: location)
         
     }
     
@@ -357,8 +359,9 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
                                                inputPaths: [String] = [],
                                                outputPaths: [String] = [],
                                                shellPath: String = PBXShellScriptBuildPhase.DEFAULT_SHELL_PATH,
-                                               shellScript: String = "# Type a script or drag a script file from your workspace to insert its path.\n") -> XcodeShellScriptBuildPhase {
-        return self.pbxTarget.createShellScriptBuildPhase(name: name,
+                                               shellScript: String = "# Type a script or drag a script file from your workspace to insert its path.\n",
+                                               atLocation location: AddLocation<PBXBuildPhase> = .end) throws -> XcodeShellScriptBuildPhase {
+        return try self.pbxTarget.createShellScriptBuildPhase(name: name,
                                                                 buildActionMask: buildActionMask,
                                                                 files: files.map({ return $0.id }),
                                                                 runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing,
@@ -366,7 +369,8 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
                                                                 inputPaths: inputPaths,
                                                                 outputPaths: outputPaths,
                                                                 shellPath: shellPath,
-                                                                shellScript: shellScript)
+                                                                shellScript: shellScript,
+                                                                atLocation: location)
     }
     
     /// Removes a build phase from the target
