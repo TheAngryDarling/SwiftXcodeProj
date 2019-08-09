@@ -34,17 +34,29 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "PBXProj",
-            dependencies: ["StringIANACharacterSetEncoding", "CodableHelpers", "Nillable", "CodeTimer", "SwiftPatches", "RawRepresentableHelpers", "SwiftClassCollections"]),
+            dependencies: ["StringIANACharacterSetEncoding",
+                           "CodableHelpers",
+                           "Nillable",
+                           "CodeTimer",
+                           "SwiftPatches",
+                           "RawRepresentableHelpers",
+                           "SwiftClassCollections"]),
         .testTarget(
             name: "PBXProjTests",
             dependencies: ["PBXProj"]),
         
         .target(
             name: "XcodeProj",
-            dependencies: ["PBXProj", "CodableHelpers", "CodeTimer", "RawRepresentableHelpers", "VersionKit"]),
+            dependencies: ["PBXProj",
+                           "CodableHelpers",
+                           "CodeTimer",
+                           "RawRepresentableHelpers",
+                           "VersionKit"]),
         .testTarget(
             name: "XcodeProjTests",
-            dependencies: ["XcodeProj", "CodeTimer", "SwiftPatches"]),
+            dependencies: ["XcodeProj",
+                           "CodeTimer",
+                           "SwiftPatches"]),
     ]
 )
 
