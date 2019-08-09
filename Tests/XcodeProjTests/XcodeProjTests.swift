@@ -259,11 +259,8 @@ class XcodeProjTests: XCTestCase {
         let workingProjectName: String = "TestSwiftCommandLine"
         do {
             
-            let provider = LocalXcodeFileSystemProvider.newInstance
-            let location = XcodeFileSystemURLResource(directory: workingDir.path)
             let proj = try XcodeProjectBuilders.Swift.CommandLine.create(workingProjectName,
-                                                                          in: location,
-                                                                          using: provider,
+                                                                          in: workingDir,
                                                                           havingUserDetails: .testUserDetails)
             
             print(proj)
@@ -279,11 +276,8 @@ class XcodeProjTests: XCTestCase {
         let workingProjectName: String = "TestObjCCommandLine"
         do {
             
-            let provider = LocalXcodeFileSystemProvider.newInstance
-            let location = XcodeFileSystemURLResource(directory: workingDir.path)
             let proj = try XcodeProjectBuilders.ObjectiveC.CommandLine.create(workingProjectName,
-                                                                         in: location,
-                                                                         using: provider,
+                                                                         in: workingDir,
                                                                          havingUserDetails: .testUserDetails)
             
             print(proj)
@@ -299,11 +293,8 @@ class XcodeProjTests: XCTestCase {
         let workingProjectName: String = "TestOtherEmptyProject"
         do {
             
-            let provider = LocalXcodeFileSystemProvider.newInstance
-            let location = XcodeFileSystemURLResource(directory: workingDir.path)
             let proj = try XcodeProjectBuilders.CrossPlatform.Empty.create(workingProjectName,
-                                                                              in: location,
-                                                                              using: provider,
+                                                                              in: workingDir,
                                                                               havingUserDetails: .testUserDetails)
             
             print(proj)
