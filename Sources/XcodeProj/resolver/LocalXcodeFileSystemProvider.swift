@@ -28,6 +28,8 @@ public class LocalXcodeFileSystemProvider: XcodeFileSystemProvider {
         case mustBeFileSystemURL(XcodeFileSystemURLResource)
     }
     
+    public static let `default`: LocalXcodeFileSystemProvider = LocalXcodeFileSystemProvider()
+    
     
     public func actions(_ actions: [XcodeFileSystemProviderAction]) throws -> [XcodeFileSystemProviderActionResponse] {
         /*let failedResPreCondition = actions.validateResourceConditions({ return $0.isFile })
@@ -257,7 +259,7 @@ public class LocalXcodeFileSystemProvider: XcodeFileSystemProvider {
     #endif
     */
     
-    public static var newInstance: LocalXcodeFileSystemProvider { return LocalXcodeFileSystemProvider() }
+    //public static var newInstance: LocalXcodeFileSystemProvider { return LocalXcodeFileSystemProvider() }
     
     
     
