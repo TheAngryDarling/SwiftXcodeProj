@@ -23,9 +23,10 @@ public class XcodeWorkspace  {
             case fileRefMissingLocationAttribute
             case invalidFileRefLocationAttribute(Any?)
         }
-        case unableToLoadXML(at: URL)
-        case unknownXMLParsingErrorOccured
+        //case unableToLoadXML(at: URL)
+        //case unknownXMLParsingErrorOccured
         case workspaceDocumentMissingRootNode
+        case mustBeFileURL(URL)
     }
     
     /// A Workspace project
@@ -104,40 +105,40 @@ public class XcodeWorkspace  {
     /// The project user data list
     private var _userdataList: XCUserDataList? = nil
     
-    /// Open up a Xcode workspace
+    /// Open up an Xcode Workspace
     ///
     /// - Parameters:
     ///   - url: The url to the workspace to open
     ///   - provider: The file system provider to use to read the project
     public init(fromURL url: XcodeFileSystemURLResource,
-                usingFSProvider provider: XcodeFileSystemProvider = LocalXcodeFileSystemProvider.newInstance) throws {
+                usingFSProvider provider: XcodeFileSystemProvider) throws {
         
         self.url = url
         self.fsProvider = provider
         
         // Read XCWorkspace
-        self._sharedData = try XCSharedData(fromURL: url.appendingPathComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME,
-                                                                               isDirectory: true), usingFSProvider: provider)
-        self._userdataList = try XCUserDataList(fromURL: url.appendingPathComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME, isDirectory: true),
+        self._sharedData = try XCSharedData(fromURL: url.appendingDirComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME),
+                                            usingFSProvider: provider)
+        self._userdataList = try XCUserDataList(fromURL: url.appendingDirComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME),
                                                usingFSProvider: provider)
         
         let parentFolder = url.deletingLastPathComponent()
         
-        let xmlDocument = try XMLDocument(data: try provider.data(from: url.appendingPathComponent(XcodeWorkspace.CONTENTS_FILE_NAME, isDirectory: false)),
+        let xmlDocument = try XMLDocument(data: try provider.data(from: url.appendingFileComponent(XcodeWorkspace.CONTENTS_FILE_NAME)),
                                           options: [])
         guard let xmlRoot = xmlDocument.rootElement() else {
             throw Errors.workspaceDocumentMissingRootNode
         }
         
-        if let verAttrib = xmlRoot.attribute(forName: "version") {
+        if let verAttrib = xmlRoot.attribute(forName: CodingKeys.version) {
             if let sValue = verAttrib.stringValue, let dValue = Decimal(string: sValue) {
                 self.workspaceVersion = dValue
             }
         }
         
-        let workspaceElements = xmlRoot.elements(forName: "FileRef")
+        let workspaceElements = xmlRoot.elements(forName: CodingKeys.fileRef)
         for element in workspaceElements {
-            guard let locAttrib = element.attribute(forName: "location") else {
+            guard let locAttrib = element.attribute(forName: CodingKeys.location) else {
                 throw Errors.Parsing.fileRefMissingLocationAttribute
             }
             guard var locStr = locAttrib.stringValue else {
@@ -166,6 +167,26 @@ public class XcodeWorkspace  {
     
     }
     
+    /// Open up an Xcode Workspace
+    ///
+    /// - Parameters:
+    ///   - url: The url to the project to open
+    public convenience init(fromURL url: URL) throws {
+        guard url.isFileURL else {
+            throw Errors.mustBeFileURL(url)
+        }
+        try self.init(fromURL: XcodeFileSystemURLResource(directory: url.path),
+                      usingFSProvider: LocalXcodeFileSystemProvider.default)
+    }
+    
+    /// Open up an Xcode Workspace
+    ///
+    /// - Parameter path: The path to the Xcode Workspace Package
+    public convenience init(fromPath path: String) throws {
+        try self.init(fromURL: XcodeFileSystemURLResource(directory: path),
+                      usingFSProvider: LocalXcodeFileSystemProvider.default)
+    }
+    
     /// The workspace shared data
     ///
     /// This will open if needed and then return the shared data for this workspace
@@ -174,7 +195,7 @@ public class XcodeWorkspace  {
     public func sharedData() throws -> XCSharedData {
         if let r = self._sharedData { return r }
         
-        let rtn = try XCSharedData(fromURL: self.url.appendingPathComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME, isDirectory: true),
+        let rtn = try XCSharedData(fromURL: self.url.appendingDirComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME),
                                    usingFSProvider: self.fsProvider)
         self._sharedData = rtn
         
@@ -189,7 +210,7 @@ public class XcodeWorkspace  {
     public func userdataList() throws -> XCUserDataList {
         if let r = self._userdataList { return r }
         
-        let rtn = try XCUserDataList(fromURL: self.url.appendingPathComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME, isDirectory: true),
+        let rtn = try XCUserDataList(fromURL: self.url.appendingDirComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME),
                                      usingFSProvider: self.fsProvider)
         self._userdataList = rtn
         
@@ -221,29 +242,21 @@ public class XcodeWorkspace  {
             let dta = xmlDocument.xmlData(options: .documentTidyXML)
             
             saveActions.append(.write(data: dta,
-                                      to: self.url.appendingPathComponent(XcodeWorkspace.CONTENTS_FILE_NAME, isDirectory: false),
+                                      to: self.url.appendingFileComponent(XcodeWorkspace.CONTENTS_FILE_NAME),
                                       writeOptions: .atomic))
             
-            //try dta.write(to: url.appendingPathComponent(XcodeWorkspace.CONTENTS_FILE_NAME), options: .atomic)
-            //try self.fsProvider.write(dta, to: self.url.appendingPathComponent(XcodeWorkspace.CONTENTS_FILE_NAME, isDirectory: false), withOptions: .atomic)
-            
-            // self.hasInfoChanged = false
         }
         
         
         
         
         // Write XCWorkspace
-        //try self._sharedData.save(to: self.url.appendingPathComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME, isDirectory: true), usingFSProvider: self.fsProvider)
-        if let actions = try self._sharedData?.saveActions(to: self.url.appendingPathComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME,
-                                                                                               isDirectory: true),
+        if let actions = try self._sharedData?.saveActions(to: self.url.appendingDirComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME),
                                                            overrideChangeCheck: overrideChangeCheck) {
             saveActions.append(contentsOf: actions)
         }
         
-        //try self._userdataList.save(to: self.url.appendingPathComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME, isDirectory: true), usingFSProvider: self.fsProvider)
-        if let actions = try self._userdataList?.saveActions(to: self.url.appendingPathComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME,
-                                                                                                 isDirectory: true),
+        if let actions = try self._userdataList?.saveActions(to: self.url.appendingDirComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME),
                                                              overrideChangeCheck: overrideChangeCheck) {
             saveActions.append(contentsOf: actions)
         }
