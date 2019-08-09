@@ -32,7 +32,7 @@ import RawRepresentableHelpers
     ///   - provider: The filesystem provider to used to load the package
     public init(from url: XcodeFileSystemURLResource, usingFSProvider provider: XcodeFileSystemProvider) throws {
         
-        self.breakpoints = try Breakpoints(fromURL: url.appendingPathComponent(XCDebugger.BreakpointsFileName, isDirectory: false),
+        self.breakpoints = try Breakpoints(fromURL: url.appendingFileComponent(XCDebugger.BreakpointsFileName),
                                            usingFSProvider: provider)
         
     }
@@ -47,7 +47,7 @@ import RawRepresentableHelpers
         //guard self.hasInfoChanged || overrideChangeCheck else { return nil }
         var rtn: [XcodeFileSystemProviderAction] = []
         
-        if let a = try self.breakpoints.saveAction(to: url.appendingPathComponent(XCDebugger.BreakpointsFileName, isDirectory: false),
+        if let a = try self.breakpoints.saveAction(to: url.appendingFileComponent(XCDebugger.BreakpointsFileName),
                                                    overrideChangeCheck: overrideChangeCheck) {
             rtn.append(a)
         }
