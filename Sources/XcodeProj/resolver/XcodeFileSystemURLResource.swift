@@ -172,7 +172,7 @@ extension XcodeFileSystemURLResource {
         if let base = self.basePath, !rtn.hasPrefix("/")  {
            rtn = self.relativePath.path(from: base)
         }
-        if self.isDirectory && !rtn.hasSuffix("/") { rtn = rtn + "/" }
+        if self.isDirectory && rtn.hasSuffix("/") { rtn.removeLast() }
         return rtn
     }
     
