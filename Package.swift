@@ -25,9 +25,8 @@ let package = Package(
         .package(url: "https://github.com/TheAngryDarling/SwiftCodeTimer.git", from: "1.0.0"),
         .package(url: "https://github.com/TheAngryDarling/SwiftClassCollections.git", from: "1.0.0"),
         .package(url: "https://github.com/TheAngryDarling/SwiftVersionKit.git", from: "1.0.3"),
-        .package(url: "https://github.com/TheAngryDarling/SwiftPatches.git", from: "0.5.3"),
-        .package(url: "https://github.com/TheAngryDarling/SwiftRawRepresentableHelpers.git", from: "0.5.2"),
-        //.package(url: "https://github.com/TheAngryDarling/SwiftLeveledCustomStringConvertible.git", from: "1.0.0")
+        .package(url: "https://github.com/TheAngryDarling/SwiftPatches.git", from: "1.0.0"),
+        .package(url: "https://github.com/TheAngryDarling/SwiftRawRepresentableHelpers.git", from: "1.0.0"),
         
     ],
     targets: [
