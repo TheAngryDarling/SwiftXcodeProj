@@ -28,7 +28,7 @@ public class XcodeMainProjectGroup: XcodeGroup {
                             createFolder: Bool = true,
                             savePBXFile: Bool = true) throws -> XcodeGroup {
         
-        let childURL = self.fullURL.appendingPathComponent(name, isDirectory: true)
+        let childURL = self.fullURL.appendingDirComponent(name)
         if createFolder && !savePBXFile && !self.project.isNewProject {
             try self.project.fsProvider.createDirectory(at: childURL)
         }

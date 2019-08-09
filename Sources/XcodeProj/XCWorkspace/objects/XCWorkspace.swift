@@ -36,9 +36,8 @@ public final class XCWorkspace {
     public init(fromURL url: XcodeFileSystemURLResource,
                 usingFSProvider provider: XcodeFileSystemProvider) throws {
         //self.url = url
-        self.sharedData = try XCSharedData(fromURL: url.appendingPathComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME,
-                                                                               isDirectory: true), usingFSProvider: provider)
-        self.userdataList = try XCUserDataList(fromURL: url.appendingPathComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME, isDirectory: true),
+        self.sharedData = try XCSharedData(fromURL: url.appendingDirComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME), usingFSProvider: provider)
+        self.userdataList = try XCUserDataList(fromURL: url.appendingDirComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME),
                                                usingFSProvider: provider)
     }
     
@@ -51,10 +50,9 @@ public final class XCWorkspace {
     public func saveActions(to url: XcodeFileSystemURLResource,
                             overrideChangeCheck: Bool = false) throws -> [XcodeFileSystemProviderAction] {
         var rtn: [XcodeFileSystemProviderAction] = []
-        rtn.append(contentsOf: try self.sharedData.saveActions(to: url.appendingPathComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME, isDirectory: true),
+        rtn.append(contentsOf: try self.sharedData.saveActions(to: url.appendingDirComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME),
                                                                overrideChangeCheck: overrideChangeCheck))
-        rtn.append(contentsOf: try self.userdataList.saveActions(to: url.appendingPathComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME,
-                                                                                                isDirectory: true),
+        rtn.append(contentsOf: try self.userdataList.saveActions(to: url.appendingDirComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME),
                                                                  overrideChangeCheck: overrideChangeCheck))
         return rtn
     }
@@ -68,10 +66,10 @@ public final class XCWorkspace {
     public func save(to url: XcodeFileSystemURLResource,
                      usingFSProvider provider: XcodeFileSystemProvider,
                      overrideChangeCheck: Bool = false) throws {
-        try self.sharedData.save(to: url.appendingPathComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME, isDirectory: true),
+        try self.sharedData.save(to: url.appendingDirComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME),
                                  usingFSProvider: provider,
                                  overrideChangeCheck: overrideChangeCheck)
-        try self.userdataList.save(to: url.appendingPathComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME, isDirectory: true),
+        try self.userdataList.save(to: url.appendingDirComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME),
                                    usingFSProvider: provider,
                                    overrideChangeCheck: overrideChangeCheck)
     }

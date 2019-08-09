@@ -65,7 +65,7 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     internal init(_ project: XcodeProject,
                   newTarget target: PBXTarget,
                   havingInfo info: [String: Any] = [:]) {
-        self.url = project.projectPackage.appendingPathComponent(target.name + "_Info.plist", isDirectory: false)
+        self.url = project.projectPackage.appendingFileComponent(target.name + "_Info.plist")
         self.pbxTarget = target
         self.info = info
         self.hasInfoChanged = (info.count > 0)
@@ -81,7 +81,7 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     internal init(_ project: XcodeProject,
                   _ target: PBXTarget,
                   havingInfo info: [String: Any]? = nil) throws {
-        self.url = project.projectPackage.appendingPathComponent(target.name + "_Info.plist", isDirectory: false)
+        self.url = project.projectPackage.appendingFileComponent(target.name + "_Info.plist")
         self.pbxTarget = target
         if let inf = info {
             self.info = inf
@@ -110,7 +110,7 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
                   _ target: PBXTarget,
                   _ info: [String: Any],
                   isNew: Bool ) {
-        self.url = project.projectPackage.appendingPathComponent(target.name + "_Info.plist", isDirectory: false)
+        self.url = project.projectPackage.appendingFileComponent(target.name + "_Info.plist")
         self.pbxTarget = target
         self.info = info
         self.hasInfoChanged = (info.count > 0 && isNew)
@@ -129,7 +129,7 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
         // this will remove target from pbx and clean up any reference to it
         self.project.proj.objects.remove(self.pbxTarget)
         
-        let url = project.projectPackage.appendingPathComponent(self.name + "_Info.plist", isDirectory: false)
+        let url = project.projectPackage.appendingFileComponent(self.name + "_Info.plist")
         let deleteAction = XcodeFileSystemProviderAction.remove(item: url).withDependencies(.exists(item: url))
         
         return deleteAction

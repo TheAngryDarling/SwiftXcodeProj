@@ -120,7 +120,7 @@ public class XcodeGroup: XcodeGroupResource {
             }
         }*/
         
-        let childURL = self.fullURL.appendingPathComponent(name, isDirectory: true)
+        let childURL = self.fullURL.appendingDirComponent(name)
         if createFolder && !savePBXFile && !self.project.isNewProject {
             try self.project.fsProvider.createDirectory(at: childURL)
         }
@@ -219,7 +219,7 @@ public class XcodeGroup: XcodeGroupResource {
         let pbxChildFile: PBXFileReference!
         if self.isAbsolutePath {
             pbxChildFile =  try self.pbxGroup.createFileReference(namePath: .both(name: name,
-                                                                              path: self.fullURL.appendingPathComponent(name, isDirectory: false).path),
+                                                                              path: self.fullURL.appendingFileComponent(name).path),
                                                                 sourceTree: .group,
                                                                 lastKnownFileType: fileType,
                                                                 atLocation: location.pbxLocation)
@@ -362,7 +362,7 @@ public class XcodeGroup: XcodeGroupResource {
         let ft = PBXFileType.fileType(forExt: path.pathExtension)
         let strPath = path.relative(to: self.project.projectFolder).path
         
-        let subPBXProjectPath = path.appendingPathComponent("project.pbxproj", isDirectory: false)
+        let subPBXProjectPath = path.appendingFileComponent("project.pbxproj")
         
         let pbxFile = try self.pbxGroup.createFileReference(namePath: .both(name: path.lastPathComponent, path: strPath),
                                                         sourceTree: PBXSourceTree.group,
@@ -549,7 +549,7 @@ public class XcodeGroup: XcodeGroupResource {
             strPath = path.lastPathComponent
             // Must copy files in
             /// TODO: Must finish coding copy locally
-            if path != self.fullURL.appendingPathComponent(path.lastPathComponent, isDirectory: false) {
+            if path != self.fullURL.appendingFileComponent(path.lastPathComponent) {
                 try self.project.fsProvider.copy(path, to: self.fullURL)
             }
         }

@@ -206,6 +206,20 @@ extension XcodeFileSystemURLResource {
         self = self.appendingPathComponent(pathComponent, isDirectory: isDirectory)
     }
     
+    /// Returns a URL constructed by appending the given file component to self.
+    ///
+    /// - parameter fileComponent: The file component to add.
+    public mutating func appendFileComponent(_ fileComponent: String) {
+        return self.appendPathComponent(fileComponent, isDirectory: false)
+    }
+    
+    /// Returns a URL constructed by appending the given directory component to self.
+    ///
+    /// - parameter dirComponent: The directory component to add.
+    public mutating func appendDirComponent(_ dirComponent: String) {
+        return self.appendPathComponent(dirComponent, isDirectory: true)
+    }
+    
     /// Returns a URL constructed by appending the given path component to self.
     ///
     /// - parameter pathComponent: The path component to add.
@@ -221,6 +235,20 @@ extension XcodeFileSystemURLResource {
                          modDate: nil,
                          basePath: self.self.basePath)
         }
+    }
+    
+    /// Returns a URL constructed by appending the given file component to self.
+    ///
+    /// - parameter fileComponent: The file component to add.
+    public func appendingFileComponent(_ fileComponent: String) -> XcodeFileSystemURLResource {
+        return self.appendingPathComponent(fileComponent, isDirectory: false)
+    }
+    
+    /// Returns a URL constructed by appending the given directory component to self.
+    ///
+    /// - parameter dirComponent: The directory component to add.
+    public func appendingDirComponent(_ dirComponent: String) -> XcodeFileSystemURLResource {
+        return self.appendingPathComponent(dirComponent, isDirectory: true)
     }
     
     /// Deletes the last path component of the XcodeFileSystemURLResource

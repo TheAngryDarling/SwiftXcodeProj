@@ -680,7 +680,7 @@ public struct XcodeProjectBuilders {
                 }
                 
                 
-                let projectFolder = folder.appendingPathComponent(name, isDirectory: true)
+                let projectFolder = folder.appendingDirComponent(name)
                 
                 let rtn = try XcodeProject(fromURL: projectFolder,
                                            usingFSProvider: provider,
@@ -745,6 +745,29 @@ public struct XcodeProjectBuilders {
                 
                 return rtn
             }
+            
+            /// Create new Swift Command Line project
+            public static func create(_ name: String,
+                                      in folder: String,
+                                      withDefaults defaultOptions: DefaultDetailsChoice = .compatibleXcode(DEFAUILT_XCODE_SUPPORT),
+                                      havingUserDetails userDetails: UserDetails = UserDetails()) throws -> XcodeProject {
+                return try create(name,
+                                  in: XcodeFileSystemURLResource(directory: folder),
+                                  using: LocalXcodeFileSystemProvider.default,
+                                  withDefaults: defaultOptions,
+                                  havingUserDetails: userDetails)
+            }
+            
+            /// Create new Swift Command Line project
+            public static func create(_ name: String,
+                                      in folder: URL,
+                                      withDefaults defaultOptions: DefaultDetailsChoice = .compatibleXcode(DEFAUILT_XCODE_SUPPORT),
+                                      havingUserDetails userDetails: UserDetails = UserDetails()) throws -> XcodeProject {
+                return try create(name,
+                                  in: folder.path,
+                                  withDefaults: defaultOptions,
+                                  havingUserDetails: userDetails)
+            }
  
         }
     }
@@ -784,7 +807,7 @@ public struct XcodeProjectBuilders {
                 }
                 
                 
-                let projectFolder = folder.appendingPathComponent(name, isDirectory: true)
+                let projectFolder = folder.appendingDirComponent(name)
                 
                 let rtn = try XcodeProject(fromURL: projectFolder,
                                            usingFSProvider: provider,
@@ -849,6 +872,29 @@ public struct XcodeProjectBuilders {
                 return rtn
             }
             
+            /// Create new Objective C Command Line project
+            public static func create(_ name: String,
+                                      in folder: String,
+                                      withDefaults defaultOptions: DefaultDetailsChoice = .compatibleXcode(DEFAUILT_XCODE_SUPPORT),
+                                      havingUserDetails userDetails: UserDetails = UserDetails()) throws -> XcodeProject {
+                return try create(name,
+                                  in: XcodeFileSystemURLResource(directory: folder),
+                                  using: LocalXcodeFileSystemProvider.default,
+                                  withDefaults: defaultOptions,
+                                  havingUserDetails: userDetails)
+            }
+            
+            /// Create new Objective C Command Line project
+            public static func create(_ name: String,
+                                      in folder: URL,
+                                      withDefaults defaultOptions: DefaultDetailsChoice = .compatibleXcode(DEFAUILT_XCODE_SUPPORT),
+                                      havingUserDetails userDetails: UserDetails = UserDetails()) throws -> XcodeProject {
+                return try create(name,
+                                  in: folder.path,
+                                  withDefaults: defaultOptions,
+                                  havingUserDetails: userDetails)
+            }
+            
         }
     }
     /// Other Project Generators
@@ -881,7 +927,7 @@ public struct XcodeProjectBuilders {
                 }
                 
                 
-                let projectFolder = folder.appendingPathComponent(name, isDirectory: true)
+                let projectFolder = folder.appendingDirComponent(name)
                 
                 let rtn = try XcodeProject(fromURL: projectFolder,
                                            usingFSProvider: provider,
@@ -900,6 +946,29 @@ public struct XcodeProjectBuilders {
                 try rtn.save()
                 
                 return rtn
+            }
+            
+            /// Create new empty project
+            public static func create(_ name: String,
+                                      in folder: String,
+                                      withDefaults defaultOptions: DefaultDetailsChoice = .compatibleXcode(DEFAUILT_XCODE_SUPPORT),
+                                      havingUserDetails userDetails: UserDetails = UserDetails()) throws -> XcodeProject {
+                return try create(name,
+                                  in: XcodeFileSystemURLResource(directory: folder),
+                                  using: LocalXcodeFileSystemProvider.default,
+                                  withDefaults: defaultOptions,
+                                  havingUserDetails: userDetails)
+            }
+            
+            /// Create new empty project
+            public static func create(_ name: String,
+                                      in folder: URL,
+                                      withDefaults defaultOptions: DefaultDetailsChoice = .compatibleXcode(DEFAUILT_XCODE_SUPPORT),
+                                      havingUserDetails userDetails: UserDetails = UserDetails()) throws -> XcodeProject {
+                return try create(name,
+                                  in: folder.path,
+                                  withDefaults: defaultOptions,
+                                  havingUserDetails: userDetails)
             }
         }
     }

@@ -50,7 +50,7 @@ public final class XCSchemes {
     ///   - provider: The file system to use
     public init(from url: XcodeFileSystemURLResource,
                 usingFSProvider provider: XcodeFileSystemProvider) throws {
-        let managementURL = url.appendingPathComponent(XCSchemes.MANAGEMENT_SETTINGS_FILE, isDirectory: false)
+        let managementURL = url.appendingFileComponent(XCSchemes.MANAGEMENT_SETTINGS_FILE)
         
         var actions: [XcodeFileSystemProviderAction] = []
         actions.append(.dataIfExists(for: managementURL))
@@ -97,7 +97,7 @@ public final class XCSchemes {
         var rtn: [XcodeFileSystemProviderAction] = []
         
         if self.hasManagementChanged || overrideChangeCheck {
-            let managementURL = url.appendingPathComponent(XCSchemes.MANAGEMENT_SETTINGS_FILE, isDirectory: false)
+            let managementURL = url.appendingFileComponent(XCSchemes.MANAGEMENT_SETTINGS_FILE)
             var action: XcodeFileSystemProviderAction!
             if self.management.count > 0 {
                 let encoder = PListEncoder()
@@ -152,7 +152,7 @@ public final class XCSchemes {
         
         
         for (k,v) in self.projectSchemes {
-            let childURL = url.appendingPathComponent(k + "." + XCSchemes.SCHEME_FILE_EXT, isDirectory: false)
+            let childURL = url.appendingFileComponent(k + "." + XCSchemes.SCHEME_FILE_EXT)
             if let action =  try v.saveAction(to: childURL, overrideChangeCheck: overrideChangeCheck) {
                 rtn.append(action)
             }

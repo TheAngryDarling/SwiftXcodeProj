@@ -83,8 +83,7 @@ public final class XCUserDataList {
                             overrideChangeCheck: Bool = false) throws -> [XcodeFileSystemProviderAction] {
         var rtn: [XcodeFileSystemProviderAction] = []
         for user in users {
-            rtn.append(contentsOf: try user.saveActions(to: url.appendingPathComponent(user.user + "." + XCUserData.USER_DATA_PACKAGE_EXT,
-                                                                                       isDirectory: true),
+            rtn.append(contentsOf: try user.saveActions(to: url.appendingDirComponent(user.user + "." + XCUserData.USER_DATA_PACKAGE_EXT),
                                                         overrideChangeCheck: overrideChangeCheck))
         }
         return rtn
@@ -100,7 +99,7 @@ public final class XCUserDataList {
                      usingFSProvider provider: XcodeFileSystemProvider,
                      overrideChangeCheck: Bool = false) throws {
         for user in users {
-            try user.save(to: url.appendingPathComponent(user.user + "." + XCUserData.USER_DATA_PACKAGE_EXT, isDirectory: true),
+            try user.save(to: url.appendingDirComponent(user.user + "." + XCUserData.USER_DATA_PACKAGE_EXT),
                           usingFSProvider: provider,
                           overrideChangeCheck: overrideChangeCheck)
         }

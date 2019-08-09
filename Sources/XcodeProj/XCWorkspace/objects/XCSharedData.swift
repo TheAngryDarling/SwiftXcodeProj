@@ -44,8 +44,8 @@ public final class XCSharedData {
         let plistDecoder = PListDecoder()
         
         
-        let ideWorkspaceChecksURL = url.appendingPathComponent(XCSharedData.IDE_WORKSPACE_CHECKS_FILE_NAME, isDirectory: false)
-        let workspaceSettingsURL = url.appendingPathComponent(XCSharedData.WORKSPACE_SETTINGS_FILE_NAME, isDirectory: false)
+        let ideWorkspaceChecksURL = url.appendingFileComponent(XCSharedData.IDE_WORKSPACE_CHECKS_FILE_NAME)
+        let workspaceSettingsURL = url.appendingFileComponent(XCSharedData.WORKSPACE_SETTINGS_FILE_NAME)
         
         var dataActions: [XcodeFileSystemProviderAction] = []
         dataActions.append(.dataIfExists(for: ideWorkspaceChecksURL))
@@ -71,7 +71,8 @@ public final class XCSharedData {
         }
         
         
-        self.schemes = try XCSchemes(from: url.appendingPathComponent(XCSchemes.SCHEMES_FOLDER, isDirectory: true), usingFSProvider: provider)
+        self.schemes = try XCSchemes(from: url.appendingDirComponent(XCSchemes.SCHEMES_FOLDER),
+                                     usingFSProvider: provider)
     }
     
     /// Get all save actions that are needed
@@ -87,7 +88,7 @@ public final class XCSharedData {
         let encoder = PListEncoder()
         
         if self.hasIDEWorkspaceChecksChagned || overrideChangeCheck {
-            let ideWorkspaceChecksURL = url.appendingPathComponent(XCSharedData.IDE_WORKSPACE_CHECKS_FILE_NAME, isDirectory: false)
+            let ideWorkspaceChecksURL = url.appendingFileComponent(XCSharedData.IDE_WORKSPACE_CHECKS_FILE_NAME)
             var action: XcodeFileSystemProviderAction!
             if self.ideWorkspaceChecks.count > 0 {
                 let dta = try CodableHelpers.dictionaries.encode(self.ideWorkspaceChecks, to: encoder)
@@ -107,7 +108,7 @@ public final class XCSharedData {
         }
         
         if self.hasWorkspaceSettingsChanged || overrideChangeCheck {
-            let workspaceSettingsURL = url.appendingPathComponent(XCSharedData.WORKSPACE_SETTINGS_FILE_NAME, isDirectory: false)
+            let workspaceSettingsURL = url.appendingFileComponent(XCSharedData.WORKSPACE_SETTINGS_FILE_NAME)
             var action: XcodeFileSystemProviderAction!
             if self.workspaceSettings.count > 0 {
                 let dta = try CodableHelpers.dictionaries.encode(self.workspaceSettings, to: encoder)
@@ -126,7 +127,7 @@ public final class XCSharedData {
             rtn.append(action)
         }
         
-        let schemeActions = try self.schemes.saveActions(to: url.appendingPathComponent(XCSchemes.SCHEMES_FOLDER, isDirectory: true),
+        let schemeActions = try self.schemes.saveActions(to: url.appendingDirComponent(XCSchemes.SCHEMES_FOLDER),
                                                          overrideChangeCheck: overrideChangeCheck)
         
         rtn.append(contentsOf: schemeActions)

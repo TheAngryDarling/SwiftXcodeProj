@@ -47,11 +47,11 @@ public final class XCUserData {
         self.user = NSString(string: url.lastPathComponent).deletingPathExtension
         
         // Load schemes
-        self.schemes = try XCSchemes(from: url.appendingPathComponent(XCSchemes.SCHEMES_FOLDER, isDirectory: true),
+        self.schemes = try XCSchemes(from: url.appendingDirComponent(XCSchemes.SCHEMES_FOLDER),
                                      usingFSProvider: provider)
         
         // Load Debugger info
-        self.debugger = try XCDebugger(from: url.appendingPathComponent(XCDebugger.DEBUGGER_FOLDER_NAME, isDirectory: true),
+        self.debugger = try XCDebugger(from: url.appendingDirComponent(XCDebugger.DEBUGGER_FOLDER_NAME),
                                        usingFSProvider: provider)
         
     }
@@ -74,7 +74,7 @@ public final class XCUserData {
     ///   - overrideChangeCheck: Indicator if should override any value change checks (Default: false)
     /// - Returns: Returns an array of all save actions that are required
     public func saveActions(to url: XcodeFileSystemURLResource, overrideChangeCheck: Bool = false) throws -> [XcodeFileSystemProviderAction] {
-        return try self.schemes.saveActions(to: url.appendingPathComponent(XCSchemes.SCHEMES_FOLDER, isDirectory: true),
+        return try self.schemes.saveActions(to: url.appendingDirComponent(XCSchemes.SCHEMES_FOLDER),
                                             overrideChangeCheck: overrideChangeCheck)
     }
     
