@@ -4,16 +4,22 @@
 ![Linux](https://img.shields.io/badge/os-linux-green.svg?style=flat)
 ![Apache 2](https://img.shields.io/badge/license-Apache2-blue.svg?style=flat)
 
+A package used for reading/writing PBX Project Files and Xcode Projects.
+
+The XcodeProj package uses its own wrapper around file system object so that file system providers can be created when wanting to access objects remotly.
+The idea behide this is using the XcodeProj packing on a mobile device like iPad that accesses the project which is on a remote server.  This allows developers to write custom file system providers to suite their communication needs and not require that the whole project be downloaded locally before working on it.
+A file system provider for local files is provided within the project, and local constructor methods have been provided for both XcodeProject and XcodeWorkspace
+
 
 ## Usage
 ```swift
 import XcodeProj
-    let project = try XcodeProject(fromURL: url)
+    let project = try XcodeProject(fromURL: url) // URL is a local file URL
     project.targets // Get an array of targets
     project.resources // Access to the files/groups within the project
     
 import PBXProj
-    let pbxFile = try PBXProj(fromURL: url)
+    let pbxFile = try PBXProj(fromURL: url) // URL is a local file URL
     pbxFile.project // The project for this file
     pbxFile.mainGroup // Access tot he files/groups within the project
     pbxFile.objects // The array of objects within the file
