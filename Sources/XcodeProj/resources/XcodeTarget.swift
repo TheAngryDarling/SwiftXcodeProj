@@ -7,7 +7,8 @@
 
 import Foundation
 import PBXProj
-import CodableHelpers
+import CustomCoders
+import AdvancedCodableHelpers
 //import LeveledCustomStringConvertible
 
 /// The Xcode representation of a Target

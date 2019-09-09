@@ -6,7 +6,7 @@
 //
 // Reference: http://www.monobjc.net/xcode-project-file-format.html
 import Foundation
-import CodableHelpers
+import AdvancedCodableHelpers
 import RawRepresentableHelpers
 import Dispatch
 

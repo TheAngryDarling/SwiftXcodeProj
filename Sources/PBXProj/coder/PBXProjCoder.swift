@@ -6,7 +6,8 @@
 //
 
 import Foundation
-import CodableHelpers
+import CustomCoders
+import AdvancedCodableHelpers
 import CodeTimer
 import SwiftClassCollections
 
@@ -85,7 +86,7 @@ public final class PBXProjDecoder: BasicClosedDecoder<PBXProj, Data> {
     public var tabs: String = " "
     
     public init() {
-        super.init(unboxer: Unboxer()) { e, d in
+        super.init(unboxing: Unboxer()) { e, d in
             let dec: PBXProjDecoder = e as! PBXProjDecoder
             let sT: (TimeInterval, (encoding: String.Encoding, singleIndent: String, content: [String: Any])) = try Timer.timeWithResults {
                 return try PBXProjSerialization.decode(data: d, userInfo: dec.userInfo)
@@ -163,7 +164,7 @@ internal class PBXProjOpenDecoder: BasicOpenDecoder<Data> {
     public var tabs: String = " "
     
     public init() {
-        super.init(unboxer: Unboxer()) { e, d in
+        super.init(unboxing: Unboxer()) { e, d in
             let dec: PBXProjOpenDecoder = e as! PBXProjOpenDecoder
             let sT: (TimeInterval, (encoding: String.Encoding, singleIndent: String, content: [String: Any])) = try Timer.timeWithResults {
                 return try PBXProjSerialization.decode(data: d, userInfo: dec.userInfo)

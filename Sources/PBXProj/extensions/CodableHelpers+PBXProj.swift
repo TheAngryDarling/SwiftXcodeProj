@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import CodableHelpers
+import AdvancedCodableHelpers
 
 internal extension CodableHelpers.sequences {
     /// Provides an easy way of decoding dictionaries of objects like an array using the key as one of the object property values.

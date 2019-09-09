@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CodableHelpers
 
 /// A base class for all PBX Objects
 public class PBXObject: Codable {

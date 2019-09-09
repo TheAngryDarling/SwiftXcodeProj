@@ -6,7 +6,8 @@
 //
 
 import Foundation
-import CodableHelpers
+import CustomCoders
+import AdvancedCodableHelpers
 
 fileprivate extension String {
     func regexEscape() -> String {

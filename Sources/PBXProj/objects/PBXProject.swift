@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import CodableHelpers
+import AdvancedCodableHelpers
 import RawRepresentableHelpers
 
 

@@ -6,21 +6,7 @@
 //
 
 import XCTest
-import CodableHelpers
-
-fileprivate class PListDecoder: BasicOpenDecoder<Data> {
-    public var options: PropertyListSerialization.MutabilityOptions = []
-    public var format: PropertyListSerialization.PropertyListFormat = .xml
-    public init() {
-        super.init { e, d in
-            let dec: PListDecoder = e as! PListDecoder
-            
-            return try PropertyListSerialization.propertyList(from: d,
-                                                              options: dec.options,
-                                                              format: &dec.format)
-        }
-    }
-}
+import CustomCoders
 
 fileprivate extension FileManager {
     func directoryExists(atPath path: String) -> Bool {
