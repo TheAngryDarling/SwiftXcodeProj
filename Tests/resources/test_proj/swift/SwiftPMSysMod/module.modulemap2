@@ -1,0 +1,5 @@
+module SwiftPMSysMod [system] {
+  header "/usr/include/SwiftPMSysMod.h"
+  link "SwiftPMSysMod"
+  export *
+}

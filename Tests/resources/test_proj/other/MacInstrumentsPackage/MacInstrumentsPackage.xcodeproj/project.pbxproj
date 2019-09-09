@@ -1,0 +1,164 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2F50A69822B1A30000A3A5A8 /* MacInstrumentsPackage.instrpkg in Sources */ = {isa = PBXBuildFile; fileRef = 2F50A69722B1A30000A3A5A8 /* MacInstrumentsPackage.instrpkg */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2F50A69422B1A30000A3A5A8 /* MacInstrumentsPackage.instrdst */ = {isa = PBXFileReference; explicitFileType = com.apple.instruments.instrdst; includeInIndex = 0; path = MacInstrumentsPackage.instrdst; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F50A69722B1A30000A3A5A8 /* MacInstrumentsPackage.instrpkg */ = {isa = PBXFileReference; lastKnownFileType = "com.apple.instruments.package-definition"; path = MacInstrumentsPackage.instrpkg; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		2F50A68D22B1A30000A3A5A8 = {
+			isa = PBXGroup;
+			children = (
+				2F50A69622B1A30000A3A5A8 /* MacInstrumentsPackage */,
+				2F50A69522B1A30000A3A5A8 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2F50A69522B1A30000A3A5A8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2F50A69422B1A30000A3A5A8 /* MacInstrumentsPackage.instrdst */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2F50A69622B1A30000A3A5A8 /* MacInstrumentsPackage */ = {
+			isa = PBXGroup;
+			children = (
+				2F50A69722B1A30000A3A5A8 /* MacInstrumentsPackage.instrpkg */,
+			);
+			path = MacInstrumentsPackage;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2F50A69322B1A30000A3A5A8 /* MacInstrumentsPackage */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2F50A69922B1A30000A3A5A8 /* Build configuration list for PBXNativeTarget "MacInstrumentsPackage" */;
+			buildPhases = (
+				2F50A69222B1A30000A3A5A8 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MacInstrumentsPackage;
+			productName = MacInstrumentsPackage;
+			productReference = 2F50A69422B1A30000A3A5A8 /* MacInstrumentsPackage.instrdst */;
+			productType = "com.apple.product-type.instruments-package";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2F50A68E22B1A30000A3A5A8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1010;
+				ORGANIZATIONNAME = "Tyler Anger";
+				TargetAttributes = {
+					2F50A69322B1A30000A3A5A8 = {
+						CreatedOnToolsVersion = 10.1;
+					};
+				};
+			};
+			buildConfigurationList = 2F50A69122B1A30000A3A5A8 /* Build configuration list for PBXProject "MacInstrumentsPackage" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 2F50A68D22B1A30000A3A5A8;
+			productRefGroup = 2F50A69522B1A30000A3A5A8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2F50A69322B1A30000A3A5A8 /* MacInstrumentsPackage */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2F50A69222B1A30000A3A5A8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F50A69822B1A30000A3A5A8 /* MacInstrumentsPackage.instrpkg in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2F50A68F22B1A30000A3A5A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		2F50A69022B1A30000A3A5A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release;
+		};
+		2F50A69A22B1A30000A3A5A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Instruments/Packages";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				VERSIONING_SYSTEM = "";
+			};
+			name = Debug;
+		};
+		2F50A69B22B1A30000A3A5A8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Instruments/Packages";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				VERSIONING_SYSTEM = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2F50A69122B1A30000A3A5A8 /* Build configuration list for PBXProject "MacInstrumentsPackage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F50A68F22B1A30000A3A5A8 /* Debug */,
+				2F50A69022B1A30000A3A5A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2F50A69922B1A30000A3A5A8 /* Build configuration list for PBXNativeTarget "MacInstrumentsPackage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F50A69A22B1A30000A3A5A8 /* Debug */,
+				2F50A69B22B1A30000A3A5A8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2F50A68E22B1A30000A3A5A8 /* Project object */;
+}
