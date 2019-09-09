@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/TheAngryDarling/SwiftCodableHelpers.git",
         "state": {
           "branch": null,
-          "revision": "e0b3d15c76958673fdbcc351226ef87ae5263fdb",
-          "version": "1.0.6"
+          "revision": "77188fc88d6fb4c77aa661d1644d5eff342acb09",
+          "version": "1.0.10"
         }
       },
       {
@@ -26,15 +26,6 @@
           "branch": null,
           "revision": "1f7a3c18d2e772618cbddeeca0ea51dedcfb4442",
           "version": "1.0.1"
-        }
-      },
-      {
-        "package": "LeveledCustomStringConvertible",
-        "repositoryURL": "https://github.com/TheAngryDarling/SwiftLeveledCustomStringConvertible.git",
-        "state": {
-          "branch": null,
-          "revision": "edec4a41e113e05ae422e3776bf3850ba947f06e",
-          "version": "1.0.0"
         }
       },
       {
@@ -51,8 +42,8 @@
         "repositoryURL": "https://github.com/TheAngryDarling/SwiftPatches.git",
         "state": {
           "branch": null,
-          "revision": "80403351e1b31ac92795df8e495ba791d424242e",
-          "version": "0.5.0"
+          "revision": "e41e70e3a5a5d9080d3210acd3faa30ac646ff4f",
+          "version": "1.0.0"
         }
       },
       {
@@ -61,7 +52,7 @@
         "state": {
           "branch": null,
           "revision": "b15fcb334c055d5ea0421db5de11053aefc884d3",
-          "version": "0.5.3"
+          "version": "1.0.0"
         }
       },
       {
