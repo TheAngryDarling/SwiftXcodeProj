@@ -77,6 +77,9 @@ class XcodeProjTests: XCTestCase {
         if isXcodeTesting { print("Loaded project (\(url.lastPathComponent)) in \(tr.0) s") }
         if isXcodeTesting { debugPrint(tr.1) }
         
+        // Test out path function
+        testResourcePathFunction(for: tr.1, in: tr.1.resources)
+        
         let tUserList: (TimeInterval, XCUserDataList) = try Timer.timeWithResults {
             try tr.1.userdataList()
         }
@@ -89,6 +92,23 @@ class XcodeProjTests: XCTestCase {
         if isXcodeTesting { print("Loaded Shared Data List in \(tSharedData.0) s") }
         if isXcodeTesting { debugPrint(tSharedData.1) }
        return tr.1
+    }
+    
+    func testResourcePathFunction(for project: XcodeProject, in group: XcodeGroup) {
+        
+        let childGroups: [XcodeGroup] = group.filter({ return $0 is XcodeGroup }).map({ return $0 as! XcodeGroup })
+        for childGroup in childGroups {
+            let foundParent = childGroup.group(atPath: "..")
+            XCTAssertEqual(foundParent, group)
+            let foundRoot = childGroup.group(atPath: "/")
+            XCTAssertEqual(foundRoot, project.resources)
+            let foundCurrent = childGroup.group(atPath: ".")
+            XCTAssertEqual(foundCurrent, childGroup)
+        }
+        
+        for childGroup in childGroups {
+            testResourcePathFunction(for: project, in: childGroup)
+        }
     }
     
     func testLocalSwiftProject() {
