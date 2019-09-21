@@ -10,7 +10,16 @@ import PBXProj
 
 /// A base clss for all Xcode File Resources (eg, File, Folder)
 public class XcodeFileResource: XcodeResource {
-    internal var parent: XcodeGroupResource!
+    /// The parent group resource if one is set
+    public internal(set) var parent: XcodeGroupResource!
+    
+    /// The parent as an XcodeGroup if the parent is set AND it is a XcodeGroup
+    ///
+    /// This will simplify when needing access to the parent group because there will be no need to cast
+    public var parentGroup: XcodeGroup! { return self.parent as? XcodeGroup }
+    
+    /// Gets the main group for the project
+    public var mainGroup: XcodeMainProjectGroup! { return self.project.resources }
     
     /// Simple way to help sort objects.  This shoud be overridded in sub classes to group different object types together
     internal var objectSortingOrder: Int { return 0 }
