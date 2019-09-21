@@ -11,35 +11,6 @@ import PBXProj
 /// An Xcode Group / Folder
 public class XcodeGroup: XcodeGroupResource {
     
-    /// Location when adding item to list
-    /*public enum CreationLocation {
-        public enum Error: Swift.Error {
-            case referenceNotFound(XcodeFileResource)
-        }
-        case beginning
-        case end
-        case index(Int)
-        case before(XcodeFileResource)
-        case after(XcodeFileResource)
-        
-        fileprivate var pbxLocation: PBXGroup.CreationLocation {
-            switch self {
-                case .beginning: return .beginning
-                case .end: return .end
-                case .index(let idx): return .index(idx)
-                case .before(let r): return .before(r.pbxFileResource.id)
-                case .after(let r): return .after(r.pbxFileResource.id)
-            }
-        }
-    }*/
-    
-    
-    /// The parent group of this group
-    internal var groupParent: XcodeGroup! {
-        get { return self.parent as? XcodeGroup }
-        set { self.parent = newValue }
-    }
-    
     /// Find the resource at a given path component list
     ///
     /// This will assume the start of the path component is relative to the given group.  To move up a level use the .. as the first component
@@ -48,18 +19,22 @@ public class XcodeGroup: XcodeGroupResource {
     /// - Returns: Returns the found resource, otherwise nil
     internal func resource(atPathComponents components: [String]) -> XcodeFileResource? {
         var comps = components
-        if comps[0] == ".." {
-            guard self.groupParent != nil else { return nil }
-            return self.groupParent.resource(atPathComponents: comps.removingFirst())
+        if (comps.count > 0 && comps[0] == ".") {
+            // First path component indicates the current folder so lets remove it
+            comps.removeFirst()
         }
-        if comps[0] == "." { comps.removeFirst() }
+        // We hit and indicator that we want the current group (wether the previous super call had a .. or our current call had a only a .)
+        guard comps.count > 0 else { return self }
         
-        for child in self.children {
-            if child.name == comps[0] {
-                guard comps.count > 1 else { return child }
-                guard let childGroup = child as? XcodeGroup else { return nil }
-                return childGroup.resource(atPathComponents: comps.removingFirst())
-            }
+        if comps[0] == ".." {
+            guard self.parentGroup != nil else { return nil }
+            return self.parentGroup.resource(atPathComponents: comps.removingFirst())
+        }
+        
+        if let child = self.children.first(where: { return $0.name == comps[0] }) {
+            guard comps.count > 1 else { return child }
+            guard let childGroup = child as? XcodeGroup else { return nil }
+            return childGroup.resource(atPathComponents: comps.removingFirst())
         }
         
         return nil
