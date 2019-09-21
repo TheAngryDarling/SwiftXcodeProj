@@ -648,7 +648,7 @@ public final class PBXProjSerialization {
             else if objectValue.lowercased() == "null" { return (content: NSNull(), endingAt: wholeRange.upperBound) }
             else if objectValue.lowercased() == "nil" { return (content: NSNull(), endingAt: wholeRange.upperBound) }
             else if objectValue.match("^(|\\+)\\d+(\\.\\d+)?[eE](|\\+\\-)\\d+?$") {
-                var workingValues = objectValue.lowercased().split(separator: "e").map(String.init)
+                let workingValues = objectValue.lowercased().split(separator: "e").map(String.init)
                 
                 var digitCount: Int = workingValues[1].count
                 if workingValues[0].hasPrefix("-") || workingValues[0].hasPrefix("+") { digitCount -= 1 }
