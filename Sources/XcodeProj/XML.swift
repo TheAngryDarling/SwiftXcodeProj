@@ -8,7 +8,11 @@
 // Revised from https://gist.github.com/brentdax/caaaa134c500e00efd36
 
 import Foundation
-
+#if swift(>=4.1)
+    #if canImport(FoundationXML)
+        import FoundationXML
+    #endif
+#endif
 
 // MARK: - Object Initialization
 internal func XMLAttribute(_ name: String, stringValue value: String) -> XMLNode {

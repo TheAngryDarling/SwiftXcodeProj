@@ -6,6 +6,11 @@
 //
 
 import Foundation
+#if swift(>=4.1)
+    #if canImport(FoundationXML)
+        import FoundationXML
+    #endif
+#endif
 
 public class XCSchemeCollection<Element>: XCSchemeObject, MutableCollection where Element: XCSchemeObject {
     

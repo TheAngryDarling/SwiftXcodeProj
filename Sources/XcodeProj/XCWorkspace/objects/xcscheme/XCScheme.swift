@@ -6,6 +6,11 @@
 //
 
 import Foundation
+#if swift(>=4.1)
+    #if canImport(FoundationXML)
+        import FoundationXML
+    #endif
+#endif
 
 public enum XCSchemeError: Error {
     case attributeNotFound(attribute: String, path: String?)
