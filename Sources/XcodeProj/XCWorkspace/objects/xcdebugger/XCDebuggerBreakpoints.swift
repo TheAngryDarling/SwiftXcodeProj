@@ -15,7 +15,7 @@ import Foundation
 extension XCDebugger {
     
     /// The collection of breakpoints for the project for the given user
-    public class Breakpoints {
+    public class Breakpoints: NSObject {
         
         public enum Error: Swift.Error {
             case schemeDocumentMissingRootNode
@@ -26,7 +26,7 @@ extension XCDebugger {
         }
         
         /// An action to perform on a breakpoint
-        public class BreakpointAction {
+        public class BreakpointAction: NSObject {
             
             /// The breakpoint action type
             ///
@@ -107,6 +107,7 @@ extension XCDebugger {
             /// - Parameter actionType: The action type of this acion
             public init(actionType: ActionType) {
                 self.actionType = actionType
+                super.init()
             }
             
             /// Decode the breakpoint action from the given xml element
@@ -117,6 +118,7 @@ extension XCDebugger {
                     throw Error.attributeNotFound(attribute: "ActionExtensionID", path: element.xPath)
                 }
                 self.actionType = ActionType(rawValue: atNode.stringValue!)
+                super.init()
             }
             
             /// Encodes the given action into an XMLElement
@@ -391,7 +393,7 @@ extension XCDebugger {
         }
         
         /// A project breakpoint
-        public class Breakpoint {
+        public class Breakpoint: NSObject {
             /// The type of breakpoint
             ///
             /// - fileBreakPoint: A file breakpoint
@@ -441,6 +443,7 @@ extension XCDebugger {
             public let breakpointType: BreakpointType
             public init(breakpointType: BreakpointType) {
                 self.breakpointType = breakpointType
+                super.init()
             }
             
             /// Decode the breakpoint from the given xml element
@@ -451,6 +454,7 @@ extension XCDebugger {
                     throw Error.attributeNotFound(attribute: "BreakpointExtensionID", path: element.xPath)
                 }
                 self.breakpointType = BreakpointType(rawValue: atNode.stringValue!)
+                super.init()
             }
             
             /// Encodes the given breakpoint into an XMLElement
@@ -592,10 +596,11 @@ extension XCDebugger {
         
         
         /// Create new empty breakpoints list
-        public init() {
+        public override init() {
             self.type = 1
             self.version = 2.0
             self.breakpoints = []
+            super.init()
         }
         
         /// Create new breakpoints list from the xml data

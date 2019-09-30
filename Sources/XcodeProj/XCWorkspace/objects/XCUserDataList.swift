@@ -8,7 +8,7 @@
 import Foundation
 
 /// Stores all the user data
-public final class XCUserDataList {
+public final class XCUserDataList: NSObject {
     
     public enum Error: Swift.Error {
         //case urlNotFileBased(URL)
@@ -25,8 +25,20 @@ public final class XCUserDataList {
         set { self.users[index] = newValue }
     }
     
+    public override var debugDescription: String {
+        var rtn: String = "XCUserDataList["
+        for (i, user) in self.users.enumerated() {
+            if i > 0 { rtn += ", " }
+            rtn += user.debugDescription
+        }
+        rtn += "]"
+        return rtn
+    }
+    
     /// Create a new empty instance of a User Data List
-    public init() {}
+    public override init() {
+        super.init()
+    }
     /// Create a new instance of a User Data List from file
     ///
     /// - Parameters:
@@ -45,6 +57,7 @@ public final class XCUserDataList {
                 }
             }
         }
+        super.init()
         
     }
     
@@ -110,17 +123,5 @@ public final class XCUserDataList {
 extension XCUserDataList: Sequence {
     public func makeIterator() -> Array<XCUserData>.Iterator {
         return self.users.makeIterator()
-    }
-}
-
-extension XCUserDataList: CustomDebugStringConvertible {
-    public var debugDescription: String {
-        var rtn: String = "XCUserDataList["
-        for (i, user) in self.users.enumerated() {
-            if i > 0 { rtn += ", " }
-            rtn += user.debugDescription
-        }
-        rtn += "]"
-        return rtn
     }
 }

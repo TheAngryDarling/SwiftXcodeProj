@@ -12,7 +12,7 @@ import Dispatch
 
 
 /// Class that represents an Xcode PBX Project file
-public class PBXProj: Codable {
+public class PBXProj: NSObject, Codable {
     internal enum CodingKeys: String, CodingKey {
         case archiveVersion
         case objectVersion
@@ -106,6 +106,8 @@ public class PBXProj: Codable {
         self.rootObject = "ROOT_REFERENCE"
         self.objects = PBXObjects()
         
+        super.init()
+        
         self.objects.proj = self
         
         if objectVersion >= 50 { self.idGenFunc = generateNewUUIDReference }
@@ -185,6 +187,8 @@ public class PBXProj: Codable {
         self.classes = (try CodableHelpers.dictionaries.decodeIfPresent(from: &container, forKey: .classes)) ?? [:]
         self.rootObject = try container.decode(PBXReference.self, forKey: .rootObject)
         self.objects = try container.decode(PBXObjects.self, forKey: .objects)
+        
+        super.init()
         
         self.objects.proj = self
         

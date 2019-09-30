@@ -19,7 +19,7 @@ public enum XCSchemeError: Error {
     case invalidAttributeValue(value: String, expectedType: Any.Type, attribute: String)
 }
 
-public final class XCScheme {
+public final class XCScheme: NSObject {
     
     public enum Errors: Error {
         case schemeDocumentMissingRootNode
@@ -137,7 +137,8 @@ public final class XCScheme {
         }
     }
     
-    public init() {
+    public override init() {
+        super.init()
         self.version = XCScheme.DEFAULT_VERSION
         self.lastUpgradeVersion = XCScheme.DEFAULT_LAST_UPGRADE_VERSION
         self.hasAnyInfoChanged = true
@@ -149,7 +150,7 @@ public final class XCScheme {
             throw Errors.schemeDocumentMissingRootNode
         }
         
-        
+        super.init()
         
         try self.loadDefinedElements(from: element)
         

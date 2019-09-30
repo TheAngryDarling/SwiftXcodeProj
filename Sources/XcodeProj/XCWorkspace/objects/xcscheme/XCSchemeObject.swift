@@ -12,7 +12,7 @@ import Foundation
     #endif
 #endif
 
-public class XCSchemeObject {
+public class XCSchemeObject: NSObject {
     
     internal class var EXCLUDED_ATTRIBUTES: [String] { return [] }
     internal class var EXCLUDED_ELEMENTS: [String] { return [] }
@@ -28,7 +28,9 @@ public class XCSchemeObject {
     }
     
     
-    public init() { }
+    public override init() {
+        super.init()
+    }
     public required init(from element: XMLElement) throws {
         self.hasInfoChanged = false
         
@@ -41,7 +43,7 @@ public class XCSchemeObject {
                 self.attributes[attribKey] = strVal
             }
         }
-        
+        super.init()
         if let children = element.children, children.count > 0 {
             for child in children {
                 guard child.kind == .element, let childElement = child as? XMLElement else { continue }

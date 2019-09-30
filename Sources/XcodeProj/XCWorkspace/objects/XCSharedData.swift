@@ -9,7 +9,7 @@ import Foundation
 import CustomCoders
 import AdvancedCodableHelpers
 
-public final class XCSharedData {
+public final class XCSharedData: NSObject {
     
     private static let IDE_WORKSPACE_CHECKS_FILE_NAME: String = "IDEWorkspaceChecks.plist"
     private static let WORKSPACE_SETTINGS_FILE_NAME: String = "WorkspaceSettings.xcsettings"
@@ -25,13 +25,16 @@ public final class XCSharedData {
         didSet { self.hasWorkspaceSettingsChanged = true }
     }
     
-    public init() {
+    public override var debugDescription: String { return "XCSharedData(\(self.schemes.debugDescription))" }
+    
+    public override init() {
         self.schemes = XCSchemes()
         self.ideWorkspaceChecks = [:]
         self.workspaceSettings = [:]
         
         // Setup defaults
         self.ideWorkspaceChecks["IDEDidComputeMac32BitWarning"] = true
+        super.init()
 
     }
     
@@ -74,6 +77,7 @@ public final class XCSharedData {
         
         self.schemes = try XCSchemes(from: url.appendingDirComponent(XCSchemes.SCHEMES_FOLDER),
                                      usingFSProvider: provider)
+        super.init()
     }
     
     /// Get all save actions that are needed
@@ -153,8 +157,4 @@ public final class XCSharedData {
         try provider.actions(actions)
     
     }
-}
-
-extension XCSharedData: CustomDebugStringConvertible {
-    public var debugDescription: String { return "XCSharedData(\(self.schemes.debugDescription))" }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class XCUserData {
+public final class XCUserData: NSObject {
     
     public enum Error: Swift.Error {
         //case urlNotFileBased(URL)
@@ -24,6 +24,10 @@ public final class XCUserData {
     public let schemes: XCSchemes
     /// The debugging data
     public let debugger: XCDebugger
+    
+    public override var debugDescription: String {
+        return "XCUserData(\(self.user): \(self.schemes.debugDescription))"
+    }
     
     /// Create new instance of a User Data from file
     ///
@@ -53,6 +57,7 @@ public final class XCUserData {
         // Load Debugger info
         self.debugger = try XCDebugger(from: url.appendingDirComponent(XCDebugger.DEBUGGER_FOLDER_NAME),
                                        usingFSProvider: provider)
+        super.init()
         
     }
     
@@ -94,11 +99,5 @@ public final class XCUserData {
         // Save schemes
         try provider.actions(actions)
     
-    }
-}
-
-extension XCUserData: CustomDebugStringConvertible {
-    public var debugDescription: String {
-        return "XCUserData(\(self.user): \(self.schemes.debugDescription))"
     }
 }

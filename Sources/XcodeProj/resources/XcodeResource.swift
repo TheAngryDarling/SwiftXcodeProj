@@ -52,7 +52,7 @@ public class XcodeResource: XcodeObject, LeveledDescripition {
     /// from either self.path or self.parent.fullPath + "/" + self.name
     public var fullPath: String { return self.pbxFileResource.fullPath }
     
-    public var description: String { return leveledDescription() }
+    public override var description: String { return leveledDescription() }
     
     internal init(_ project: XcodeProject, _ resource: PBXFileElement) {
         self.pbxFileResource = resource
@@ -84,7 +84,7 @@ public class XcodeResource: XcodeObject, LeveledDescripition {
     }
 }
 
-extension XcodeResource: Equatable {
+extension XcodeResource {
     public static func == (lhs: XcodeResource, rhs: XcodeResource) -> Bool {
         return lhs.pbxFileResource.id == rhs.pbxFileResource.id
     }

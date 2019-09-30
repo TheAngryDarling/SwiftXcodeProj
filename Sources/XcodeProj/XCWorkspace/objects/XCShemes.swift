@@ -20,7 +20,7 @@ fileprivate extension String {
     }
 }
 
-public final class XCSchemes {
+public final class XCSchemes: NSObject {
     
     public static let SCHEMES_FOLDER: String = "xcschemes"
     private static let MANAGEMENT_SETTINGS_FILE: String = "xcschememanagement.plist"
@@ -35,13 +35,24 @@ public final class XCSchemes {
         didSet { self.hasProjectSchemesChanged = true }
     }
     
+    public override var debugDescription: String {
+        var rtn: String = "XCSchemes["
+        for (i, scheme) in self.projectSchemes.keys.enumerated() {
+            if i > 0 { rtn += ", " }
+            rtn += "\(scheme): \(self.projectSchemes[scheme]!)"
+        }
+        rtn += "]"
+        return rtn
+    }
+    
     
     /// Create new empty instance of an empty Scheme List
-    public init() {
+    public override init() {
         self.hasManagementChanged = true
         self.management = [:]
         self.projectSchemes = [:]
         self.hasProjectSchemesChanged = true
+        super.init()
     }
     
     /// Create new insatance of a Scheme List
@@ -84,6 +95,7 @@ public final class XCSchemes {
         } else {
             throw XcodeFileSystemProviderErrors.invalidResults
         }
+        super.init()
         
     }
     
@@ -177,17 +189,5 @@ public final class XCSchemes {
                                            overrideChangeCheck: overrideChangeCheck)
         try provider.actions(actions)
         
-    }
-}
-
-extension XCSchemes: CustomDebugStringConvertible {
-    public var debugDescription: String {
-        var rtn: String = "XCSchemes["
-        for (i, scheme) in self.projectSchemes.keys.enumerated() {
-            if i > 0 { rtn += ", " }
-            rtn += "\(scheme): \(self.projectSchemes[scheme]!)"
-        }
-        rtn += "]"
-        return rtn
     }
 }

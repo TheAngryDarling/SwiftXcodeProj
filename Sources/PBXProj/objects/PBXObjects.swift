@@ -9,7 +9,7 @@ import Foundation
 import AdvancedCodableHelpers
 import RawRepresentableHelpers
 
-public final class PBXObjects: Codable {
+public final class PBXObjects: NSObject, Codable {
     public enum ObjectError: Error {
         case objectNotFound(PBXReference)
         case castingFailure(PBXObject, Any.Type)
@@ -34,12 +34,17 @@ public final class PBXObjects: Codable {
     public var containerProxyItems: [PBXContainerItemProxy] { return self.of(type: PBXContainerItemProxy.self) }
     
     /// Create new instance of PBXObjects
-    internal init() { }
+    internal override init() {
+        super.init()
+    }
     /// Create new instance of PBXObjects
     ///
     /// - Parameter objects: The objects to initialize with
     fileprivate init(_ objects: [PBXObject]) {
         self.objects = objects
+        
+        super.init()
+        
         for o in self.objects {
             o.objectList = self
         }

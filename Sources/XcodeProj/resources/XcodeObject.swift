@@ -8,8 +8,11 @@
 import Foundation
 
 /// The base class for all Xcode Project Objects
-public class XcodeObject {
+public class XcodeObject: NSObject {
     /// The Xcode project this object belongs to
     public let project: XcodeProject
-    internal init(_ project: XcodeProject) { self.project = project }
+    internal init(_ project: XcodeProject) {
+        self.project = project
+        super.init()
+    }
 }

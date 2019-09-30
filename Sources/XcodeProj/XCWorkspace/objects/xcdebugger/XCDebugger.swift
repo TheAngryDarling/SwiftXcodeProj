@@ -10,7 +10,7 @@ import RawRepresentableHelpers
 
 
  /// The debugging package where debugging data is stored
- public class XCDebugger {
+public class XCDebugger: NSObject {
     
     /// the debugging package folder name
     public static let DEBUGGER_FOLDER_NAME: String = "xcdebugger"
@@ -21,8 +21,9 @@ import RawRepresentableHelpers
     let breakpoints: Breakpoints
     
     /// Create a new debugging package
-    public init() {
+    public override init() {
         self.breakpoints = Breakpoints()
+        super.init()
     }
     
     /// Load a debugging package from the given path
@@ -34,6 +35,7 @@ import RawRepresentableHelpers
         
         self.breakpoints = try Breakpoints(fromURL: url.appendingFileComponent(XCDebugger.BreakpointsFileName),
                                            usingFSProvider: provider)
+        super.init()
         
     }
     

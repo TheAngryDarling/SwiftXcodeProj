@@ -2,7 +2,7 @@ import Foundation
 import PBXProj
 import CodeTimer
 
-public class XcodeProject {
+public class XcodeProject: NSObject {
     
     public typealias XcodeRegion = PBXProject.PBXRegion
     public typealias ProjectBuildConfigurationOptions = PBXProj.ProjectBuildConfigurationOptions
@@ -70,6 +70,13 @@ public class XcodeProject {
     internal var isNewProject: Bool = false
     
     
+    public override var description: String {
+        return self.leveledDescription(0, indent: "\t", indentOpening: false, sortKeys: true)
+    }
+    public override var debugDescription: String {
+        return self.leveledDebugDescription(0, indent: "\t", indentOpening: false, sortKeys: true)
+    }
+    
     /// Open up an Xcode project
     ///
     /// - Parameters:
@@ -103,6 +110,7 @@ public class XcodeProject {
         
         self.isNewProject = isNewProject
         
+        super.init()
         
         // setup resources
         /// Create main group from PBX main group. This will also go through all sub items in the PBX group and create Xcode equivilatns for
@@ -235,6 +243,7 @@ public class XcodeProject {
         self.proj = pbxT.1
         self.projFileSettings = PBXFileSettings(encoding: decoder.encoding, tabbing: decoder.tabs)
         
+        super.init()
         
         // setup resources
         /// Create main group from PBX main group. This will also go through all sub items in the PBX group and create Xcode equivilatns for
@@ -567,13 +576,6 @@ public class XcodeProject {
         try self.save(overrideChangeCheck: overrideChangeCheck, actions)
     }
     
-}
-
-extension XcodeProject: LeveledDescripition, CustomStringConvertible, CustomDebugStringConvertible {
-    
-    public var description: String { return self.leveledDescription(0, indent: "\t", indentOpening: false, sortKeys: true) }
-    public var debugDescription: String { return self.leveledDebugDescription(0, indent: "\t", indentOpening: false, sortKeys: true) }
-    
     public func leveledDescription(_ level: Int, indent: String, indentOpening: Bool, sortKeys: Bool) -> String {
         var rtn: String = ""
         if indentOpening { rtn += String(repeating: indent, count: level) }
@@ -624,4 +626,5 @@ extension XcodeProject: LeveledDescripition, CustomStringConvertible, CustomDebu
         
         return rtn
     }
+    
 }

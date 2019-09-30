@@ -12,7 +12,7 @@ import Foundation
     #endif
 #endif
 
-public class XcodeWorkspace  {
+public class XcodeWorkspace: NSObject  {
     
     private enum CodingKeys: String, CodingKey {
         case workspace = "Workspace"
@@ -139,6 +139,8 @@ public class XcodeWorkspace  {
             }
         }
         
+        super.init()
+        
         let workspaceElements = xmlRoot.elements(forName: CodingKeys.fileRef)
         for element in workspaceElements {
             guard let locAttrib = element.attribute(forName: CodingKeys.location) else {
@@ -167,6 +169,7 @@ public class XcodeWorkspace  {
             }
             
         }
+        
     
     }
     

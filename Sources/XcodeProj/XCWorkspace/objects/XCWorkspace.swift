@@ -8,7 +8,7 @@
 import Foundation
 
 
-public final class XCWorkspace {
+public final class XCWorkspace: NSObject {
     
     /// Shared Data folder name
     internal static let SHARED_DATA_FOLDER_NAME: String = "xcshareddata"
@@ -39,6 +39,7 @@ public final class XCWorkspace {
         self.sharedData = try XCSharedData(fromURL: url.appendingDirComponent(XCWorkspace.SHARED_DATA_FOLDER_NAME), usingFSProvider: provider)
         self.userdataList = try XCUserDataList(fromURL: url.appendingDirComponent(XCWorkspace.USER_DATA_LIST_FOLDER_NAME),
                                                usingFSProvider: provider)
+        super.init()
     }
     
     /// Get all save actions that are needed

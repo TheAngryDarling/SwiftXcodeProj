@@ -8,7 +8,7 @@
 import Foundation
 
 /// A base class for all PBX Objects
-public class PBXObject: Codable {
+public class PBXObject: NSObject, Codable {
     
     /// Base PBX Object Coding Keys
     internal enum ObjectCodingKeys: String, CodingKey {
@@ -43,6 +43,7 @@ public class PBXObject: Codable {
     internal init(id: PBXReference, type: PBXObjectType) {
         self.id = id
         self.type = type
+        super.init()
     }
     
     public required init(from decoder: Decoder) throws {
@@ -50,6 +51,7 @@ public class PBXObject: Codable {
         
         self.id = try container.decode(PBXReference.self, forKey: .id)
         self.type = try container.decode(PBXObjectType.self, forKey: .type)
+        super.init()
     }
     
     public func encode(to encoder: Encoder) throws {
