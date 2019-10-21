@@ -30,9 +30,16 @@ public class PBXUnknownObject: PBXObject {
     }
     
     public required init(from decoder: Decoder) throws {
-        var props: [String: Any] = try CodableHelpers.dictionaries.decode(from: decoder)
-        if props.keys.contains(PBXObject.ObjectCodingKeys.id) { props.removeValue(forKey: PBXObject.ObjectCodingKeys.id) }
-        if props.keys.contains(PBXObject.ObjectCodingKeys.type) { props.removeValue(forKey: PBXObject.ObjectCodingKeys.type) }
+        var props: [String: Any] = try CodableHelpers.dictionaries.decode(from: decoder, excludingKeys: Swift.type(of: self).knownProperties)
+        //if props.keys.contains(PBXObject.ObjectCodingKeys.id) { props.removeValue(forKey: PBXObject.ObjectCodingKeys.id) }
+        //if props.keys.contains(PBXObject.ObjectCodingKeys.type) { props.removeValue(forKey: PBXObject.ObjectCodingKeys.type) }
+        
+        // A patch to fix issue where Empty String arrays get parsed as Empty Data objects from the CodableHelpers.dictionaries.decode method
+        for key in props.keys {
+            if let v = props[key] as? Data, v.count == 0 {
+                props[key] = Array<String>()
+            }
+         }
         self.properties = props
         try super.init(from: decoder)
     }
