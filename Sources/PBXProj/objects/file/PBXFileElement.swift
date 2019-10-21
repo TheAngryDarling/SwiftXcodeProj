@@ -105,7 +105,8 @@ public class PBXFileElement: PBXUnknownObject {
                 return n
             }
         } else {
-            fatalError("File Element missing name or path (\(self))")
+            return ""
+            //fatalError("File Element missing name or path (\(self))")
         }
     }
     
@@ -124,7 +125,8 @@ public class PBXFileElement: PBXUnknownObject {
             guard !fP.isEmpty else { return n }
             return p.fullPath + "/" + n
         } else {
-            fatalError("File Element missing name or path (\(self))")
+            return ""
+            //fatalError("File Element missing name or path (\(self))")
         }
     }
     
