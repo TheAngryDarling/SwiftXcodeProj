@@ -18,6 +18,7 @@ public final class PBXBuildRule: PBXUnknownObject {
         case fileType
         case editable = "isEditable"
         case name
+        case inputFiles
         case outputFiles
         case outputFilesCompilerFlags
         case script
@@ -31,6 +32,7 @@ public final class PBXBuildRule: PBXUnknownObject {
         rtn.append(CodingKeys.filePatterns)
         rtn.append(CodingKeys.fileType)
         rtn.append(CodingKeys.name)
+        rtn.append(CodingKeys.inputFiles)
         rtn.append(CodingKeys.outputFiles)
         rtn.append(CodingKeys.outputFilesCompilerFlags)
         rtn.append(CodingKeys.script)
@@ -44,6 +46,7 @@ public final class PBXBuildRule: PBXUnknownObject {
         rtn.append(CodingKeys.fileType)
         rtn.append(CodingKeys.editable)
         rtn.append(CodingKeys.name)
+        rtn.append(CodingKeys.inputFiles)
         rtn.append(CodingKeys.outputFiles)
         rtn.append(CodingKeys.outputFilesCompilerFlags)
         rtn.append(CodingKeys.script)
@@ -85,6 +88,13 @@ public final class PBXBuildRule: PBXUnknownObject {
         }
     }
     
+    /// Element input files.
+    public var inputFiles: [String] {
+        didSet {
+            self.proj?.sendChangedNotification()
+        }
+    }
+    
     /// Element output files.
     public var outputFiles: [String] {
         didSet {
@@ -115,6 +125,7 @@ public final class PBXBuildRule: PBXUnknownObject {
     ///   - fileType: The file type
     ///   - editable: If its editable or not (Default: true)
     ///   - filePatterns: The file patterns (Optional)
+    ///   - inputFiles: The input files (Default: Empty Array)
     ///   - outputFiles: The output files (Default: Empty Array)
     ///   - outputFilesCompilerFlags: Output compiler flags (Optional)
     ///   - script: Script string (Optional)
@@ -124,6 +135,7 @@ public final class PBXBuildRule: PBXUnknownObject {
                 fileType: PBXFileType,
                 editable: Bool = true,
                 filePatterns: String? = nil,
+                inputFiles: [String] = [],
                 outputFiles: [String] = [],
                 outputFilesCompilerFlags: [String]? = nil,
                 script: String? = nil) {
@@ -132,6 +144,7 @@ public final class PBXBuildRule: PBXUnknownObject {
         self.filePatterns = filePatterns
         self.fileType = fileType
         self.editable = editable
+        self.inputFiles = inputFiles
         self.outputFiles = outputFiles
         self.outputFilesCompilerFlags = outputFilesCompilerFlags
         self.script = script
@@ -146,6 +159,7 @@ public final class PBXBuildRule: PBXUnknownObject {
         self.filePatterns = try container.decodeIfPresent(String.self, forKey: .filePatterns)
         self.fileType = try container.decodeIfPresent(PBXFileType.self, forKey: .fileType) ?? PBXFileType()
         self.editable = ((try container.decode(Int.self, forKey: .editable)) == 1)
+        self.inputFiles = try container.decodeIfPresent([String].self, forKey: .inputFiles) ?? []
         self.outputFiles = try container.decodeIfPresent([String].self, forKey: .outputFiles) ?? []
         self.outputFilesCompilerFlags = try container.decodeIfPresent([String].self, forKey: .outputFilesCompilerFlags)
         self.script = try container.decodeIfPresent(String.self, forKey: .script)
@@ -161,6 +175,7 @@ public final class PBXBuildRule: PBXUnknownObject {
         try container.encodeIfPresent(filePatterns, forKey: .filePatterns)
         if !self.fileType.isEmpty { try container.encode(self.fileType, forKey: .fileType) }
         try container.encode(self.editable ? 1 : 0, forKey: .editable)
+        if !self.inputFiles.isEmpty { try container.encode(self.inputFiles, forKey: .inputFiles) }
         if !self.outputFiles.isEmpty { try container.encode(self.outputFiles, forKey: .outputFiles) }
         try container.encodeIfPresent(self.outputFilesCompilerFlags, forKey: .outputFilesCompilerFlags)
         try container.encodeIfPresent(self.script, forKey: .script)
