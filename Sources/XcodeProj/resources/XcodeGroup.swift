@@ -518,12 +518,10 @@ public class XcodeGroup: XcodeGroupResource {
                                  atLocation location: AddLocation<XcodeFileResource> = .end,
                                  copyLocally: Bool = true,
                                  savePBXFile: Bool = true) throws -> XcodeFileResource {
-        
-       var strPath = path.relative(to: self.project.projectFolder).path
+        var strPath = path.relative(to: self.project.projectFolder).path
         if copyLocally  {
             strPath = path.lastPathComponent
             // Must copy files in
-            /// TODO: Must finish coding copy locally
             if path != self.fullURL.appendingFileComponent(path.lastPathComponent) {
                 try self.project.fsProvider.copy(path, to: self.fullURL)
             }
