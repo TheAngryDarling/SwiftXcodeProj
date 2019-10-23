@@ -30,7 +30,7 @@ extension XcodeProjectBuilders.UserDetails {
     /// User Name: REAL_USER
     /// Display Name: REAL_DISPLAY_NAME
     public static var envUserDetails: XcodeProjectBuilders.UserDetails {
-        guard let userName = ProcessInfo.processInfo.environment["REAL_USER"] else {
+        guard let userName = ProcessInfo.processInfo.environment["REAL_USER_NAME"] else {
             fatalError("Unable to get real user from Docker Enviromental variable 'REAL_USER'")
         }
         let rDN = ProcessInfo.processInfo.environment["REAL_DISPLAY_NAME"]
@@ -274,54 +274,91 @@ class XcodeProjTests: XCTestCase {
     }
     
     func testCreateSwiftCommandLineApp() {
-        let workingDir: URL = URL(fileURLWithPath: NSString(string: "~/").expandingTildeInPath,
-                                 isDirectory: true)
+        
+        let workingDir: URL = URL(fileURLWithPath: NSTemporaryDirectory())
         let workingProjectName: String = "TestSwiftCommandLine"
+        defer {
+            try? FileManager.default.removeItem(at: workingDir.appendingPathComponent(workingProjectName,
+                                                                                          isDirectory: true))
+        }
         do {
             
             let proj = try XcodeProjectBuilders.Swift.CommandLine.create(workingProjectName,
                                                                           in: workingDir,
                                                                           havingUserDetails: .testUserDetails)
             
-            print(proj)
+            try loadProject(proj.projectPackage.url)
         } catch {
             XCTFail("\(error)")
-            try? FileManager.default.removeItem(at: workingDir.appendingPathComponent(workingProjectName, isDirectory: true))
         }
     }
     
     func testCreateObjCCommandLineApp() {
-        let workingDir: URL = URL(fileURLWithPath: NSString(string: "~/").expandingTildeInPath,
-                                  isDirectory: true)
+        let workingDir: URL = URL(fileURLWithPath: NSTemporaryDirectory())
         let workingProjectName: String = "TestObjCCommandLine"
+        defer {
+            try? FileManager.default.removeItem(at: workingDir.appendingPathComponent(workingProjectName,
+                                                                                          isDirectory: true))
+        }
         do {
             
             let proj = try XcodeProjectBuilders.ObjectiveC.CommandLine.create(workingProjectName,
                                                                          in: workingDir,
                                                                          havingUserDetails: .testUserDetails)
-            
-            print(proj)
+            try loadProject(proj.projectPackage.url)
         } catch {
             XCTFail("\(error)")
-            try? FileManager.default.removeItem(at: workingDir.appendingPathComponent(workingProjectName, isDirectory: true))
         }
     }
     
     func testCreateOtherEmptyProject() {
-        let workingDir: URL = URL(fileURLWithPath: NSString(string: "~/").expandingTildeInPath,
-                                  isDirectory: true)
+        let workingDir: URL = URL(fileURLWithPath: NSTemporaryDirectory())
         let workingProjectName: String = "TestOtherEmptyProject"
+        defer {
+            try? FileManager.default.removeItem(at: workingDir.appendingPathComponent(workingProjectName,
+                                                                                          isDirectory: true))
+        }
         do {
             
             let proj = try XcodeProjectBuilders.CrossPlatform.Empty.create(workingProjectName,
                                                                               in: workingDir,
                                                                               havingUserDetails: .testUserDetails)
-            
-            print(proj)
+            try loadProject(proj.projectPackage.url)
         } catch {
             XCTFail("\(error)")
-            try? FileManager.default.removeItem(at: workingDir.appendingPathComponent(workingProjectName, isDirectory: true))
         }
+    }
+    
+    func testAddFileToSwiftProject() {
+        let workingDir: URL = URL(fileURLWithPath: NSTemporaryDirectory())
+        let workingProjectName: String = "TestSwiftCommandLine"
+        let projectFolder: URL = workingDir.appendingPathComponent(workingProjectName, isDirectory: true)
+        let sourcesFolder =  projectFolder.appendingPathComponent("Sources", isDirectory: true)
+        let targetFolder = sourcesFolder.appendingPathComponent(workingProjectName, isDirectory: true)
+        defer {
+            try? FileManager.default.removeItem(at: projectFolder)
+        }
+        do {
+                   
+           let proj = try XcodeProjectBuilders.Swift.CommandLine.create(workingProjectName,
+                                                                        in: workingDir,
+                                                                        havingUserDetails: .testUserDetails)
+            let testFile: URL = URL(fileURLWithPath: #file)
+            let destTestFile: URL = targetFolder.appendingPathComponent(testFile.lastPathComponent)
+            /// Copy test file into project
+            try FileManager.default.copyItem(at: testFile, to: destTestFile)
+
+            let targetGroup = proj.resources.group(atPath: "Sources/\(workingProjectName)")!
+            let localResourceFile = targetGroup.fullURL.appendingFileComponent(testFile.lastPathComponent)
+            
+            try targetGroup.addExisting(localResourceFile,
+                                           includeInTargets: [proj.targets.first!],
+                                           copyLocally: true,
+                                           savePBXFile: false)
+           print(proj)
+       } catch {
+           XCTFail("\(error)")
+       }
     }
 
     func testEmpty() { }
@@ -332,8 +369,8 @@ class XcodeProjTests: XCTestCase {
         ("testSwiftProjects", testSwiftProjects),
         ("testObjectiveCProjects", testObjectiveCProjects),
         ("testOtherProjects", testOtherProjects),
-        //("testCreateSwiftCommandLineApp", testCreateSwiftCommandLineApp),
-        //("testCreateObjCCommandLineApp", testCreateObjCCommandLineApp),
-        //("testCreateOtherEmptyProject", testCreateOtherEmptyProject)
+        ("testCreateSwiftCommandLineApp", testCreateSwiftCommandLineApp),
+        ("testCreateObjCCommandLineApp", testCreateObjCCommandLineApp),
+        ("testCreateOtherEmptyProject", testCreateOtherEmptyProject)
     ]
 }
