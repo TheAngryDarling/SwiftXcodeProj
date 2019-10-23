@@ -498,7 +498,7 @@ extension XCDebugger {
                 /// The file the breakpoint is in
                 public var filePath: String
                 /// The timestamp
-                public var timestampString: Decimal
+                public var timestampString: Decimal?
                 /// The starting column number of the breakpoint
                 public var startingColumnNumber: UInt
                 /// The ending column number of the breakpoint
@@ -524,7 +524,11 @@ extension XCDebugger {
                     self.condition = content.attribute(forName: "condition")?.stringValue
                     self.continueAfterRunningActions = (content.attribute(forName: "continueAfterRunningActions")?.stringValue?.lowercased() == "yes")
                     self.filePath = content.attribute(forName: "filePath")!.stringValue!
-                    self.timestampString = Decimal(string: content.attribute(forName: "timestampString")!.stringValue!)!
+                    if let timestamp = content.attribute(forName: "timestampString") {
+                        self.timestampString = Decimal(string: timestamp.stringValue!)!
+                    } else {
+                        self.timestampString = nil
+                    }
                     self.startingColumnNumber = UInt(content.attribute(forName: "startingColumnNumber")!.stringValue!)!
                     self.endingColumnNumber = UInt(content.attribute(forName: "endingColumnNumber")!.stringValue!)!
                     self.startingLineNumber = UInt(content.attribute(forName: "startingLineNumber")!.stringValue!)!
@@ -555,7 +559,9 @@ extension XCDebugger {
                     if let c = self.condition { attribs["condition"] = c }
                     attribs["continueAfterRunningActions"] = self.continueAfterRunningActions ? "Yes" : "No"
                     attribs["filePath"] = self.filePath
-                    attribs["timestampString"] = "\(self.timestampString)"
+                    if let timestamp = self.timestampString {
+                        attribs["timestampString"] = "\(timestamp)"
+                    }
                     attribs["startingColumnNumber"] = "\(self.startingColumnNumber)"
                     attribs["endingColumnNumber"] = "\(self.endingColumnNumber)"
                     attribs["startingLineNumber"] = "\(self.startingLineNumber)"
