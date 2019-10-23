@@ -46,7 +46,11 @@ public class XcodeFileResource: XcodeResource {
                 return XcodeFileSystemURLResource(path: newURL.path, isDirectory: isFolder)
                 //return URL(fileURLWithPath: pbxPath, isDirectory: isFolder)
             }
-            else { return self.project.projectPackage.deletingLastPathComponent().appendingPathComponent(pbxPath, isDirectory: isFolder) }
+            else {
+                return self.project.projectPackage
+                    .deletingLastPathComponent()
+                    .appendingPathComponent(pbxPath, isDirectory: isFolder)
+            }
         }
         if self.parent != nil {
             return self.parent.fullURL.appendingPathComponent(self.name, isDirectory: isFolder)
