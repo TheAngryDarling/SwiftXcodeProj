@@ -17,7 +17,15 @@ import SwiftGlibc
 import Darwin
 #endif
 
+fileprivate extension Version.SingleVersion {
 
+    /// Default Xcode version
+    static var defaultXcodeSupport: Version.SingleVersion { return XcodeProjectBuilders.DEFAUILT_XCODE_SUPPORT }
+    /// Default mac deployment version
+    static var defaultMacDeploymentTarget: Version.SingleVersion { return XcodeProjectBuilders.DEFAUILT_MAC_DEPLOYMENT_TARGET }
+    /// Default swift verson
+    static var defaultSwiftVersion: Version.SingleVersion { return XcodeProjectBuilders.DEFAULT_SWIFT_VERSION }
+}
 public struct XcodeProjectBuilders {
     private init() { }
     
@@ -118,6 +126,96 @@ public struct XcodeProjectBuilders {
                     }
                     results = results.sorted(by: objectVersionDetailsSorter)
                     return results.last
+            }
+        }
+        
+        /// Test to see if the given choice contains the provided choice reglardless of any choice parameters
+        /// - Parameter option: The choice/option to check for
+        internal func has(_ option: DefaultDetailsChoice) -> Bool {
+            switch (self, option) {
+                case (.objectVersion(_), .objectVersion(_)): return true
+                case (.compatibleXcode(_), .compatibleXcode(_)): return true
+                case (.swiftVersion(_), .swiftVersion(_)): return true
+                case (.macDeploymentTarget(_), .macDeploymentTarget(_)): return true
+                case (.iOSDeploymentTarget(_), .iOSDeploymentTarget(_)): return true
+                case (.tvOSDeploymentTarget(_), .tvOSDeploymentTarget(_)): return true
+                case (.watchOSDeploymentTarget(_), .watchOSDeploymentTarget(_)): return true
+                case (.iPadOSDeploymentTarget(_), .iPadOSDeploymentTarget(_)): return true
+                case (.compound(let lhs), .compound(let rhs)):
+                    for choice in rhs {
+                        if !lhs.has(choice) { return false }
+                    }
+                    return true
+                case (.compound(let lhs), _): return lhs.has(option)
+                default: return false
+            }
+           
+        }
+        
+        
+        /// Remove any choices/options provided
+        /// - Parameter option: any options to remove
+        /// - Returns: Returns true of anything was removed, otherwise false
+        @discardableResult
+        internal mutating func remove(_ option: DefaultDetailsChoice) -> Bool {
+            var rtn: Bool = false
+            switch (self, option) {
+                case (.compound(var lhs), .compound(let rhs)):
+                    /// Remove any items in lhs that exist in rhs
+                    var idx: Int = 0
+                    while idx < lhs.count {
+                        if rhs.has(lhs[idx]) {
+                            lhs.remove(at: idx)
+                            rtn = true
+                        } else {
+                            idx += 1
+                        }
+                    }
+                    if lhs.count == 1 { self = lhs.first! }
+                    else { self = .compound(lhs) }
+                case (.compound(var lhs), _):
+                    /// Remove any items in lhs that exist in rhs
+                    var idx: Int = 0
+                    while idx < lhs.count {
+                        if [option].has(lhs[idx]) {
+                            lhs.remove(at: idx)
+                            rtn = true
+                        } else {
+                            idx += 1
+                        }
+                    }
+                    if lhs.count == 1 { self = lhs.first! }
+                    else { self = .compound(lhs) }
+                case (_, .compound(let rhs)):
+                    if rhs.has(self) {
+                        rtn = true
+                        self = .compound([])
+                    }
+                default: rtn = false
+            }
+            return rtn
+        }
+        
+        /// Add the provided choice/option to the given choice
+        /// - Parameter option: The choice/option to add
+        internal mutating func add(_ option: DefaultDetailsChoice) {
+            switch (self, option) {
+                case (.compound(let lhs), .compound(let rhs)):
+                    let ary = lhs.removing(rhs).appending(contentsOf: rhs)
+                    if ary.count == 1 { self = ary.first! }
+                    else { self = .compound(ary) }
+                case (.compound(let lhs), _):
+                    let ary = lhs.removing(option).appending(option)
+                    if ary.count == 1 { self = ary.first! }
+                    else { self = .compound(ary) }
+                case (_, .compound(let rhs)):
+                    let ary = [self].removing(rhs).appending(contentsOf: rhs)
+                    if ary.count == 1 { self = ary.first! }
+                    else { self = .compound(ary) }
+                default:
+                    let ary = [self].removing(option).appending(option)
+                    if ary.count == 1 { self = ary.first! }
+                    else { self = .compound(ary) }
             }
         }
         
@@ -541,39 +639,53 @@ public struct XcodeProjectBuilders {
                          iOSDeploymentTarget: "iOS 11.4",
                          tvOSDeploymentTarget: "tvOS 11.4",
                          watchOSDeploymentTarget: "watchOS 4.3"),
-         DefaultDetails(objectVersion: 51,
+         DefaultDetails(objectVersion: 50,
                         compatibleXcode: "Xcode 10",
                          swiftVersion: "Swift 4.2",
                          macDeploymentTarget: "macOS 10.14",
                          iOSDeploymentTarget: "iOS 12",
                          tvOSDeploymentTarget: "tvOS 12",
                          watchOSDeploymentTarget: "watchOS 5"),
-         DefaultDetails(objectVersion: 51,
+         DefaultDetails(objectVersion: 50,
                         compatibleXcode: "Xcode 10.1",
                          swiftVersion: "Swift 4.2.1",
                          macDeploymentTarget: "macOS 10.14.1",
                          iOSDeploymentTarget: "iOS 12.1",
                          tvOSDeploymentTarget: "tvOS 12.1",
                          watchOSDeploymentTarget: "watchOS 5.1"),
-         DefaultDetails(objectVersion: 51,
+         DefaultDetails(objectVersion: 50,
                         compatibleXcode: "Xcode 10.2",
                          swiftVersion: "Swift 5.0",
                          macDeploymentTarget: "macOS 10.14.4",
                          iOSDeploymentTarget: "iOS 12.2",
                          tvOSDeploymentTarget: "tvOS 12.2",
                          watchOSDeploymentTarget: "watchOS 5.2"),
-         DefaultDetails(objectVersion: 51,
+         DefaultDetails(objectVersion: 50,
                         compatibleXcode: "Xcode 10.2.1",
                          swiftVersion: "Swift 5.0.1",
                          macDeploymentTarget: "macOS 10.14.4",
                          iOSDeploymentTarget: "iOS 12.2",
                          tvOSDeploymentTarget: "tvOS 12.2",
                          watchOSDeploymentTarget: "watchOS 5.2"),
-         DefaultDetails(objectVersion: 51,
+         DefaultDetails(objectVersion: 50,
+                        compatibleXcode: "Xcode 10.3",
+                         swiftVersion: "Swift 5.0.1",
+                         macDeploymentTarget: "macOS 10.14.4",
+                         iOSDeploymentTarget: "iOS 12.2",
+                         tvOSDeploymentTarget: "tvOS 12.2",
+                         watchOSDeploymentTarget: "watchOS 5.2"),
+         DefaultDetails(objectVersion: 50,
                         compatibleXcode: "Xcode 11",
                          swiftVersion: "Swift 5.1",
                          macDeploymentTarget: "macOS 10.15",
                          iOSDeploymentTarget: "iOS 13",
+                         tvOSDeploymentTarget: "tvOS 13",
+                         watchOSDeploymentTarget: "watchOS 6"),
+         DefaultDetails(objectVersion: 50,
+                        compatibleXcode: "Xcode 11.1",
+                         swiftVersion: "Swift 5.1",
+                         macDeploymentTarget: "macOS 10.15",
+                         iOSDeploymentTarget: "iOS 13.1",
                          tvOSDeploymentTarget: "tvOS 13",
                          watchOSDeploymentTarget: "watchOS 6"),
     ]
@@ -657,6 +769,10 @@ public struct XcodeProjectBuilders {
                                                                                                      .swiftVersion(DEFAULT_SWIFT_VERSION)]),
                                       havingUserDetails userDetails: UserDetails = UserDetails()) throws -> XcodeProject {
                 
+                var defaultOptions = defaultOptions
+                
+                if !defaultOptions.has(.swiftVersion(.defaultSwiftVersion)) { defaultOptions.add(.swiftVersion(.defaultSwiftVersion)) }
+                if !defaultOptions.has(.macDeploymentTarget(.defaultMacDeploymentTarget)) { defaultOptions.add(.macDeploymentTarget(.defaultMacDeploymentTarget)) }
                 
                 guard let defaults = defaultOptions.mostCompatible(from: getObjectVersionDefaultDetails()) else {
                     throw Errors.noDefaultsFound
@@ -717,9 +833,10 @@ public struct XcodeProjectBuilders {
                                                     createProxy: false,
                                                     havingInfo: [:])
                 
-                
+            
                 // Create sources folder before target so it will show up before Products folder
-                let sourcesFolder = try rtn.resources.createSourceGroup(withName: name, savePBXFile: false)
+                let sourcesFolder = try rtn.resources.createSourceGroup(withName: "Sources", savePBXFile: false)
+                let targetFolder = try sourcesFolder.createGroup(withName: name)
                 
                 let mainFileName: String = "main.swift"
                 
@@ -729,10 +846,11 @@ public struct XcodeProjectBuilders {
                                                                 havingMembership: target,
                                                                 inProject: rtn)
                 
-                let sourceFile = try sourcesFolder.createFile(ofType: PBXFileType.SourceCode.Swift.source,
+                let sourceFile = try targetFolder.createFile(ofType: PBXFileType.SourceCode.Swift.source,
                                                              withName: mainFileName,
                                                              withInitialData: dta,
                                                              havingMembership: target)
+                
                 
                 let sourcesBuildPhase = target.sourcesBuildPhase()
                 sourcesBuildPhase.createBuildFile(for: sourceFile)
@@ -749,7 +867,8 @@ public struct XcodeProjectBuilders {
             /// Create new Swift Command Line project
             public static func create(_ name: String,
                                       in folder: String,
-                                      withDefaults defaultOptions: DefaultDetailsChoice = .compatibleXcode(DEFAUILT_XCODE_SUPPORT),
+                                      withDefaults defaultOptions: DefaultDetailsChoice = .compound([.macDeploymentTarget(DEFAUILT_MAC_DEPLOYMENT_TARGET),
+                                                                                                     .swiftVersion(DEFAULT_SWIFT_VERSION)]),
                                       havingUserDetails userDetails: UserDetails = UserDetails()) throws -> XcodeProject {
                 return try create(name,
                                   in: XcodeFileSystemURLResource(directory: folder),
