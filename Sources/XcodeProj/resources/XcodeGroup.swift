@@ -85,16 +85,6 @@ public class XcodeGroup: XcodeGroupResource {
                             createFolder: Bool = true,
                             savePBXFile: Bool = true) throws -> XcodeGroup {
         
-        /*if case let .before(ref) = location {
-            if !self.children.contains(ref) {
-                throw CreationLocation.Error.referenceNotFound(ref)
-            }
-        } else if case let .after(ref) = location {
-            if !self.children.contains(ref) {
-                throw CreationLocation.Error.referenceNotFound(ref)
-            }
-        }*/
-        
         let childURL = self.fullURL.appendingDirComponent(name)
         if createFolder && !savePBXFile && !self.project.isNewProject {
             try self.project.fsProvider.createDirectory(at: childURL)
@@ -106,25 +96,6 @@ public class XcodeGroup: XcodeGroupResource {
         let rtn = XcodeGroup(self.project, pbxChildGroup, havingParent: self)
         
         try location.add(rtn, to: &self.children)
-        
-        /*switch location {
-            case .beginning: self.children.insert(rtn, at: 0)
-            case .end: self.children.append(rtn)
-            case .index(let index): self.children.insert(rtn, at: index)
-            case .before(let ref):
-                guard let index = self.children.firstIndex(of: ref) else {
-                    throw CreationLocation.Error.referenceNotFound(ref)
-                }
-                self.children.insert(rtn, at: index)
-            case .after(let ref):
-                guard let index = self.children.firstIndex(of: ref) else {
-                    throw CreationLocation.Error.referenceNotFound(ref)
-                }
-                self.children.insert(rtn, at: index + 1)
-        }*/
-        
-        //if location == .end { self.children.append(rtn) }
-        //else { self.children.insert(rtn, at: 0) }
         
         if savePBXFile {
             var actions: [XcodeFileSystemProviderAction] = []
@@ -181,16 +152,6 @@ public class XcodeGroup: XcodeGroupResource {
                                     savePBXFile: Bool = true,
                                     actionBeforeModification: (XcodeFile) throws -> Void = { _ in return }) throws -> XcodeFile {
         
-        /*if case let .before(ref) = location {
-            if !self.children.contains(ref) {
-                throw CreationLocation.Error.referenceNotFound(ref)
-            }
-        } else if case let .after(ref) = location {
-            if !self.children.contains(ref) {
-                throw CreationLocation.Error.referenceNotFound(ref)
-            }
-        }*/
-        
         let pbxChildFile: PBXFileReference!
         if self.isAbsolutePath {
             pbxChildFile =  try self.pbxGroup.createFileReference(namePath: .both(name: name,
@@ -208,24 +169,6 @@ public class XcodeGroup: XcodeGroupResource {
         let rtn = XcodeFile(self.project, pbxChildFile, havingParent: self)
         
         try location.add(rtn, to: &self.children)
-        
-        /*switch location {
-            case .beginning: self.children.insert(rtn, at: 0)
-            case .end: self.children.append(rtn)
-            case .index(let index): self.children.insert(rtn, at: index)
-            case .before(let ref):
-                guard let index = self.children.firstIndex(of: ref) else {
-                    throw CreationLocation.Error.referenceNotFound(ref)
-                }
-                self.children.insert(rtn, at: index)
-            case .after(let ref):
-                guard let index = self.children.firstIndex(of: ref) else {
-                    throw CreationLocation.Error.referenceNotFound(ref)
-                }
-                self.children.insert(rtn, at: index + 1)
-        }*/
-        
-        //self.children.append(rtn)
         
         if fileType.isCodeFile {
             for target in membership {
@@ -304,23 +247,6 @@ public class XcodeGroup: XcodeGroupResource {
                               atLocation: location)
     }
     
-    
-    
-    /*internal func addExistingChild(_ child: XcodeFileResource, savePBXFile: Bool = true) throws {
-        if child.parent != nil {
-            child.removeReferenceFromParentWithoutSaving()
-        }
-        
-        self.pbxGroup.childrenReferences.append(child.pbxFileResource.id)
-        self.children.append(child)
-        child.parent = self
-        
-        if savePBXFile {
-            try self.project.save()
-        }
-        
-    }*/
-    
     /// Add an existing Xcode Project to this group
     ///
     ///
@@ -366,26 +292,13 @@ public class XcodeGroup: XcodeGroupResource {
                 let proxy = self.project.proj.createContainerItemProxy(containerPortal: pbxFile,
                                                                         remoteGlobalIDString: productReference,
                                                                         remoteInfo: tName)
-                /*let proxy = PBXContainerItemProxy(id: self.project.proj.generateNewReference(),
-                                                  containerPortal: pbxFile.id,
-                                                  proxyType: .reference,
-                                                  remoteGlobalIDString: productReference,
-                                                  remoteInfo: tName)
-                
-                self.pbxGroup.objectList.append(proxy)*/
                 
                 
                 let ref = self.project.proj.createReferenceProxy(namePath: .path(targetFile.path!),
                                                                     sourceTree: .buildProductsDir,
                                                                     fileType: targetFile.explicitFileType!,
                                                                     remoteReference: proxy.id)
-                /*let ref = PBXReferenceProxy(id: self.project.proj.generateNewReference(),
-                                            path: targetFile.path!,
-                                            sourceTree: .buildProductsDir,
-                                            fileType: targetFile.explicitFileType!,
-                                            remoteReference: proxy.id)
                 
-                self.pbxGroup.objectList.append(ref)*/
                 targetProxyRefrences.append(ref.id)
                 
             }
@@ -394,13 +307,6 @@ public class XcodeGroup: XcodeGroupResource {
                                                             namePath: .name("Products"),
                                                             sourceTree: .group,
                                                             children: targetProxyRefrences)
-            /*let grp = PBXGroup(id: self.project.proj.generateNewReference(),
-                               fileType: .referenceProxy,
-                               name: "Products",
-                               sourceTree: .group,
-                               children: targetProxyRefrences)
-            
-            self.pbxGroup.objectList.append(grp)*/
             
             let ref = PBXProject.PBXProjectReference(group: grp.id, ref: pbxFile.id)
             
@@ -410,22 +316,6 @@ public class XcodeGroup: XcodeGroupResource {
         
         let rtn = XcodeFile(self.project, pbxFile, havingParent: self)
         try location.add(rtn, to: &self.children)
-        /*switch location {
-            case .beginning: self.children.insert(rtn, at: 0)
-            case .end: self.children.append(rtn)
-            case .index(let index): self.children.insert(rtn, at: index)
-            case .before(let ref):
-                guard let index = self.children.firstIndex(of: ref) else {
-                    throw CreationLocation.Error.referenceNotFound(ref)
-                }
-                self.children.insert(rtn, at: index)
-            case .after(let ref):
-                guard let index = self.children.firstIndex(of: ref) else {
-                    throw CreationLocation.Error.referenceNotFound(ref)
-                }
-                self.children.insert(rtn, at: index + 1)
-        }*/
-        //self.children.append(rtn)
         
         if savePBXFile {
             try self.project.save()
@@ -455,22 +345,6 @@ public class XcodeGroup: XcodeGroupResource {
         do {
             let subGroup = XcodeGroup(self.project, pbxSubGroup, havingParent: self)
             try location.add(subGroup, to: &self.children)
-            /*switch location {
-                case .beginning: self.children.insert(subGroup, at: 0)
-                case .end: self.children.append(subGroup)
-                case .index(let index): self.children.insert(subGroup, at: index)
-                case .before(let ref):
-                    guard let index = self.children.firstIndex(of: ref) else {
-                        throw CreationLocation.Error.referenceNotFound(ref)
-                    }
-                    self.children.insert(subGroup, at: index)
-                case .after(let ref):
-                    guard let index = self.children.firstIndex(of: ref) else {
-                        throw CreationLocation.Error.referenceNotFound(ref)
-                    }
-                    self.children.insert(subGroup, at: index + 1)
-            }*/
-            //self.children.append(subGroup)
             
             let children = try self.project.fsProvider.contentsOfDirectory(at: path)
             for child in children {
@@ -518,9 +392,29 @@ public class XcodeGroup: XcodeGroupResource {
                                  atLocation location: AddLocation<XcodeFileResource> = .end,
                                  copyLocally: Bool = true,
                                  savePBXFile: Bool = true) throws -> XcodeFileResource {
-        var strPath = path.relative(to: self.project.projectFolder).path
+        //let initalStrPath = path.relative(to: self.project.projectFolder).relativePath
+        var strPath = path.relative(to: self.project.projectFolder).relativePath
         if copyLocally  {
-            strPath = path.lastPathComponent
+            //print("Adding \(path.path) to group \(self.name) with tree: \(self.sourceTree)")
+            if let tree = self.sourceTree {
+                switch tree {
+                    case .group:
+                        strPath = path.lastPathComponent
+                        //print("[group]: Changing strPath from \(initalStrPath) to \(strPath)")
+                    case .absolute:
+                        strPath = path.path
+                        //print("[absolute]: Changing strPath from \(initalStrPath) to \(strPath)")
+                    case .sourceRoot:
+                        var basePath = self.project.resources.fullURL
+                        if let p = self.path { basePath.appendDirComponent(p) }
+                        strPath = path.relative(to: basePath).relativePath
+                        //print("[sourceRoot]: Changing strPath from \(initalStrPath) to \(strPath) having basePath \(basePath.path)")
+                    default:
+                        strPath = path.path
+                        //print("Changing strPath to \(strPath)")
+                }
+            }
+            
             // Must copy files in
             if path != self.fullURL.appendingFileComponent(path.lastPathComponent) {
                 try self.project.fsProvider.copy(path, to: self.fullURL)
@@ -549,22 +443,6 @@ public class XcodeGroup: XcodeGroupResource {
         
         let rtn = XcodeFile(self.project, pbxFile, havingParent: self)
         try location.add(rtn, to: &self.children)
-        /*switch location {
-            case .beginning: self.children.insert(rtn, at: 0)
-            case .end: self.children.append(rtn)
-            case .index(let index): self.children.insert(rtn, at: index)
-            case .before(let ref):
-                guard let index = self.children.firstIndex(of: ref) else {
-                    throw CreationLocation.Error.referenceNotFound(ref)
-                }
-                self.children.insert(rtn, at: index)
-            case .after(let ref):
-                guard let index = self.children.firstIndex(of: ref) else {
-                    throw CreationLocation.Error.referenceNotFound(ref)
-                }
-                self.children.insert(rtn, at: index + 1)
-        }*/
-        //self.children.append(rtn)
         
         if savePBXFile {
             try self.project.save()
@@ -590,16 +468,6 @@ public class XcodeGroup: XcodeGroupResource {
                                                copyLocally: Bool = true,
                                                savePBXFile: Bool = true) throws -> XcodeFileResource {
         
-        /*if case let .before(ref) = location {
-            if !self.children.contains(ref) {
-                throw CreationLocation.Error.referenceNotFound(ref)
-            }
-        } else if case let .after(ref) = location {
-            if !self.children.contains(ref) {
-                throw CreationLocation.Error.referenceNotFound(ref)
-            }
-        }*/
-        
         var rtn: XcodeFileResource!
         
         if path.isDirectory {
@@ -622,38 +490,4 @@ public class XcodeGroup: XcodeGroupResource {
         
         return rtn
     }
-    
-    /*
-    /// Remove the file from the project
-    ///
-    /// - Parameters:
-    ///   - file: the file to remove from this group
-    ///   - deletingFiles: An indicator if any file system resources for this group should be deleted from the file system
-    ///   - savePBXFile: An indicator if the PBX Project File should be saved at this time (Default: true)
-    public func remove(_ file: XcodeFile, deleteFile: Bool = true, savePBXFile: Bool = true) throws {
-        if let idx = self.children.firstIndex(of: file) {
-            if deleteFile { try self.project.fsProvider.remove(item: file.fullURL) }
-            self.children.remove(at: idx)
-            self.pbxGroup.objectList.remove(file.pbxFileReference)
-            if savePBXFile { try self.project.save() }
-        }
-        
-    }
-    
-    /// Remove the group from the project
-    ///
-    /// - Parameters:
-    ///   - group: the group to remove from this group
-    ///   - deletingFiles: An indicator if any file system resources for this group should be deleted from the file system
-    ///   - savePBXFile: An indicator if the PBX Project File should be saved at this time (Default: true)
-    public func remove(_ group: XcodeGroup, deleteFile: Bool = true, savePBXFile: Bool = true) throws {
-        if let idx = self.children.firstIndex(of: group) {
-            if deleteFile { try self.project.fsProvider.remove(item: group.fullURL) }
-            self.children.remove(at: idx)
-            self.pbxGroup.objectList.remove(group.pbxGroup)
-            if savePBXFile { try self.project.save() }
-        }
-        
-    }
-    */
 }
