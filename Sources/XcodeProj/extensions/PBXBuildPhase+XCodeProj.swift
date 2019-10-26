@@ -22,4 +22,12 @@ public extension PBXBuildPhase {
         
         return self.createBuildFile(for: file.pbxFileReference, withSettings: settings)
     }
+    
+    /// Removes the build file for the given XcodeFile
+    /// - Parameter file: The file to remove from the build phase
+    /// - Returns: Returns true if the file was removed, otherwise false
+    @discardableResult
+    func removeBuildFile(for file: XcodeFile) -> Bool {
+        return self.removeBuildFile(for: file.pbxFileReference)
+    }
 }
