@@ -41,7 +41,8 @@ public class PBXBuildPhase: PBXUnknownObject {
         case sourceBuildPhase = "Sources"
         case carbonResourceBuildPhase = "Rez"
         
-        fileprivate var pbxType: PBXObjectType {
+        /// The PBX Object Type for this build phase type
+        public var objectType: PBXObjectType {
             switch self {
             case .copyFilesBuildPhase: return PBXObjectType.copyFilesBuildPhase
             case .frameworksBuildPhase: return PBXObjectType.frameworksBuildPhase
@@ -129,7 +130,7 @@ public class PBXBuildPhase: PBXUnknownObject {
         self.buildActionMask = buildActionMask
         self.fileReferences = files
         self.runOnlyForDeploymentPostprocessing = runOnlyForDeploymentPostprocessing
-        super.init(id: id, type: type.pbxType)
+        super.init(id: id, type: type.objectType)
     }
     
     public required init(from decoder: Decoder) throws {
@@ -221,6 +222,31 @@ public class PBXBuildPhase: PBXUnknownObject {
         self.fileReferences.append(rtn.id)
         return rtn
     }
+    
+    /// Removes the build file from the target/project
+    /// - Parameter file: The build file to remove
+    /// - returns: Returns true if the file was removed, otherwise false
+    @discardableResult
+    public func removeBuildFile(for file: PBXBuildFile) -> Bool {
+        guard self.fileReferences.contains(file.id) else { return false }
+        self.objectList.remove(file) // This will remove the object and all references to it
+        return true
+    }
+    
+    /// Removes the refernece to the file from the build phase
+    /// - Parameter file: The file to remove
+    /// - returns: Returns true if the file was removed, otherwise false
+    @discardableResult
+    public func removeBuildFile(for file: PBXFileReference) -> Bool {
+        let buildFiles = self.files
+        guard let bf = buildFiles.first(where: { return $0.fileRef == file.id } ) else {
+            return false
+        }
+        
+        return removeBuildFile(for: bf)
+    }
+    
+    
     
     
 }
