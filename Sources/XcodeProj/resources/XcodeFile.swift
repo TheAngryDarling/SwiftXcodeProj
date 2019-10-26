@@ -79,27 +79,20 @@ public class XcodeFile: XcodeFileResource {
         set { self.pbxFileReference.languageSpecificationIdentifier = newValue }
     }
     
-    
-    
-    /*public var targetMembership: [XcodeTarget] {
+    /// A list of all targets this file belongs to
+    public var targetMemberships: [XcodeTarget] {
         get {
+            let pbxTargets = self.pbxFileReference.targetMembership
             var rtn: [XcodeTarget] = []
-            let tm = self.fileReference.targetMembership
-            for t in tm {
-                rtn.append(XcodeTarget(t))
+            let allTargets = self.project.targets
+            for pbxTarget in pbxTargets {
+                if let t = allTargets.first(where: { $0.pbxTarget.id == pbxTarget.id }) {
+                    rtn.append(t)
+                }
             }
             return rtn
         }
-        set {
-            var tgs: [PBXTarget] = []
-            
-            for t in newValue {
-                tgs.append(t.target)
-            }
-            
-            self.fileReference.targetMembership = tgs
-        }
-    }*/
+    }
     
     
     /// Create a new instance of an Xcode File
