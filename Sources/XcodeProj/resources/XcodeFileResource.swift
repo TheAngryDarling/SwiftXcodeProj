@@ -30,6 +30,12 @@ public class XcodeFileResource: XcodeResource {
         return pbxPath.hasPrefix("/")
     }
     
+    /// The source tree for the given resource
+    public var sourceTree: XcodeSourceTree? {
+        get { return self.pbxFileResource.sourceTree }
+        set { self.pbxFileResource.sourceTree = newValue }
+    }
+    
     /// Provides the full XcodeFileSystemURLResource URL path of this resource.
     ///
     /// This is build using the current resource path/name as well as its parent fullURL to build the reutrning value
@@ -62,15 +68,6 @@ public class XcodeFileResource: XcodeResource {
             }
             return rtn
         }
-        
-        /*var rtn: String = ""
-        if self.parent != nil {
-            let pFp = self.parent.fullPath
-            if !pFp.isEmpty {
-                rtn = pFp + "/"
-            }
-        }
-        return (rtn + self.name)*/
     }
     
     
