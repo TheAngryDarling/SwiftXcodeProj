@@ -6,7 +6,15 @@
 //
 
 import Foundation
+import PBXProj
 
+public extension Array where Element == XcodeBuildPhase {
+    /// Returns the first build phase of a specific type
+    /// - Parameter type: The type of build phase to find
+    func first(of type: XcodeBuildPhaseType) -> XcodeBuildPhase? {
+        return self.first(where: { return $0.type == type.objectType })
+    }
+}
 internal extension Array {
     /// Creates a copy of the current array removing the first element
     func removingFirst() -> Array<Element> {
