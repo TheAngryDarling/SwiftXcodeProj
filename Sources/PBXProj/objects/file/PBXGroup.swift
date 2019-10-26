@@ -20,19 +20,6 @@ public class PBXGroup: PBXFileElement {
     
     private typealias CodingKeys = GroupCodingKeys
     
-    
-    /// Location when adding item to list
-    /*public enum CreationLocation {
-        public enum Error: Swift.Error {
-            case referenceNotFound(PBXReference)
-        }
-        case beginning
-        case end
-        case index(Int)
-        case before(PBXReference)
-        case after(PBXReference)
-    }*/
-    
     /// Group Type
     public enum PBXGroupType {
         case basic
@@ -88,12 +75,6 @@ public class PBXGroup: PBXFileElement {
         get {
             return self.objectList.objects(withReferences: self.childrenReferences,
                                            asType: PBXFileReference.self)
-            /*var rtn: [PBXFileReference] = []
-            let items = self.children
-            for i in items {
-                if let f = i as? PBXFileReference { rtn.append(f) }
-            }
-            return rtn*/
         }
     }
     
@@ -315,21 +296,6 @@ extension PBXGroup {
                            children: [])
         try location.add(rtn.id, to: &self.childrenReferences)
         self.objectList.append(rtn)
-        /*switch location {
-            case .beginning: self.childrenReferences.insert(rtn.id, at: 0)
-            case .end: self.childrenReferences.append(rtn.id)
-            case .index(let index): self.childrenReferences.insert(rtn.id, at: index)
-            case .before(let ref):
-                guard let index = self.childrenReferences.firstIndex(of: ref) else {
-                    throw AddLocation<PBXReference>.Error.objectNotFound(ref)
-                }
-                self.childrenReferences.insert(rtn.id, at: index)
-            case .after(let ref):
-                guard let index = self.childrenReferences.firstIndex(of: ref) else {
-                    throw AddLocation<PBXReference>.Error.objectNotFound(ref)
-                }
-                self.childrenReferences.insert(rtn.id, at: index + 1)
-        }*/
         rtn.parent = self
         return rtn
     }
@@ -469,15 +435,6 @@ extension PBXGroup {
                                   tabWidth: UInt? = nil,
                                   wrapsLines: Bool = true,
                                   atLocation location: AddLocation<PBXReference> = .end) throws -> PBXFileReference {
-        /*if case let .before(ref) = location {
-            if !self.childrenReferences.contains(ref) {
-                throw AddLocation<PBXReference>.Error.objectNotFound(ref)
-            }
-        } else if case let .after(ref) = location {
-            if !self.childrenReferences.contains(ref) {
-                throw AddLocation<PBXReference>.Error.objectNotFound(ref)
-            }
-        }*/
         
         let rtn = PBXFileReference(id: self.proj.generateNewReference(),
                                    namePath: namePath,
@@ -493,23 +450,7 @@ extension PBXGroup {
                                    wrapsLines: wrapsLines)
         try location.add(rtn.id, to: &self.childrenReferences)
         self.objectList.append(rtn)
-        /*switch location {
-            case .beginning: self.childrenReferences.insert(rtn.id, at: 0)
-            case .end: self.childrenReferences.append(rtn.id)
-            case .index(let index): self.childrenReferences.insert(rtn.id, at: index)
-            case .before(let ref):
-                guard let index = self.childrenReferences.firstIndex(of: ref) else {
-                    throw AddLocation<PBXReference>.Error.objectNotFound(ref)
-                }
-                self.childrenReferences.insert(rtn.id, at: index)
-            case .after(let ref):
-                guard let index = self.childrenReferences.firstIndex(of: ref) else {
-                    throw AddLocation<PBXReference>.Error.objectNotFound(ref)
-                }
-                self.childrenReferences.insert(rtn.id, at: index + 1)
-        }*/
-        
-        //self.childrenReferences.append(rtn.id)
+    
         rtn.parent = self
         return rtn
     }
