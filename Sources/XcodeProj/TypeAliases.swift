@@ -11,7 +11,9 @@ import PBXProj
 
 public typealias XcodeProductType = PBXProductType
 public typealias XcodeFileType = PBXFileType
+public typealias XcodeSourceTree = PBXSourceTree
 public typealias XcodeBuildPhase = PBXBuildPhase
+public typealias XcodeBuildPhaseType = PBXBuildPhase.PBXBuildPhaseType
 public typealias XcodeBuildRule = PBXBuildRule
 public typealias XcodeCopyFilesBuildPhase = PBXCopyFilesBuildPhase
 public typealias XcodeFrameworksBuildPhase = PBXFrameworksBuildPhase
