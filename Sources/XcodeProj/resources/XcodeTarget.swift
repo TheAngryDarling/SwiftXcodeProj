@@ -221,24 +221,16 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     }
     
     
-    /*
-    /// Create a framework build phase for this target
-    ///
-    /// - Parameters:
-    ///   - buildActionMask: The action mask (Has Default)
-    ///   - files: Any build files for this build phase
-    ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
-    /// - Returns: Returns the newly created framework build phase
+    
+    /// Removes the file from the sources build phase
+    /// - Parameter file: The file to remove
+    /// - Returns: Returns true if the file was removed otherwise false
     @discardableResult
-    public func createFrameworkBuildPhase(buildActionMask: UInt = PBXFrameworksBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
-                                             files: [PBXBuildFile] = [],
-                                             runOnlyForDeploymentPostprocessing: UInt = 0) throws -> XcodeFrameworksBuildPhase {
-        
-        return try self.pbxTarget.createFrameworkBuildPhase(buildActionMask: buildActionMask,
-                                                               files: files.map({ return $0.id }),
-                                                               runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing)
+    public func remove(file: XcodeFile, from phaseType: XcodeBuildPhaseType) -> Bool {
+        return self.buildPhases.first(of: phaseType)?.removeBuildFile(for: file) ?? false
     }
-    */
+    
+    
     /// Returns the framework build phase.  If it does not exists, it will be created first
     @discardableResult
     public func frameworkBuildPhase(atLocation location: AddLocation<PBXBuildPhase> = .end) -> XcodeFrameworksBuildPhase {
@@ -247,24 +239,6 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
         }
         return try! self.pbxTarget.createFrameworkBuildPhase(atLocation: location)
     }
-    
-    /*
-    /// Create a headers build phase for this target
-    ///
-    /// - Parameters:
-    ///   - buildActionMask: The action mask (Has Default)
-    ///   - files: Any build files for this build phase
-    ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
-    /// - Returns: Returns the newly created headers build phase
-    @discardableResult
-    public func createHeadersBuildPhase(buildActionMask: UInt = PBXHeadersBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
-                                           files: [PBXBuildFile] = [],
-                                           runOnlyForDeploymentPostprocessing: UInt = 0) throws -> XcodeHeadersBuildPhase {
-        return try self.pbxTarget.createHeadersBuildPhase(buildActionMask: buildActionMask,
-                                                             files: files.map({ return $0.id }),
-                                                             runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing)
-    }
-    */
     
     /// Returns the headers build phase.  If it does not exists, it will be created first
     @discardableResult
@@ -275,23 +249,6 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
         return try! self.pbxTarget.createHeadersBuildPhase(atLocation: location)
     }
     
-    /*
-    /// Create a resources build phase for this target
-    ///
-    /// - Parameters:
-    ///   - buildActionMask: The action mask (Has Default)
-    ///   - files: Any build files for this build phase
-    ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
-    /// - Returns: Returns the newly created resources build phase
-    @discardableResult
-    public func createResourcesBuildPhase(buildActionMask: UInt = PBXResourcesBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
-                                             files: [PBXBuildFile] = [],
-                                             runOnlyForDeploymentPostprocessing: UInt = 0) throws -> XcodeResourcesBuildPhase {
-        return try self.pbxTarget.createResourcesBuildPhase(buildActionMask: buildActionMask,
-                                                              files: files.map({ return $0.id }),
-                                                              runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing)
-    }
-    */
     /// Returns the resources build phase.  If it does not exists, it will be created first
     @discardableResult
     public func resourcesBuildPhase(atLocation location: AddLocation<XcodeBuildPhase> = .end) -> XcodeResourcesBuildPhase {
@@ -301,23 +258,6 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
         return try! self.pbxTarget.createResourcesBuildPhase(atLocation: location)
     }
     
-    /*
-    /// Create a rez build phase for this target
-    ///
-    /// - Parameters:
-    ///   - buildActionMask: The action mask (Has Default)
-    ///   - files: Any build files for this build phase
-    ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
-    /// - Returns: Returns the newly created rez build phase
-    @discardableResult
-    public func createRezBuildPhase(buildActionMask: UInt = PBXRezBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
-                                       files: [PBXBuildFile] = [],
-                                       runOnlyForDeploymentPostprocessing: UInt = 0) throws -> XcodeRezBuildPhase {
-        return try self.pbxTarget.createRezBuildPhase(buildActionMask: buildActionMask,
-                                                         files: files.map({ return $0.id }),
-                                                         runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing)
-    }
-    */
     /// Returns the rez build phase.  If it does not exists, it will be created first
     @discardableResult
     public func rezBuildPhase(atLocation location: AddLocation<XcodeBuildPhase> = .end) -> XcodeRezBuildPhase {
@@ -326,24 +266,6 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
         }
         return try! self.pbxTarget.createRezBuildPhase(atLocation: location)
     }
-    
-    /*
-    /// Create a sources build phase for this target
-    ///
-    /// - Parameters:
-    ///   - buildActionMask: The action mask (Has Default)
-    ///   - files: Any build files for this build phase
-    ///   - runOnlyForDeploymentPostprocessing: The Run oly for deployment post processing (Default: 0)
-    /// - Returns: Returns the newly created sources build phase
-    @discardableResult
-    public func createSourcesBuildPhase(buildActionMask: UInt = PBXSourcesBuildPhase.DEFAULT_BUILD_ACTION_MAKS,
-                                           files: [PBXBuildFile] = [],
-                                           runOnlyForDeploymentPostprocessing: UInt = 0) throws -> XcodeSourcesBuildPhase {
-        return try self.pbxTarget.createSourcesBuildPhase(buildActionMask: buildActionMask,
-                                                             files: files.map({ return $0.id }),
-                                                             runOnlyForDeploymentPostprocessing: runOnlyForDeploymentPostprocessing)
-    }
-    */
     
     /// Returns the sources build phase.  If it does not exists, it will be created first
     @discardableResult
@@ -427,6 +349,8 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
     public func removeBuildPhase(_ buildPhase: XcodeBuildPhase) -> Bool {
         return self.pbxTarget.removeBuildPhase(buildPhase)
     }
+    
+    
     
     /// Creates a new dependency for this target
     ///
