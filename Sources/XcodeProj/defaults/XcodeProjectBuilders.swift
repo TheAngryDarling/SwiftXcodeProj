@@ -75,7 +75,7 @@ public struct XcodeProjectBuilders {
         }
     }
     
-    ///
+    /// Requirements used to find the most compatible version of Build / Deployment details
     public enum DefaultDetailsChoice {
         case objectVersion(Int)
         case compatibleXcode(Version.SingleVersion)
@@ -99,6 +99,11 @@ public struct XcodeProjectBuilders {
         public init(_ compound: [DefaultDetailsChoice]) { self = .compound(compound) }
         
         
+        /// Find the most compatiable Default Build Details for the given choices
+        public func mostCompatible() -> DefaultDetails! {
+            return self.mostCompatible(from: XcodeProjectBuilders.getObjectVersionDefaultDetails())
+        }
+        /// Find the most compatiable Default Build Details for the given choices within the list of Default Build Details
         fileprivate func mostCompatible(from details: [DefaultDetails]) -> DefaultDetails! {
             switch self {
                 case .objectVersion(let version):
@@ -131,7 +136,7 @@ public struct XcodeProjectBuilders {
         
         /// Test to see if the given choice contains the provided choice reglardless of any choice parameters
         /// - Parameter option: The choice/option to check for
-        internal func has(_ option: DefaultDetailsChoice) -> Bool {
+        public func has(_ option: DefaultDetailsChoice) -> Bool {
             switch (self, option) {
                 case (.objectVersion(_), .objectVersion(_)): return true
                 case (.compatibleXcode(_), .compatibleXcode(_)): return true
@@ -157,7 +162,7 @@ public struct XcodeProjectBuilders {
         /// - Parameter option: any options to remove
         /// - Returns: Returns true of anything was removed, otherwise false
         @discardableResult
-        internal mutating func remove(_ option: DefaultDetailsChoice) -> Bool {
+        public mutating func remove(_ option: DefaultDetailsChoice) -> Bool {
             var rtn: Bool = false
             switch (self, option) {
                 case (.compound(var lhs), .compound(let rhs)):
@@ -198,7 +203,7 @@ public struct XcodeProjectBuilders {
         
         /// Add the provided choice/option to the given choice
         /// - Parameter option: The choice/option to add
-        internal mutating func add(_ option: DefaultDetailsChoice) {
+        public mutating func add(_ option: DefaultDetailsChoice) {
             switch (self, option) {
                 case (.compound(let lhs), .compound(let rhs)):
                     let ary = lhs.removing(rhs).appending(contentsOf: rhs)
@@ -725,7 +730,7 @@ public struct XcodeProjectBuilders {
     }
     
     /// Get all Pre-defined and registered default details
-    private static func getObjectVersionDefaultDetails() -> [DefaultDetails] {
+    public static func getObjectVersionDefaultDetails() -> [DefaultDetails] {
         var rtn: [DefaultDetails] = INTERNAL_OBJECT_VERSION_DEFAULT_DETAILS
         
         for rO in REGISTERED_OBJECT_VERSION_DEFAULT_DETAILS {
