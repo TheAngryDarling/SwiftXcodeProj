@@ -44,15 +44,15 @@ public struct XcodeProjectBuilders {
     
     /// Default Settings for PBX Project File
     public struct DefaultDetails {
-        let archiveVersion: Int
-        let objectVersion: Int
-        let compatibleXcode: NamedVersion.BasicVersion
-        let swiftVersion: NamedVersion.BasicVersion!
-        let macDeploymentTarget: NamedVersion.BasicVersion!
-        let iOSDeploymentTarget: NamedVersion.BasicVersion!
-        let tvOSDeploymentTarget: NamedVersion.BasicVersion!
-        let watchOSDeploymentTarget: NamedVersion.BasicVersion!
-        let iPadOSDeploymentTarget: NamedVersion.BasicVersion!
+        public let archiveVersion: Int
+        public let objectVersion: Int
+        public let compatibleXcode: NamedVersion.BasicVersion
+        public let swiftVersion: NamedVersion.BasicVersion!
+        public let macDeploymentTarget: NamedVersion.BasicVersion!
+        public let iOSDeploymentTarget: NamedVersion.BasicVersion!
+        public let tvOSDeploymentTarget: NamedVersion.BasicVersion!
+        public let watchOSDeploymentTarget: NamedVersion.BasicVersion!
+        public let iPadOSDeploymentTarget: NamedVersion.BasicVersion!
         
         public init(archiveVersion: Int = 1,
                     objectVersion: Int,
