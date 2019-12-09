@@ -59,6 +59,10 @@ public indirect enum XcodeFileSystemProviderAction {
     case exists(item: XcodeFileSystemURLResource)
     /// Checks to see if an object does not exist
     case notExists(item: XcodeFileSystemURLResource)
+    /// The number of child elements within
+    case childCount(forFolder: XcodeFileSystemURLResource)
+    /// Compares the child count
+    case childCountComparison(forFolder: XcodeFileSystemURLResource, operator: Operator, value: Int)
     ///  Get a specific date attribute
     case dateAttribute(item: XcodeFileSystemURLResource, attribute: DateAttribute)
     /// Compare a date attribute
@@ -95,6 +99,8 @@ public indirect enum XcodeFileSystemProviderAction {
             case .noAction(for: let url): return url
             case .exists(item: let url): return url
             case .notExists(item: let url): return url
+            case .childCount(forFolder: let url): return url
+            case .childCountComparison(forFolder: let url, operator: _, value: _): return url
             case .dateAttribute(item: let url, _): return url
             case .dateAttributeComparison(item: let url, _, _, _): return url
             case .isDirectory(item: let url): return url
@@ -142,6 +148,25 @@ public indirect enum XcodeFileSystemProviderAction {
         return XcodeFileSystemProviderAction.remove(item: item).withDependencies(.exists(item: item))
     }
     
+    /// Creates an action with dependancy that removes a file system object only if it exists
+    ///
+    /// - Parameter forFolder: The remove to remove
+    /// - Returns: Returns an action that represents the removal of a resource
+    public static func removeIfEmpty(forFolder: XcodeFileSystemURLResource) -> XcodeFileSystemProviderAction {
+        return XcodeFileSystemProviderAction.remove(item: forFolder)
+            .withDependencies(.childCountComparison(forFolder: forFolder, operator: .equals, value: 0))
+    }
+    
+    /// Creates an action with dependancy that removes a file system object only if it exists
+    ///
+    /// - Parameter forFolder: The remove to remove
+    /// - Returns: Returns an action that represents the removal of a resource
+    public static func removeIfExistsAndEmpty(forFolder: XcodeFileSystemURLResource) -> XcodeFileSystemProviderAction {
+        return XcodeFileSystemProviderAction.remove(item: forFolder)
+            .withDependencies(.childCountComparison(forFolder: forFolder, operator: .equals, value: 0))
+            .withDependencies(.exists(item: forFolder))
+    }
+    
     /// Creates a write action that then has a callback when its finished
     ///
     /// - Parameters:
@@ -156,7 +181,8 @@ public indirect enum XcodeFileSystemProviderAction {
                              callback: @escaping XcodeFSProviderActionCompleteHandler) -> XcodeFileSystemProviderAction {
         return XcodeFileSystemProviderAction.write(data: data,
                                                    to: to,
-                                                   writeOptions: writeOptions).withCallback(callback: callback)
+                                                   writeOptions: writeOptions)
+            .withCallback(callback: callback)
     }
     
    /// Creates a new action that takes the current action and wraps it around with a callback action
@@ -195,73 +221,79 @@ public indirect enum XcodeFileSystemProviderAction {
     /// - Returns: Returns a resource that fails the validateion
     func validateResourceConditions(_ precondition: (XcodeFileSystemURLResource) throws -> Bool)  rethrows -> XcodeFileSystemURLResource? {
         switch self {
-        case .noAction(for: let res):
-            if !(try precondition(res)) { return res }
-            else { return nil }
-        case .exists(item: let res):
-            if !(try precondition(res)) { return res }
-            else { return nil }
-        case .notExists(item: let res):
-            if !(try precondition(res)) { return res }
-            else { return nil }
-        case .dateAttribute(item: let res, _):
-            if !(try precondition(res)) { return res }
-            else { return nil }
-        case .dateAttributeComparison(item: let res, _, _, _):
-            if !(try precondition(res)) { return res }
-            else { return nil }
-        case .isDirectory(item: let res):
-            if !(try precondition(res)) { return res }
-            else { return nil }
-        case .data(for: let res, readOptions: _):
-            if !(try precondition(res)) { return res }
-            else { return nil }
-        case .write(_, to: let res, writeOptions: _):
-            if !(try precondition(res)) { return res }
-            else { return nil }
-        case .directoryContents(for: let res, _, _):
-            if !(try precondition(res)) { return res }
-            else { return nil }
-        case .directoryRemoveContents(from: let res, _, _):
-            if !(try precondition(res)) { return res }
-            else { return nil }
-        case .directoryDataContents(from: let res, _, _):
-            if !(try precondition(res)) { return res }
-            else { return nil }
-        case .createDirectory(at: let res, withIntermediateDirectories: _):
-            if !(try precondition(res)) { return res }
-            else { return nil }
-        case .copy(source: let resA, destination: let resB):
-            if !(try precondition(resA)) { return resA }
-            else if !(try precondition(resB)) { return resB }
-            else { return nil }
-        case .remove(item: let res):
-            if !(try precondition(res)) { return res }
-            else { return nil }
-        case .actionWithDependencies(dependants: let dependancies, action: let action):
-            var rtn: XcodeFileSystemURLResource? = nil
-            for d in dependancies where (rtn == nil) {
+            case .noAction(for: let res):
+                if !(try precondition(res)) { return res }
+                else { return nil }
+            case .exists(item: let res):
+                if !(try precondition(res)) { return res }
+                else { return nil }
+            case .notExists(item: let res):
+                if !(try precondition(res)) { return res }
+                else { return nil }
+            case .childCount(forFolder: let res):
+                if !(try precondition(res)) { return res }
+                else { return nil }
+            case .childCountComparison(forFolder: let res, _, _):
+                    if !(try precondition(res)) { return res }
+                    else { return nil }
+            case .dateAttribute(item: let res, _):
+                if !(try precondition(res)) { return res }
+                else { return nil }
+            case .dateAttributeComparison(item: let res, _, _, _):
+                if !(try precondition(res)) { return res }
+                else { return nil }
+            case .isDirectory(item: let res):
+                if !(try precondition(res)) { return res }
+                else { return nil }
+            case .data(for: let res, readOptions: _):
+                if !(try precondition(res)) { return res }
+                else { return nil }
+            case .write(_, to: let res, writeOptions: _):
+                if !(try precondition(res)) { return res }
+                else { return nil }
+            case .directoryContents(for: let res, _, _):
+                if !(try precondition(res)) { return res }
+                else { return nil }
+            case .directoryRemoveContents(from: let res, _, _):
+                if !(try precondition(res)) { return res }
+                else { return nil }
+            case .directoryDataContents(from: let res, _, _):
+                if !(try precondition(res)) { return res }
+                else { return nil }
+            case .createDirectory(at: let res, withIntermediateDirectories: _):
+                if !(try precondition(res)) { return res }
+                else { return nil }
+            case .copy(source: let resA, destination: let resB):
+                if !(try precondition(resA)) { return resA }
+                else if !(try precondition(resB)) { return resB }
+                else { return nil }
+            case .remove(item: let res):
+                if !(try precondition(res)) { return res }
+                else { return nil }
+            case .actionWithDependencies(dependants: let dependancies, action: let action):
+                var rtn: XcodeFileSystemURLResource? = nil
+                for d in dependancies where (rtn == nil) {
+                    
+                    rtn = try d.validateResourceConditions(precondition)
+                }
                 
-                rtn = try d.validateResourceConditions(precondition)
-            }
-            
-            /*for a in actions where (rtn == nil) {
-                rtn = try a.validateResourceConditions(precondition)
-            }*/
-            rtn = try action.validateResourceConditions(precondition)
-            
-            
-            return rtn
-        case .actionWithCallBack(action: let action, handler: _):
-            return try action.validateResourceConditions(precondition)
-        case .actionWithFailoverAction(action: let action, failover: let failover):
-            if let r = try action.validateResourceConditions(precondition) {
-                return r
-            } else if let r = try failover.validateResourceConditions(precondition) {
-                return r
-            } else {
-                return nil
-            }
+                /*for a in actions where (rtn == nil) {
+                    rtn = try a.validateResourceConditions(precondition)
+                }*/
+                rtn = try action.validateResourceConditions(precondition)
+                
+                
+                return rtn
+            case .actionWithCallBack(action: let action, handler: _):
+                return try action.validateResourceConditions(precondition)
+            case .actionWithFailoverAction(action: let action, failover: let failover):
+                if let r = try action.validateResourceConditions(precondition) {
+                    return r
+                } else if let r = try failover.validateResourceConditions(precondition) {
+                    return r
+                } else {
+                    return nil
+                }
         }
     }
 }
@@ -282,6 +314,8 @@ public enum XcodeFileSystemProviderActionResponse {
     case void(for: XcodeFileSystemURLResource)
     /// A Bool response value
     case bool(Bool, for: XcodeFileSystemURLResource)
+    /// An Int response value
+    case int(Int, for: XcodeFileSystemURLResource)
     /// A Date respopnse value
     case data(Data, for: XcodeFileSystemURLResource)
     /// A resourece data response value
@@ -300,6 +334,7 @@ public enum XcodeFileSystemProviderActionResponse {
         switch self {
             case .void(for: let url): return url
             case .bool(_, for: let url): return url
+            case .int(_, for: let url): return url
             case .data(_, for: let url): return url
             case .resourceData(_, _, for: let url): return url
             case .date(_, for: let url): return url
@@ -430,6 +465,11 @@ public protocol XcodeFileSystemProvider {
     /// - Parameter url: The url to the file system object
     /// - Returns: Returns true if the object exists or false if it does not
     func itemExists(at url: XcodeFileSystemURLResource) throws -> Bool
+    /// Returns the number of children within a folder
+    ///
+    /// - Parameter url: The folder to look at
+    /// - Returns: Returns the number of items within the folder
+    func childCount(forFolder url: XcodeFileSystemURLResource) throws -> Int
     /// Returns the last modified date of the file system object
     ///
     /// - Parameter url: The url to the file system object
@@ -677,6 +717,19 @@ public extension XcodeFileSystemProvider {
         return results
     }
     
+    /// Returns the number of children within a folder
+    ///
+    /// - Parameter url: The folder to look at
+    /// - Returns: Returns the number of items within the folder
+    func childCount(forFolder url: XcodeFileSystemURLResource) throws -> Int {
+        let r = try self.action(.childCount(forFolder: url))
+        guard case let XcodeFileSystemProviderActionResponse.int(results, for: _) = r else {
+            throw XcodeFileSystemProviderErrors.invalidResults
+        }
+        
+        return results
+    }
+    
     /// Get the creation date for a given resource
     ///
     /// - Parameter url: Address to the resource to check
@@ -867,5 +920,17 @@ extension XcodeFileSystemProvider {
     ///   - url: The url of where to create the directory
     public func createDirectory(at url: XcodeFileSystemURLResource) throws {
         try self.createDirectory(at: url, withIntermediateDirectories: true)
+    }
+}
+
+public extension XcodeFileSystemProviderAction.Operator {
+    func eval<T>(_ lhs: T, comparedTo rhs: T) -> Bool where T: Comparable {
+        switch self {
+            case .equals: return (lhs == rhs)
+            case .greaterThan: return (lhs > rhs)
+            case .greaterThanOrEquals: return (lhs >= rhs)
+            case .lessThan: return (lhs < rhs)
+            case .lessThanOrEquals: return (lhs <= rhs)
+        }
     }
 }

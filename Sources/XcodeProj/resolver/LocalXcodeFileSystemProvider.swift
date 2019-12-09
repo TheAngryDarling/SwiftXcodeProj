@@ -67,6 +67,24 @@ public class LocalXcodeFileSystemProvider: XcodeFileSystemProvider {
                 if FileManager.default.fileExists(atPath: res.path)  { rtn.append(.bool(true, for: res)) }
                 else { rtn.append(.bool(false, for: res)) }
                 
+            case .childCount(forFolder: let res):
+                var isDir: Bool = false
+                if FileManager.default.fileExists(atPath: res.path, isDirectory: &isDir) && isDir {
+                    let children = try FileManager.default.contentsOfDirectory(atPath: res.path)
+                    rtn.append(.int(children.count, for: res))
+                } else {
+                    rtn.append(.int(0, for: res))
+                }
+                    
+            case .childCountComparison(forFolder: let res, operator: let opr, value: let value):
+                var isDir: Bool = false
+                if FileManager.default.fileExists(atPath: res.path, isDirectory: &isDir) && isDir {
+                    let children = try FileManager.default.contentsOfDirectory(atPath: res.path)
+                    rtn.append(.bool(opr.eval(children.count, comparedTo: value), for: res))
+                } else {
+                    rtn.append(.bool(false, for: res))
+                }
+                
             case .notExists(item: let res):
                 if FileManager.default.fileExists(atPath: res.path)  { rtn.append(.bool(false, for: res)) }
                 else { rtn.append(.bool(true, for: res)) }
