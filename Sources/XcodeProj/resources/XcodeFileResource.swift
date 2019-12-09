@@ -111,5 +111,23 @@ public class XcodeFileResource: XcodeResource {
         }
         return true
     }
+    
+    /// Remove this group from the project
+    ///
+    /// - Parameters:
+    ///   - deletingFiles: An indicator if any file system resources for this group should be deleted from the file system
+    ///   - savePBXFile: An indicator if the PBX Project File should be saved at this time (Default: true)
+    public func remove(deletingFiles: Bool, savePBXFile: Bool = true) throws {
+        self.removeReferenceFromParentWithoutSaving()
+        self.project.proj.objects.remove(self.pbxFileResource)
+        if savePBXFile {
+            try self.project.save()
+        }
+    }
+    
+    /// Returns an array of actions required to remove resources on the FileSystem linked to this Xcode resource
+    internal func removeFromFileSystemActions() throws -> [XcodeFileSystemProviderAction] {
+        return []
+    }
 
 }

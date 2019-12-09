@@ -111,25 +111,40 @@ public class XcodeGroup: XcodeGroupResource {
         return rtn
     }
     
+    internal override func removeFromFileSystemActions() throws -> [XcodeFileSystemProviderAction] {
+        var rtn: [XcodeFileSystemProviderAction] = try super.removeFromFileSystemActions()
+        // Remove all child references
+        for child in self.children {
+            rtn.append(contentsOf: try child.removeFromFileSystemActions())
+        }
+        rtn.append(.removeIfExistsAndEmpty(forFolder: self.fullURL))
+        return rtn
+    }
+    
     /// Remove this group from the project
     ///
     /// - Parameters:
     ///   - deletingFiles: An indicator if any file system resources for this group should be deleted from the file system
     ///   - savePBXFile: An indicator if the PBX Project File should be saved at this time (Default: true)
-    public func remove(deletingFiles: Bool, savePBXFile: Bool = true) throws {
-        if deletingFiles && !savePBXFile {
-            try self.project.fsProvider.remove(item: self.fullURL)
+    public override func remove(deletingFiles: Bool, savePBXFile: Bool = true) throws {
+        var removeActions: [XcodeFileSystemProviderAction] = []
+        
+        if deletingFiles {
+            removeActions.append(contentsOf: try self.removeFromFileSystemActions())
+        }
+        // Remove all child references
+        for child in self.children {
+            try child.remove(deletingFiles: false, savePBXFile: false)
         }
         
-        self.removeReferenceFromParentWithoutSaving()
-        self.project.proj.objects.remove(self.pbxFileResource)
+        try super.remove(deletingFiles: false, savePBXFile: false)
+        
+        
         
         if savePBXFile {
-            var actions: [XcodeFileSystemProviderAction] = []
-            if deletingFiles {
-                actions.append(.removeIfExists(item: self.fullURL))
-            }
-            try self.project.save(actions)
+            try self.project.save(removeActions)
+        } else if deletingFiles && removeActions.count > 0 {
+            try self.project.fsProvider.actions(removeActions)
         }
     }
     

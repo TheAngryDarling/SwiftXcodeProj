@@ -107,24 +107,29 @@ public class XcodeFile: XcodeFileResource {
     }
     
     
+    internal override func removeFromFileSystemActions() throws -> [XcodeFileSystemProviderAction] {
+        var rtn: [XcodeFileSystemProviderAction] = try super.removeFromFileSystemActions()
+        rtn.append(.removeIfExists(item: self.fullURL))
+        return rtn
+    }
     /// Remove this file
     ///
     /// This will remove the file refernece from the PBX Project file and then try and delete the file from the file system and save the updated PBX Project File
     /// - Parameter deletingFiles: An indicator if this method should delete any physical file (Default: true)
-    public func remove(deletingFiles: Bool = true, savePBXFile: Bool = true) throws {
-        if deletingFiles && !savePBXFile {
-            try self.project.fsProvider.remove(item: self.fullURL)
+    public override func remove(deletingFiles: Bool = true, savePBXFile: Bool = true) throws {
+        
+        var removeActions: [XcodeFileSystemProviderAction] = []
+        
+        try super.remove(deletingFiles: false, savePBXFile: false)
+        
+        if deletingFiles {
+            removeActions.append(contentsOf: try self.removeFromFileSystemActions())
         }
         
-        self.removeReferenceFromParentWithoutSaving()
-        self.project.proj.objects.remove(self.pbxFileResource)
-        
         if savePBXFile {
-            var actions: [XcodeFileSystemProviderAction] = []
-            if deletingFiles {
-                actions.append(.removeIfExists(item: self.fullURL))
-            }
-            try self.project.save(actions)
+            try self.project.save(removeActions)
+        } else if deletingFiles && removeActions.count > 0 {
+            try self.project.fsProvider.actions(removeActions)
         }
         
         
