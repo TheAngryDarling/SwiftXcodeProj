@@ -335,8 +335,8 @@ class XcodeProjTests: XCTestCase {
          let workingProjectName: String = "TestSwiftCommandLine"
          let groupName: String = "SubGroup"
          let projectFolder: URL = workingDir.appendingPathComponent(workingProjectName, isDirectory: true)
-         let sourcesFolder =  projectFolder.appendingPathComponent("Sources", isDirectory: true)
-         let targetFolder = sourcesFolder.appendingPathComponent(workingProjectName, isDirectory: true)
+         //let sourcesFolder =  projectFolder.appendingPathComponent("Sources", isDirectory: true)
+         //let targetFolder = sourcesFolder.appendingPathComponent(workingProjectName, isDirectory: true)
          
          defer {
              try? FileManager.default.removeItem(at: projectFolder)
