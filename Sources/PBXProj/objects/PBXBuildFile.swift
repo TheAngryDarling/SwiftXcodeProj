@@ -100,11 +100,10 @@ public final class PBXBuildFile: PBXUnknownObject {
     }
     
     public required init(from decoder: Decoder) throws {
-        var container = try decoder.container(keyedBy:  CodingKeys.self)
+        let container = try decoder.container(keyedBy:  CodingKeys.self)
         
         self.fileRef = try container.decode(PBXReference.self, forKey: .fileRef)
-        self.settings = (try CodableHelpers.dictionaries.decodeIfPresent(from: &container, forKey: .settings)) ?? [:]
-       
+        self.settings = try container.decodeAnyDictionaryIfPresent(forKey: .settings, withDefaultValue: [:])
         
         try super.init(from: decoder)
     }
@@ -114,7 +113,7 @@ public final class PBXBuildFile: PBXUnknownObject {
         
         try container.encode(self.fileRef, forKey: .fileRef)
         if self.settings.count > 0 {
-            try CodableHelpers.dictionaries.encode(self.settings, in: &container, forKey: .settings)
+            try container.encodeAnyDictionary(self.settings, forKey: .settings)
         }
         
         try super.encode(to: encoder)

@@ -178,13 +178,13 @@ public class PBXProj: NSObject, Codable {
     }
     
     required public init(from decoder: Decoder) throws {
-        var container = try decoder.container(keyedBy: CodingKeys.self)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
         self.archiveVersion = try container.decode(Int.self, forKey: .archiveVersion)
         self.objectVersion = try container.decode(Int.self, forKey: .objectVersion)
         
         
 
-        self.classes = (try CodableHelpers.dictionaries.decodeIfPresent(from: &container, forKey: .classes)) ?? [:]
+        self.classes = try container.decodeAnyDictionaryIfPresent(forKey: .classes, withDefaultValue: [:])
         self.rootObject = try container.decode(PBXReference.self, forKey: .rootObject)
         self.objects = try container.decode(PBXObjects.self, forKey: .objects)
         
@@ -219,7 +219,7 @@ public class PBXProj: NSObject, Codable {
         try container.encode(self.archiveVersion, forKey: .archiveVersion)
         try container.encode(self.objectVersion, forKey: .objectVersion)
         if self.classes.count > 0 {
-            try CodableHelpers.dictionaries.encode(self.classes, in: &container, forKey: .classes)
+            try container.encodeAnyDictionary(self.classes, forKey: .classes)
         }
         try container.encode(self.rootObject, forKey: .rootObject)
         try container.encode(self.objects, forKey: .objects)

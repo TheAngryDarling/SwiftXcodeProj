@@ -97,26 +97,21 @@ public final class XCBuildConfiguration: PBXUnknownObject {
     }
     
     public required init(from decoder: Decoder) throws {
-        var container = try decoder.container(keyedBy: CodingKeys.self)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
         
         self.name = try container.decode(String.self, forKey: .name)
         
         self.baseConfigurationReferenceReference = try container.decodeIfPresent(PBXReference.self,
                                                                                  forKey: .baseConfigurationReference)
-        self.buildSettings = (try CodableHelpers.dictionaries.decodeIfPresent(from: &container, forKey: .buildSettings)) ?? [:]
-        
+        self.buildSettings = try container.decodeAnyDictionaryIfPresent(forKey: .buildSettings, withDefaultValue: [:])
         try super.init(from: decoder)
-        
-        //print("\(decoder.codingPath.stringCodingPath + "/" + self.name): ")
-        //print(self.buildSettings)
     }
     
     public override func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(self.baseConfigurationReferenceReference,
                                       forKey: .baseConfigurationReference)
-        try CodableHelpers.dictionaries.encode(self.buildSettings, in: &container,
-                                           forKey: .buildSettings)
+        try container.encodeAnyDictionary(self.buildSettings, forKey: .buildSettings)
         try container.encode(self.name, forKey: .name)
         
         try super.encode(to: encoder)

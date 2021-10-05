@@ -59,8 +59,7 @@ public final class PBXObjects: NSObject, Codable {
     
 
     required public convenience init(from decoder: Decoder) throws {
-        let objs: [PBXObject] = try CodableHelpers.sequences.dynamicElementDecoding(from: decoder,
-                                                                                    usingKey: PBXObject.ObjectCodingKeys.id) { (dec: Decoder) throws -> PBXObject in
+        let objs: [PBXObject] = try decoder.dynamicElementDecoding(usingKey: PBXObject.ObjectCodingKeys.id) { (dec: Decoder) throws -> PBXObject in
             let container = try dec.container(keyedBy: PBXObject.ObjectCodingKeys.self)
             let isaType = try container.decode(PBXObjectType.self, forKey: .type)
             return try isaType.objectContainerType.init(from: dec)
@@ -73,9 +72,8 @@ public final class PBXObjects: NSObject, Codable {
     }
     
     public func encode(to encoder: Encoder) throws {
-        try CodableHelpers.sequences.dynamicElementEncoding(self.objects,
-                                                            to: encoder,
-                                                            usingKey: PBXObject.ObjectCodingKeys.id)
+        try encoder.dynamicElementEncoding(self.objects,
+                                           usingKey: PBXObject.ObjectCodingKeys.id)
     }
     
     /// Returns the number of objects in the list

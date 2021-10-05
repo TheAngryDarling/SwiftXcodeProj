@@ -476,7 +476,7 @@ public final class PBXProject: PBXUnknownObject {
     }
     
     public required init(from decoder: Decoder) throws {
-        var container = try decoder.container(keyedBy:  CodingKeys.self)
+        let container = try decoder.container(keyedBy:  CodingKeys.self)
         
         self.buildConfigurationListReference = try container.decode(PBXReference.self, forKey: .buildConfigurationList)
         self.compatibilityVersion = try container.decode(String.self, forKey: .compatibilityVersion)
@@ -489,7 +489,7 @@ public final class PBXProject: PBXUnknownObject {
         self.projectReferences = (try container.decodeIfPresent([PBXProjectReference].self, forKey: .projectReferences)) ?? []
         self.projectRoot = try container.decodeIfPresent(String.self, forKey: .projectRoot)
         self.targetReferences = try container.decode([PBXReference].self, forKey: .targets)
-        self.attributes = (try CodableHelpers.dictionaries.decodeIfPresent(from: &container, forKey: .attributes)) ?? [:]
+        self.attributes = try container.decodeAnyDictionaryIfPresent(forKey: .attributes, withDefaultValue: [:])
         
         
         try super.init(from: decoder)
@@ -509,7 +509,9 @@ public final class PBXProject: PBXUnknownObject {
         if self.projectReferences.count > 0 { try container.encode(self.projectReferences, forKey: .projectReferences) }
         try container.encodeIfPresent(self.projectRoot, forKey: .projectRoot)
         try container.encode(self.targetReferences, forKey: .targets)
-        if self.attributes.count > 0 { try CodableHelpers.dictionaries.encode(self.attributes, in: &container, forKey: .attributes) }
+        if self.attributes.count > 0 {
+            try container.encodeAnyDictionary(self.attributes, forKey: .attributes)
+        }
         
         try super.encode(to: encoder)
     }

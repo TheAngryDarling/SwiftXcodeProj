@@ -89,8 +89,7 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
         } else {
             if let dta = try project.fsProvider.dataIfExists(from: url) {
                 let plistDecoder = PListDecoder()
-                self.info = try CodableHelpers.dictionaries.decode(dta,
-                                                                   from: plistDecoder)
+                self.info = try plistDecoder.decodeAnyDictionary(from: dta)
             } else {
                 self.info = [:]
                 
@@ -164,7 +163,7 @@ public class XcodeTarget: XcodeObject, LeveledDescripition {
         // Generate Data
         let plistEncoder = PListEncoder()
         plistEncoder.outputFormat = .xml
-        let dta = try CodableHelpers.dictionaries.encode(self.info, to: plistEncoder)
+        let dta = try plistEncoder.encodeAnyDictionary(self.info)
         
         let writeAction = XcodeFileSystemProviderAction.write(data: dta, to: self.url, writeOptions: .atomic)
         

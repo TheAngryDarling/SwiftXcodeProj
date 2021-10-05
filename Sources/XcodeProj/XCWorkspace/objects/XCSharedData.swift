@@ -60,16 +60,14 @@ public final class XCSharedData: NSObject {
         
         if responses[0].isFailedDependancy { self.ideWorkspaceChecks = [:] }
         else if case XcodeFileSystemProviderActionResponse.data(let dta, for: _) = responses[0] {
-            self.ideWorkspaceChecks = try CodableHelpers.dictionaries.decode(dta,
-                                                                             from: plistDecoder)
+            self.ideWorkspaceChecks = try plistDecoder.decodeAnyDictionary(from: dta)
         } else {
             throw XcodeFileSystemProviderErrors.invalidResults
         }
         
         if responses[1].isFailedDependancy {  self.workspaceSettings = [:] }
         else if case XcodeFileSystemProviderActionResponse.data(let dta, for: _) = responses[1] {
-            self.workspaceSettings = try CodableHelpers.dictionaries.decode(dta,
-                                                                            from: plistDecoder)
+            self.workspaceSettings = try plistDecoder.decodeAnyDictionary(from: dta)
         } else {
             throw XcodeFileSystemProviderErrors.invalidResults
         }
@@ -96,7 +94,7 @@ public final class XCSharedData: NSObject {
             let ideWorkspaceChecksURL = url.appendingFileComponent(XCSharedData.IDE_WORKSPACE_CHECKS_FILE_NAME)
             var action: XcodeFileSystemProviderAction!
             if self.ideWorkspaceChecks.count > 0 {
-                let dta = try CodableHelpers.dictionaries.encode(self.ideWorkspaceChecks, to: encoder)
+                let dta = try encoder.encodeAnyDictionary(self.ideWorkspaceChecks)
                 action = .write(data: dta, to: ideWorkspaceChecksURL, writeOptions: .atomic)
             } else {
                 action = .removeIfExists(item: ideWorkspaceChecksURL)
@@ -116,7 +114,7 @@ public final class XCSharedData: NSObject {
             let workspaceSettingsURL = url.appendingFileComponent(XCSharedData.WORKSPACE_SETTINGS_FILE_NAME)
             var action: XcodeFileSystemProviderAction!
             if self.workspaceSettings.count > 0 {
-                let dta = try CodableHelpers.dictionaries.encode(self.workspaceSettings, to: encoder)
+                let dta = try encoder.encodeAnyDictionary(self.workspaceSettings)
                 action = .write(data: dta, to: workspaceSettingsURL, writeOptions: .atomic)
             } else {
                 action = .removeIfExists(item: workspaceSettingsURL)

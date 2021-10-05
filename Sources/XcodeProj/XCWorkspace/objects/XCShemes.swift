@@ -77,7 +77,7 @@ public final class XCSchemes: NSObject {
         if responses[0].isFailedDependancy { self.management = [:] }
         else if case XcodeFileSystemProviderActionResponse.data(let dta, for: _) = responses[0] {
             let coder = PListDecoder()
-            self.management = try CodableHelpers.dictionaries.decode(dta, from: coder)
+            self.management = try coder.decodeAnyDictionary(from: dta)
         } else {
             throw XcodeFileSystemProviderErrors.invalidResults
         }
@@ -114,11 +114,9 @@ public final class XCSchemes: NSObject {
             var action: XcodeFileSystemProviderAction!
             if self.management.count > 0 {
                 let encoder = PListEncoder()
-                let dta = try CodableHelpers.dictionaries.encode(self.management, to: encoder)
-                //try dta.write(to: managementURL, options: .atomic)
+                let dta = try encoder.encodeAnyDictionary(self.management)
                 action = .write(data: dta, to: managementURL, writeOptions: .atomic)
             } else {
-                //try? FileManager.default.removeItem(at: managementURL)
                 action = .remove(item: managementURL)
             }
             
