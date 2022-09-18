@@ -78,7 +78,8 @@ public class XCSchemeObject: NSObject {
     }
     internal func getYESNOBoolValue<E>(forAttribute name: E,
                                        withDefaultValue defVal: @autoclosure () -> Bool = { return false }()) -> Bool where E: RawRepresentable, E.RawValue == String {
-        return getYESNOBoolValue(forAttribute: name.rawValue, withDefaultValue: defVal)
+        return getYESNOBoolValue(forAttribute: name.rawValue,
+                                 withDefaultValue: defVal())
     }
     
     internal func setYESNOBoolVal(_ value: Bool, forAttribute name: String) {
@@ -108,7 +109,8 @@ public class XCSchemeObject: NSObject {
     
     internal func getDecimalValue<E>(forAttribute name: E,
                                      withDefaultValue defVal: @autoclosure () -> Decimal) throws -> Decimal where E: RawRepresentable, E.RawValue == String {
-        return try getDecimalValue(forAttribute: name.rawValue, withDefaultValue: defVal)
+        return try getDecimalValue(forAttribute: name.rawValue,
+                                   withDefaultValue: defVal())
     }
     
     internal func setDecimalValue(_ value: Decimal, forAttribute name: String) {
@@ -148,7 +150,8 @@ public class XCSchemeObject: NSObject {
     
     internal func getIntValue<E>(forAttribute name: E,
                                      withDefaultValue defVal: @autoclosure () -> Int) throws -> Int where E: RawRepresentable, E.RawValue == String {
-        return try getIntValue(forAttribute: name.rawValue, withDefaultValue: defVal)
+        return try getIntValue(forAttribute: name.rawValue,
+                               withDefaultValue: defVal())
     }
     
     internal func setIntValue(_ value: Int, forAttribute name: String) {

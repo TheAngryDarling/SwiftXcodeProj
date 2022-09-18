@@ -280,7 +280,8 @@ public final class XCScheme: NSObject {
     
     private func getDecimalValue<E>(forAttribute name: E,
                                      withDefaultValue defVal: @autoclosure () -> Decimal) throws -> Decimal where E: RawRepresentable, E.RawValue == String {
-        return try getDecimalValue(forAttribute: name.rawValue, withDefaultValue: defVal)
+        return try getDecimalValue(forAttribute: name.rawValue,
+                                   withDefaultValue: defVal())
     }
     
     private func setDecimalValue(_ value: Decimal, forAttribute name: String) {
