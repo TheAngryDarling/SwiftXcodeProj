@@ -91,7 +91,7 @@ public class PBXObject: NSObject, Codable {
             
             for k in self.CODING_KEY_ORDER {
                 //ensure definedKeys only contains keys within workingKeys
-                if let idx = workingKeys.index(of: k) {
+                if let idx = workingKeys.firstIndex(of: k) {
                     definedKeys.append(k)
                     //Remove key from workingKeys.  it will be put back in later
                     workingKeys.remove(at: idx)

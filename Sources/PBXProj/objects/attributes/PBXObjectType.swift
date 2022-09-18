@@ -49,7 +49,7 @@ public struct PBXObjectType: Hashable {
     
     /// The order value of the given object type.  This is used for sorting object types
     public var orderValue: Int {
-        guard let idx = PBXObjectType.WRITE_ORDER.index(of: self) else { return PBXObjectType.unknownTypeOrderValue }
+        guard let idx = PBXObjectType.WRITE_ORDER.firstIndex(of: self) else { return PBXObjectType.unknownTypeOrderValue }
         return idx
     }
     
