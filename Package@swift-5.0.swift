@@ -1,4 +1,4 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -19,32 +19,23 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
-        .package(name: "StringIANACharacterSetEncoding",
-                 url: "https://github.com/TheAngryDarling/SwiftStringIANACharacterSetEncoding.git",
+        .package(url: "https://github.com/TheAngryDarling/SwiftStringIANACharacterSetEncoding.git",
                  from: "2.0.1"),
-        .package(name: "Nillable",
-                 url: "https://github.com/TheAngryDarling/SwiftNillable.git",
+        .package(url: "https://github.com/TheAngryDarling/SwiftNillable.git",
                  from: "1.0.3"),
-        .package(name: "AdvancedCodableHelpers",
-                 url: "https://github.com/TheAngryDarling/SwiftAdvancedCodableHelpers.git",
+        .package(url: "https://github.com/TheAngryDarling/SwiftAdvancedCodableHelpers.git",
                  from: "1.1.1"),
-        .package(name: "CustomCoders",
-                 url: "https://github.com/TheAngryDarling/SwiftCustomCoders.git",
+        .package(url: "https://github.com/TheAngryDarling/SwiftCustomCoders.git",
                  from: "1.0.0"),
-        .package(name: "CodeTimer",
-                 url: "https://github.com/TheAngryDarling/SwiftCodeTimer.git",
+        .package(url: "https://github.com/TheAngryDarling/SwiftCodeTimer.git",
                  from: "1.0.0"),
-        .package(name: "SwiftClassCollections",
-                 url: "https://github.com/TheAngryDarling/SwiftClassCollections.git",
+        .package(url: "https://github.com/TheAngryDarling/SwiftClassCollections.git",
                  from: "1.0.4"),
-        .package(name: "VersionKit",
-                 url: "https://github.com/TheAngryDarling/SwiftVersionKit.git",
+        .package(url: "https://github.com/TheAngryDarling/SwiftVersionKit.git",
                  from: "1.0.3"),
-        .package(name: "SwiftPatches",
-                 url: "https://github.com/TheAngryDarling/SwiftPatches.git",
+        .package(url: "https://github.com/TheAngryDarling/SwiftPatches.git",
                  from: "2.0.8"),
-        .package(name: "RawRepresentableHelpers",
-                 url: "https://github.com/TheAngryDarling/SwiftRawRepresentableHelpers.git",
+        .package(url: "https://github.com/TheAngryDarling/SwiftRawRepresentableHelpers.git",
                  from: "1.0.0"),
         
     ],
