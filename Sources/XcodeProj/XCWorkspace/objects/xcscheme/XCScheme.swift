@@ -149,10 +149,26 @@ public final class XCScheme: NSObject {
         guard let element = xmlDocument.rootElement() else {
             throw Errors.schemeDocumentMissingRootNode
         }
+       
+        if let aE: XMLElement = element.firstElement(forName: CodingKeys.buildAction) {
+            self.buildAction = try XCSchemeBuildAction(from: aE)
+        }
+        if let aE: XMLElement = element.firstElement(forName: CodingKeys.testAction) {
+            self.testAction = try XCSchemeTestAction(from: aE)
+        }
+        if let aE: XMLElement = element.firstElement(forName: CodingKeys.launchAction) {
+            self.launchAction = try XCSchemeLaunchAction(from: aE)
+        }
+        if let aE: XMLElement = element.firstElement(forName: CodingKeys.profileAction) {
+            self.profileAction = try XCSchemeProfileAction(from: aE)
+        }
+        if let aE: XMLElement = element.firstElement(forName: CodingKeys.analyzeAction) {
+            self.analyzeAction = try XCSchemeAnalyzeAction(from: aE)
+        }
+        if let aE: XMLElement = element.firstElement(forName: CodingKeys.archiveAction) {
+            self.archiveAction = try XCSchemeArchiveAction(from: aE)
+        }
         
-        super.init()
-        
-        try self.loadDefinedElements(from: element)
         
         for attrib in (element.attributes ?? []) {
             guard attrib.kind == .attribute else { continue }
@@ -176,6 +192,7 @@ public final class XCScheme: NSObject {
                 self.elements[childElementName] = ary
             }
         }
+        super.init()
     }
     
     public convenience init(fromURL url: XcodeFileSystemURLResource, usingFSProvider provider: XcodeFileSystemProvider) throws {
@@ -184,26 +201,6 @@ public final class XCScheme: NSObject {
         
     }
     
-    private func loadDefinedElements(from element: XMLElement) throws {
-        if let element = element.firstElement(forName: CodingKeys.buildAction) {
-            self.buildAction = try XCSchemeBuildAction(from: element)
-        }
-        if let element = element.firstElement(forName: CodingKeys.testAction) {
-            self.testAction = try XCSchemeTestAction(from: element)
-        }
-        if let element = element.firstElement(forName: CodingKeys.launchAction) {
-            self.launchAction = try XCSchemeLaunchAction(from: element)
-        }
-        if let element = element.firstElement(forName: CodingKeys.profileAction) {
-            self.profileAction = try XCSchemeProfileAction(from: element)
-        }
-        if let element = element.firstElement(forName: CodingKeys.analyzeAction) {
-            self.analyzeAction = try XCSchemeAnalyzeAction(from: element)
-        }
-        if let element = element.firstElement(forName: CodingKeys.archiveAction) {
-            self.archiveAction = try XCSchemeArchiveAction(from: element)
-        }
-    }
     
     public func saveAction(to url: XcodeFileSystemURLResource, overrideChangeCheck: Bool = false) throws -> XcodeFileSystemProviderAction? {
         guard self.hasAnyInfoChanged || overrideChangeCheck else { return nil }
